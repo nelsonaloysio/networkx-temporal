@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetworkX-Temporal — Temporal graph analysis in Python</title>
+<meta name="description" content="NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of the structure and dynamics of temporal graphs.">
+<meta property="og:title" content="NetworkX-Temporal">
+<meta property="og:description" content="Temporal graph analysis in Python, extending NetworkX.">
+<meta property="og:image" content="https://networkx-temporal.org/banner.png">
+<meta property="og:url" content="https://networkx-temporal.org/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://networkx-temporal.org/">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<style>
+  :root {
+    --blue: #136097;
+    --link: #555555;
+    --ink: #2b2b2b;
+    --muted: #6b6b6b;
+    --line: #e3e3e3;
+    --bg: #ffffff;
+    --code-bg: #f6f7f8;
+    --border: #cecece;
+    --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+
+  /* Dark palette: system setting, unless light was explicitly chosen. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --blue: #6cb0e6;
+      --link: #b4b4b4;
+      --ink: #eeeeee;
+      --muted: #989898;
+      --line: #33373a;
+      --bg: #16181a;
+      --code-bg: #202427;
+      --border: #3b4043;
+      color-scheme: dark;
+    }
+  }
+  /* Dark palette: explicit choice, set by the toggle. */
+  :root[data-theme="dark"] {
+    --blue: #6cb0e6;
+    --link: #b4b4b4;
+    --ink: #eeeeee;
+    --muted: #989898;
+    --line: #33373a;
+    --bg: #16181a;
+    --code-bg: #202427;
+    --border: #3b4043;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--blue); }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .side { position: sticky; top: 1.75rem; font-size: 0.95rem; }
+  .side .group { margin-bottom: 1.6rem; }
+  .side h2 {
+    font-size: 1.1rem; font-weight: 700; margin: 0 0 0.45rem; color: var(--ink);
+  }
+  .side ul { list-style: none; margin: 0; padding: 0; }
+  .side li { margin: 0.22rem 0; }
+  .side a { color: var(--link); text-decoration: none; }
+  .side a:hover { color: var(--blue); text-decoration: underline; }
+  .side .rel { color: var(--muted); font-size: 0.85rem; margin: 0.1rem 0 0.35rem; }
+
+  .search { display: block; }
+  .search input {
+    width: 85%;
+    font-family: var(--serif); font-size: 0.92rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--ink);
+  }
+  .search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 119, 180, 0.2); }
+
+  .theme button {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--serif); font-size: 0.92rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--bg); color: var(--link); cursor: pointer;
+  }
+  .theme button:hover { color: var(--blue); border-color: var(--blue); }
+  .theme svg { width: 15px; height: 15px; flex: none; }
+  .theme .icon-moon { display: none; }
+  :root[data-theme="dark"] .theme .icon-sun { display: none; }
+  :root[data-theme="dark"] .theme .icon-moon { display: inline; }
+
+  /* Main */
+  .main .brand img { max-width: 400px; width: 100%; height: auto; display: block; margin-bottom: 1.25rem; }
+  .lead {
+    font-size: 1.12rem; line-height: 1.5; color: var(--ink);
+    max-width: 64ch; margin: 0 0 1.75rem;
+  }
+
+  .install-block { margin: 0 0 2rem; }
+  .install-block .label { font-size: 0.9rem; color: var(--muted); margin: 0 0 0.45rem; }
+  .install {
+    font-family: var(--mono); font-size: 0.9rem;
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 0.6rem 0.9rem; display: inline-block; user-select: all; color: var(--ink);
+  }
+  .install::before { content: "$ "; color: var(--muted); }
+
+  .main h1 {
+    /* font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 700; */
+    letter-spacing: -0.01em; margin: 0 0 1rem; color: var(--ink);
+  }
+
+  .feature-list { font-size: 1.1rem; margin: 0; padding-left: 1.25rem; max-width: 66ch; }
+  .feature-list li { margin: 0.4rem 0; }
+  .feature-list li::marker { color: var(--muted); }
+
+  footer {
+    max-width: 1080px; margin: 0 auto; padding: 2.25rem 2rem 2.75rem;
+    color: var(--muted); font-size: 0.9rem; text-align: right;
+  }
+
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+
+  @media (max-width: 800px) {
+    .wrap { grid-template-columns: 1fr; gap: 2.25rem; padding-top: 2.25rem; }
+    .side { position: static; order: 2; border-top: 1px solid var(--line); padding-top: 1.75rem; }
+    .main { order: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+<script>
+  /* Runs before first paint so the page never flashes the wrong theme. */
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (e) { }
+    document.documentElement.dataset.theme =
+      stored || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  })();
+</script>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="side">
+    <nav class="group" aria-label="Documentation">
+      <h2>Documentation</h2>
+      <ul>
+        <li>
+          <a href="https://networkx-temporal.readthedocs.io/en/stable/">Stable</a>
+          <div class="rel" id="version">Loading...</div>
+        </li>
+        <li>
+          <a href="https://networkx-temporal.readthedocs.io/en/latest/">Latest</a>
+          <div class="rel">development</div>
+        </li>
+        <script>
+          fetch('https://pypi.org/pypi/networkx-temporal/json')
+            .then(response => response.json())
+            .then(data => {
+              document.getElementById('version').textContent = data.info.version;
+            })
+            .catch(error => console.error('Error:', error));
+        </script>
+      </ul>
+    </nav>
+
+      <nav class="group" aria-label="Project links">
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal">Source</a></li>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal/issues">Issue tracker</a></li>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md">Changelog</a></li>
+          <li><a href="mailto:contact@networkx-temporal.org">Contact</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/cite.html">Cite</a></li>
+        </ul>
+      </nav>
+
+      <nav class="group" aria-label="Explore">
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/#quick-start">Getting started</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/basics.html">Basic operations</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/convert.html">Convert &amp; transform</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/metrics.html">Algorithms &amp; metrics</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/community.html">Community detection</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/gpu.html">GPU acceleration</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/api/api.html">API reference</a></li>
+        </ul>
+      </nav>
+
+      <form class="group search" role="search"
+            action="https://networkx-temporal.readthedocs.io/en/stable/search.html" method="get">
+        <h2>Search</h2>
+        <input type="hidden" name="check_keywords" value="yes">
+        <input type="hidden" name="area" value="default">
+        <input type="search" name="q" placeholder="Search docs" aria-label="Search the documentation">
+      </form>
+
+      <div class="group theme">
+        <button type="button" id="theme-toggle" aria-label="Switch to dark theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5"/>
+            <path d="M12 1.5v3M12 19.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1.5 12h3M19.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>
+          </svg>
+          <span class="theme-label">Dark</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <a class="brand" href="/" aria-label="NetworkX-Temporal home">
+        <img src="/banner.svg" alt="NetworkX-Temporal — Temporal graph analysis in Python">
+      </a>
+
+      <p class="lead">
+        NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of
+        the structure and dynamics of temporal graphs — extending
+        <a href="https://networkx.org">NetworkX</a>
+        with support for time-varying relational data.
+      </p>
+
+      <div class="install-block">
+        <p class="label">Install from <a href="https://pypi.org/project/networkx-temporal/">PyPI</a>:</p>
+        <code class="install">pip install networkx-temporal</code>
+      </div>
+
+      <h1>Software for temporal networks</h1>
+
+      <ul class="feature-list">
+        <li><code><a href="https://networkx-temporal.readthedocs.io/en/stable/api/classes.html#networkx_temporal.classes.TemporalGraph">TemporalGraph</a></code> classes that inherit NetworkX static graph classes</li>
+        <li>Easy slicing of temporal data into snapshots by time, quantile, or rank</li>
+        <li>Algorithms for temporal networks, plus static NetworkX algorithms per snapshot</li>
+        <li>Community detection: spectral clustering and multislice Leiden optimization</li>
+        <li>CPU and GPU (CuPy/RAPIDS) backends, switchable via environment variable</li>
+        <li>Dataset loaders and generators, including dynamic stochastic block models</li>
+        <li>Conversion between static, snapshot, event, and unrolled representations</li>
+        <li>Interoperability with igraph, graph-tool, PyTorch Geometric, DGL, <a href="https://networkx-temporal.readthedocs.io/en/stable/#convert-and-transform-graphs">and more</a></li>
+        <li>Open source <a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md">3-clause BSD license</a></li>
+        <li>Extensive <a href="https://networkx-temporal.readthedocs.io/en/stable/">documentation</a> and examples, plus additional benefits from Python: fast prototyping, cross-platform, and easy to teach and debug</li>
+      </ul>
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy;2024-2026, NetworkX-Temporal developers.</p>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var button = document.getElementById('theme-toggle');
+      var label = button.querySelector('.theme-label');
+      var system = matchMedia('(prefers-color-scheme: dark)');
+
+      function apply(theme) {
+        root.dataset.theme = theme;
+        var next = theme === 'dark' ? 'light' : 'dark';
+        label.textContent = next === 'dark' ? 'Light' : 'Dark';
+        button.setAttribute('aria-label', 'Switch to ' + next + ' theme');
+      }
+
+      apply(root.dataset.theme);
+
+      button.addEventListener('click', function () {
+        var theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        apply(theme);
+        try { localStorage.setItem('theme', theme); } catch (e) { }
+      });
+
+      /* Follow live OS changes until the visitor picks a theme of their own. */
+      system.addEventListener('change', function (event) {
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) { }
+        if (!stored) apply(event.matches ? 'dark' : 'light');
+      });
+    })();
+  </script>
+</body>
+</html>
