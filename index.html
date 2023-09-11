@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetworkX-Temporal — Temporal network analysis in Python</title>
+<meta name="description" content="NetworkX-Temporal is a Python package for the creation, manipulation, and study of the structure, dynamics, and functions of temporal networks.">
+<link rel="icon" href="https://raw.githubusercontent.com/nelsonaloysio/networkx-temporal/refs/heads/main/docs/assets/banner-logo.svg">
+<style>
+  :root {
+    --blue: #136097;          /* networkx / matplotlib C0 */
+    --link: #555555;          /* gray links, blue on hover */
+    --ink: #2b2b2b;
+    --muted: #6b6b6b;
+    --line: #e3e3e3;
+    --bg: #ffffff;
+    --code-bg: #f6f7f8;
+    --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--serif);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--blue); }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 3rem 2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  /* Sidebar */
+  .side { position: sticky; top: 1.75rem; font-size: 0.95rem; }
+  .side .group { margin-bottom: 1.6rem; }
+  .side h2 {
+    font-size: 1.1rem; font-weight: 700; margin: 0 0 0.45rem; color: var(--ink);
+  }
+  .side ul { list-style: none; margin: 0; padding: 0; }
+  .side li { margin: 0.22rem 0; }
+  .side a { color: var(--link); text-decoration: none; }
+  .side a:hover { color: var(--blue); text-decoration: underline; }
+  .side .rel { color: var(--muted); font-size: 0.85rem; margin: 0.1rem 0 0.35rem; }
+
+  .search { display: block; }
+  .search input {
+    width: 100%;
+    font-family: var(--serif); font-size: 0.92rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink);
+  }
+  .search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 119, 180, 0.2); }
+
+  /* Main */
+  .main .brand img { max-width: 400px; width: 100%; height: auto; display: block; margin-bottom: 1.25rem; }
+  .lead {
+    font-size: 1.12rem; line-height: 1.5; color: var(--ink);
+    max-width: 64ch; margin: 0 0 1.75rem;
+  }
+
+  .install-block { margin: 0 0 2rem; }
+  .install-block .label { font-size: 0.9rem; color: var(--muted); margin: 0 0 0.45rem; }
+  .install {
+    font-family: var(--mono); font-size: 0.9rem;
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-left: 3px solid var(--blue);
+    border-radius: 4px; padding: 0.6rem 0.9rem; display: inline-block; user-select: all; color: #333;
+  }
+  .install::before { content: "$ "; color: var(--muted); }
+
+  .main h1 {
+    /* font-size: clamp(1.7rem, 3.2vw, 2.3rem); font-weight: 700; */
+    letter-spacing: -0.01em; margin: 0 0 1rem; color: var(--ink);
+  }
+
+  .feature-list { font-size: 1.1rem; margin: 0; padding-left: 1.25rem; max-width: 66ch; }
+  .feature-list li { margin: 0.4rem 0; }
+  .feature-list li::marker { color: var(--muted); }
+
+  footer {
+    max-width: 1080px; margin: 0 auto; padding: 2.25rem 2rem 2.75rem;
+    color: var(--muted); font-size: 0.9rem; text-align: right;
+  }
+
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 3px; }
+
+  @media (max-width: 800px) {
+    .wrap { grid-template-columns: 1fr; gap: 2.25rem; padding-top: 2.25rem; }
+    .side { position: static; order: 2; border-top: 1px solid var(--line); padding-top: 1.75rem; }
+    .main { order: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="side">
+      <nav class="group" aria-label="Documentation">
+        <h2>Documentation</h2>
+        <ul>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/">Stable</a></li>
+          <p class="rel"><script>
+            fetch('https://pypi.org/pypi/networkx-temporal/json')
+              .then(response => response.json())
+              .then(data => {
+                const latestVersion = data.info.version;
+                document.getElementById('version').textContent = latestVersion;
+              })
+              .catch(error => console.error('Error:', error));
+          </script>
+          <p class="rel"><span id="version">Loading...</span></p>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/latest/">Latest</a></li>
+          <p class="rel">development</p>
+        </ul>
+      </nav>
+
+      <nav class="group" aria-label="Project links">
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://pypi.org/project/networkx-temporal/">PyPI</a></li>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal">Source</a></li>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal/issues">Issue tracker</a></li>
+          <li><a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md">Changelog</a></li>
+          <li><a href="mailto:nelson.reis@phd.unipi.it">Contact</a></li>
+        </ul>
+      </nav>
+
+      <nav class="group" aria-label="Explore">
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/basics.html">Getting started</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/convert.html">Convert &amp; transform</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/algorithms.html">Algorithms &amp; metrics</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/community.html">Community detection</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/gpu.html">GPU acceleration</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/api/api.html">API reference</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/cite.html">Cite</a></li>
+        </ul>
+      </nav>
+
+      <form class="group search" role="search"
+            action="https://networkx-temporal.readthedocs.io/en/stable/search.html" method="get">
+        <h2>Search</h2>
+        <input type="hidden" name="check_keywords" value="yes">
+        <input type="hidden" name="area" value="default">
+        <input type="search" name="q" placeholder="Search docs…" aria-label="Search the documentation">
+      </form>
+    </aside>
+
+    <main class="main">
+      <a class="brand" href="/" aria-label="NetworkX-Temporal home">
+        <img src="https://raw.githubusercontent.com/nelsonaloysio/networkx-temporal/refs/heads/main/docs/assets/banner-logo.svg" alt="NetworkX-Temporal — Network Analysis in Python">
+      </a>
+
+      <p class="lead">
+        NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of
+        the structure, dynamics, and functions of temporal (dynamic) networks — extending
+        <a href="https://networkx.org">NetworkX</a> to graphs that change over time.
+      </p>
+
+      <div class="install-block">
+        <p class="label">Install from PyPI:</p>
+        <code class="install">pip install networkx-temporal</code>
+      </div>
+
+      <h1>Software for temporal networks</h1>
+
+      <ul class="feature-list">
+        <li><code><a href="https://networkx-temporal.readthedocs.io/en/stable/api/classes.html#networkx_temporal.classes.TemporalGraph">TemporalGraph</a></code> classes that inherit NetworkX static graph classes</li>
+        <li>Slice temporal data into snapshots by time, quantile, or rank</li>
+        <li>Algorithms for temporal networks, compatible with NetworkX functions</li>
+        <li>Community detection: spectral clustering and multislice Leiden optimization</li>
+        <li>CPU and GPU (CuPy/CUDA) backends, switchable via environment variable</li>
+        <li>Dataset loaders and generators, including dynamic stochastic block models</li>
+        <li>Convert graphs between static, snapshot, event, and unrolled representations</li>
+        <li>Interoperates with igraph, graph-tool, PyTorch Geometric, DGL, <a href="https://networkx-temporal.readthedocs.io/en/stable/#convert-and-transform-graphs">and more</a></li>
+        <li>Open source <a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md">3-clause BSD license</a></li>
+        <li>Extensive documentation and examples, plus additional benefits from Python: fast prototyping, cross-platform, and easy to teach and debug</li>
+      </ul>
+    </main>
+  </div>
+
+  <footer>
+    <p>&copy;2024-2026, NetworkX-Temporal developers.</p>
+  </footer>
+</body>
+</html>
