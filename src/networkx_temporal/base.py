@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Literal, Optional, Union
 
 import networkx as nx
 import pandas as pd
@@ -62,6 +62,14 @@ class TemporalBase():
         return f"{type(self).__name__}(t={len(self)})"
 
     @property
+    def index(self) -> iter:
+        """ Returns list of time indices in the temporal graph. """
+        index = self.__dict__.get("_index")
+        assert index is None or len(index) == len(self),\
+                "Length of index does not match number of snapshots."
+        return index or range(len(self))
+
+    @property
     def t(self) -> int:
         """ Returns number of time steps in the temporal graph. """
         return len(self)
@@ -87,54 +95,156 @@ class TemporalBase():
 
     def slice(
         self,
-        bins: int,
+        bins: Optional[int] = None,
+        attr: Optional[Union[str, list, dict]] = None,
+        attr_level: Optional[Literal["node", "edge"]] = None,
+        node_level: Optional[Literal["source", "target"]] = None,
         qcut: bool = False,
         duplicates: bool = False,
         rank_first: bool = False,
+        factorize: bool = False,
+        fillna: Optional[Any] = None,
         apply_func: Optional[Callable[..., Any]] = None,
     ) -> list:
         """
-        Slices temporal graph into time bins.
+        Slices temporal graph into time bins, returning a new temporal graph object.
+
+        Contrary to `nx.{edge_,}subgraph`, this method returns new graphs instead of a view,
+        allowing for further manipulation without affecting the original graph object.
+
+        Note that no data is lost when using this method, as it includes all nodes and
+        edges from the original graph, plus additional features such as data binning.
 
         :param bins: Number of slices to create.
+        :param attr: Node- or edge-level attribute to consider as temporal data.
+        :param attr_level: Level of temporal attribute, either 'node' or 'edge'.
+        :param node_level: Level of temporal nodes to consider, either 'source' or 'target'.
         :param qcut: If True, use quantiles to obtain time bins.
         :param duplicates: If False, raise an error when time bins contain duplicates.
         :param rank_first: If True, rank data points before slicing.
+        :param factorize: If True, assign unique integer values to time bins.
+        :param fillna: Value to fill null values in attribute data.
         :param apply_func: Function to apply to time attribute values.
         """
         assert self._data,\
                 "Temporal graph is empty."
 
-        assert self.size()[0],\
+        assert sum(self.order()),\
+                "Temporal graph has no nodes."
+
+        assert sum(self.size()),\
                 "Temporal graph has no edges."
 
+        # Set default values for optional arguments.
+        rank_first = True if attr is None else rank_first
+        node_level = "source" if attr_level == "node" and node_level is None else node_level
+
+        # Check if attribute data is valid.
+        assert attr is None or type(attr) in (str, list, dict, pd.Series, pd.DataFrame),\
+               f"Argument `attr` accepts a str, list, dict, pandas Series or DataFrame, received: {type(attr).__name__}."
+
+        assert type(attr) != str or attr_level in ("node", "edge"),\
+               f"Argument `attr_level` must be either 'node' or 'edge' when `attr` is a string."
+
+        assert node_level is None or attr_level == "node",\
+               f"Argument `node_level` is not applicable to edge-level attribute data."
+
+        assert node_level in ("source", "target") or attr_level != "node",\
+               f"Argument `node_level` must be either 'source' or 'target' when slicing node-level attribute data."
+
+        assert bins is None or bins > 0,\
+               f"Argument `bins` must be a positive integer if set."
+
+        # Obtain static graph object and edge data.
         G = self.to_static()
         edges = nx.to_pandas_edgelist(G)
 
-        times = pd.Series(
-            [t for t, size in enumerate(self.size()) for _ in range(size)]
-        )
+        # Obtain temporal data from node-level or edge-level attributes.
+        if type(attr) == str:
+            times = pd.Series(
+                [_[-1] for _ in getattr(G, f"{attr_level}s")(data=attr)],
+                index=G.nodes() if attr_level == "node" else None
+            )
+
+        elif type(attr) == list:
+            times = pd.Series(attr, index=G.nodes() if attr_level == "node" else None)
+
+        elif type(attr) == dict:
+            times = pd.Series(attr)
+
+        elif type(attr) == pd.Series:
+            times = attr
+
+        elif type(attr) == pd.DataFrame:
+            times = attr.squeeze()
+
+        else:
+            times = pd.Series(
+                [t for t, size in enumerate(self.size()) for _ in range(size)]
+                if attr_level == "edge" else
+                [t for t, order in enumerate(self.order()) for _ in range(order)]
+            )
+
+        # Check if attribute data has the right length.
+        assert attr_level == "node" or len(times) == G.size(),\
+               f"Length of `attr` ({len(times)}) differs from number of edges ({G.size()})."
+
+        assert attr_level == "edge" or len(times) == G.order(),\
+               f"Length of `attr` ({len(times)}) differs from number of nodes ({G.order()})."
+
+        # Fill null values in attribute data.
+        if times.isna().any():
+            assert not times.isna().all(),\
+                f"Attribute does not exist or contains null values only."
+            assert fillna is not None,\
+                f"Found null value(s) in attribute data, but `fillna` has not been set."
+            times.fillna(fillna, inplace=True)
 
         # Apply function to time attribute values.
         if apply_func is not None:
             times = times.apply(apply_func)
 
-        # Treat data points sequentially.
-        if rank_first:
-            times = times.rank(method="first")
+        # Obtain edge temporal values from node-level data [0/1].
+        if attr_level == "node":
+            times = edges[node_level].apply(times.get)
 
-        # Slice data in a given nuber of time steps.
-        times = getattr(pd, "qcut" if qcut else "cut")(
-            times,
-            bins,
-            duplicates="drop" if duplicates is False else "raise"
-        )
+        # Return a given number of time bins.
+        if bins:
+
+            # Obtain node-wise (source or target) cut to consider for time bins.
+            if node_level:
+                times = [
+                    pd.Series(
+                        times.loc[nodes.index].values,
+                        index=nodes.values
+                    )
+                    for nodes in (
+                        [edges[node_level].drop_duplicates().sort_values()]
+                    )
+                ][0]
+
+            # Treat data points sequentially.
+            if rank_first:
+                times = times.rank(method="first")
+
+            # Slice data in a given nuber of time steps.
+            times = getattr(pd, "qcut" if qcut else "cut")(
+                times,
+                bins,
+                duplicates="drop" if duplicates is False else "raise"
+            )
+
+            # Obtain edge temporal values from node-level data [1/1].
+            if node_level:
+                times = edges[node_level].apply(times.get)
 
         # Assign unique integer values to time bins.
-        times = pd.Series(
-            pd.factorize(times, sort=True)[0],
-            index=range(sum(self.size()))
-        )
+        if factorize:
+            times = pd.Series(
+                pd.factorize(times, sort=True)[0],
+                index=range(sum(self.size()))
+            )
+            times.map(lambda x: x.__str__())
 
         # Group edge indices by time.
         indices = edges.groupby(times).groups
@@ -149,8 +259,8 @@ class TemporalBase():
                     .explode()
                 )
             )
-            for t, index in
-                indices.items()
+            for index in
+                indices.values()
         ]
 
         # Add edges with attributes to created subgraphs.
@@ -158,15 +268,23 @@ class TemporalBase():
             graphs[t].add_edges_from(
                 edges
                 .iloc[index]
-                .apply(lambda e: (e["source"], e["target"], {k: v for k, v in e.items() if k not in ("source", "target")}), axis=1)
+                .apply(
+                    lambda e: (
+                        e["source"],
+                        e["target"],
+                        {k: v for k, v in e.items() if k not in ("source", "target")}
+                    ),
+                    axis=1
+                )
             )
             for t, index in
-                indices.items()
+                enumerate(indices.values())
         )
 
         # Create new temporal graph object.
         TG = self.__new__(self.__class__)
         TG._data = graphs
+        TG._index = list(indices.keys())
         return TG
 
     def to_events(self, stream: bool = True) -> list:
