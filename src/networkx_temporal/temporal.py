@@ -377,20 +377,18 @@ class TemporalBase(metaclass=ABCMeta):
                     duplicates="drop" if duplicates is False else "raise",
                 )
 
-                # Convert categorical time bins to named intervals.
+                # Convert categorical time bins to string intervals.
                 if names is not None:
                     names = [
                         f"{'[' if c.closed_left else '('}{names[int(c.left)]}, {names[int(c.right)]}{']' if c.closed_right else ')'}"
                         for c in times.categories
                     ]
+                else:
+                    names = [c.__str__() for c in times.cat.categories]
 
             # Obtain edge temporal values from node-level data [1/1].
             if node_level:
                 times = edges[node_level].apply(times.get)
-
-        # Convert categorical time bins to string intervals.
-        if type(times.dtype) == pd.core.dtypes.dtypes.CategoricalDtype:
-            names = [c.__str__() for c in times.cat.categories]
 
         # Group edge indices by time.
         indices = edges.groupby(times, observed=False).groups
@@ -507,6 +505,7 @@ class TemporalBase(metaclass=ABCMeta):
              [(e[0], e[1], e[2] if not attr_name else e[2]|{attr_name: t}) for e in edges])
              for t, edges in enumerate(self.edges(data=True)))
 
+        G.name = self.name
         return G
 
     def to_unified(
@@ -614,6 +613,7 @@ class TemporalBase(metaclass=ABCMeta):
                 }
             )
 
+        UTG.name = self.name
         return UTG
 
     @staticmethod
