@@ -1,51 +1,15 @@
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Optional, Union
 
 import networkx as nx
-import pandas as pd
 
-from .networkx_temporal import (
-    TemporalGraph,
-    TemporalDiGraph,
-    TemporalMultiGraph,
-    TemporalMultiDiGraph
-)
+from .temporal import empty_graph
 
 
-def empty_graph(
-    t: Optional[int] = None,
+def from_events(
+    events: list,
     directed: Optional[bool] = None,
-    multigraph: Optional[bool] = None,
-    create_using: Optional[Union[nx.Graph, TemporalGraph]] = None
-) -> TemporalGraph:
-    """
-    Returns empty temporal graph of specified type.
-
-    :param t: Number of snapshots to initialize.
-    :param directed: If True, the graph will be directed.
-    :param multigraph: If True, the graph will be a multigraph.
-    :param create_using: Graph or temporal graph to use as reference.
-    """
-    assert create_using is None or (directed is None and multigraph is None),\
-        "Arguments `directed` and `multigraph` are not allowed when `create_using` is passed."
-
-    if create_using:
-        directed = create_using.is_directed()
-        multigraph = create_using.is_multigraph()
-
-    if not directed and not multigraph:
-        return TemporalGraph(t=t)
-
-    elif directed and not multigraph:
-        return TemporalDiGraph(t=t)
-
-    elif not directed and multigraph:
-        return TemporalMultiGraph(t=t)
-
-    elif directed and multigraph:
-        return TemporalMultiDiGraph(t=t)
-
-
-def from_events(events: list, directed: bool = False, multigraph: bool = False) -> list:
+    multigraph: Optional[bool] = None
+) -> list:
     """
     Returns temporal graph from sequence of events, i.e., (u, v, t) or (u, v, t, e).
 
@@ -86,21 +50,25 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
 
     :param graphs: List or dictionary of NetworkX graphs
     """
-    T = list(graphs.keys() if type(graphs) == dict else range(len(graphs)))
+    T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
-    for G in graphs:
-        assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
-               f"Argument `G` must be a valid NetworkX graph, received: {type(G)}."
+    assert type(graphs) in (dict, list),\
+           "Argument `graphs` must be a list or dictionary of NetworkX graphs."
 
-    TG = empty_graph(create_using=graphs[T[0]])
+    assert len(graphs) > 0,\
+           "Argument `graphs` must be a non-empty list or dictionary."
 
-    assert all(graphs[T[t]].is_directed() == TG.is_directed() for t in T),\
+    assert all(type(graphs[t]) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) for t in T),\
+            "All elements in data must be valid NetworkX graphs."
+
+    assert all(graphs[T[t]].is_directed() == graphs[T[0]].is_directed() for t in T),\
            "Mixed graphs and digraphs are not supported."
 
-    assert all(graphs[T[t]].is_multigraph() == TG.is_multigraph() for t in T),\
+    assert all(graphs[T[t]].is_multigraph() == graphs[T[0]].is_multigraph() for t in T),\
            "Mixed graphs and multigraphs are not supported."
 
-    TG._data = [graphs[T[t]] for t in T]
+    TG = empty_graph(create_using=graphs[T[0]])
+    TG.data = graphs
     return TG
 
 

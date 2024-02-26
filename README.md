@@ -76,7 +76,8 @@ Once initialized, a specified number of bins can be returned in a new object of 
 TGS = TG.slice(bins=2)
 TGS.nodes()
 
-# [NodeView(('a', 'b', 'c')), NodeView(('a', 'b', 'c', 'd', 'e', 'f'))]
+# [NodeView(('a', 'b', 'c')),
+#  NodeView(('a', 'b', 'c', 'd', 'e', 'f'))]
 ```
 
 By default, created bins are composed of non-overlapping edges and might have uneven size. To balance them, pass `qcut=True`:
@@ -85,7 +86,8 @@ By default, created bins are composed of non-overlapping edges and might have un
 TGS = TG.slice(bins=2, qcut=True)
 TGS.nodes()
 
-# [NodeView(('a', 'b', 'c', 'd', 'e')), NodeView(('a', 'b', 'e', 'f'))]
+# [NodeView(('a', 'b', 'c', 'd', 'e')),
+#  NodeView(('a', 'b', 'e', 'f'))]
 ```
 
 Note that in some cases, the `qcut` method may not be able to split the graph into the number of bins requested and will return the maximum number of bins possible.
@@ -135,7 +137,7 @@ print(G)
 Converting a static graph with node-level temporal data to a temporal graph object (`node_level` considers the source node's time by default when slicing edges):
 
 ```python
-TG = nxt.from_static(G, attr="t", attr_level="node", node_level="source", bins=None, qcut=None)
+TG = nxt.from_static(G).slice(attr="t", attr_level="node", node_level="source", bins=None, qcut=None)
 TG.edges(data=True)
 
 # [OutMultiEdgeDataView([('a', 'b', {'t': 0})]),
@@ -151,7 +153,7 @@ Note that considering node-level attributes resulted in misplacing the edge `(c,
 Converting a static graph with edge-level temporal data to a temporal graph object (edge's time applies to both source and target nodes):
 
 ```python
-TG = nxt.from_static(G, attr="t", attr_level="edge", bins=None, qcut=None)
+TG = nxt.from_static(G).slice(attr="t", attr_level="edge", bins=None, qcut=None)
 TG.edges(data=True)
 
 # [OutMultiEdgeDataView([('a', 'b', {'t': 0})]),
@@ -170,7 +172,7 @@ Once a temporal graph is instantiated, some methods are implemented that allow r
 
 ### Get snapshots
 
-Returns a list of graphs internally stored under `_data` in the temporal graph object, also accessible by iterating through the object:
+Returns a list of graphs internally stored under `data` in the temporal graph object, also accessible by iterating through the object:
 
 ```python
 STG = TG.to_snapshots()
@@ -180,12 +182,6 @@ STG
 #  <networkx.classes.multidigraph.MultiDiGraph at 0x7fa0ac72aa90>,
 #  <networkx.classes.multidigraph.MultiDiGraph at 0x7fa0ac725c10>,
 #  <networkx.classes.multidigraph.MultiDiGraph at 0x7fa0ac726290>]
-```
-
-```python
-TG.to_snapshots() == TG._data
-
-# True
 ```
 
 ### Get static graph
@@ -251,6 +247,7 @@ UTG = TG.to_unified(add_couplings=True,
                     add_proxy_nodes=False,
                     proxy_nodes_with_attr=True,
                     prune_proxy_nodes=True)
+
 print(UTG)
 
 # DiGraph with 12 nodes and 14 edges
