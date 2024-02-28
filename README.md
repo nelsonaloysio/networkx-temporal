@@ -16,11 +16,15 @@ Package is available to install on [PyPI](https://pypi.org/project/networkx-temp
 pip install networkx-temporal
 ```
 
-___
-
 ## Usage
 
-The code provided as example below is also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb) ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb)).
+The code provided as example below is also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb)).
+
+* [Build temporal graph](#common-metrics): basics on manipulating a `networkx-temporal` graph object;
+* [Common metrics](#common-metrics): common metrics available from `networkx`;
+* [Convert from static to temporal graph](#convert-from-static-to-temporal-graph): converting `networkx` graphs to `networkx-temporal`;
+* [Transform temporal graph](#transform-temporal-graph): converting `networkx-temporal` to other graph formats or representations;
+* [Detect temporal communities](#detect-temporal-communities): example of temporal community detection with a `networkx-temporal` object.
 
 ### Build temporal graph
 
@@ -28,6 +32,7 @@ The `Temporal{Di,Multi,MultiDi}Graph` class uses NetworkX graphs internally to a
 
 ```python
 import networkx_temporal as tx
+from networkx_temporal.tests.example import draw_temporal_graph
 
 TG = tx.TemporalDiGraph(t=4)
 
@@ -39,10 +44,7 @@ TG[2].add_edge("a", "c")
 TG[3].add_edge("f", "e")
 TG[3].add_edge("f", "a")
 TG[3].add_edge("f", "b")
-```
 
-```python
-from networkx_temporal.tests.example import draw_temporal_graph
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
@@ -227,21 +229,12 @@ ___
 
 Once a temporal graph is instantiated, some methods are implemented that allow converting it or returning snaphots, events or unified temporal graphs.
 
-- `to_static`: returns a single graph with all edges and unique nodes, does not support dynamic node attributes;
-- `to_unified`: returns a single graph with all edges and non-unique nodes, supports dynamic node attributes;
-- `to_snapshots`: returns a list of graphs with all edges and possibly repeated nodes, preserves edge information;
-- `to_events`: returns a list of observed events as 3-tuples or 4-tuples
+* `to_static`: returns a single graph with all edges and unique nodes, does not support dynamic node attributes;
+* `to_unified`: returns a single graph with all edges and non-unique nodes, supports dynamic node attributes;
+* `to_snapshots`: returns a list of graphs with all edges and possibly repeated nodes, preserves edge information;
+* `to_events`: returns a list of observed events as 3-tuples or 4-tuples.
 
-We may convert our graph to a different object type by calling `convert_to` or passing `to={package}`, provided the `package` is locally installed.
-
-Note that the above applies to the `to_static`, `to_snapshots`, and `to_unified` methods only. Supported formats include:
-
-- `dgl`
-- `graph_tool` (`gt`)
-- `igraph` (`ig`)
-- `networx` (`nx`)
-- `networkit` (`nk`)
-- `torch_geometric` (`pyg`)
+Graphs may be converteed a different object type by calling `convert_to` or passing `to={package}` to the above methods, provided `package` is locally installed. Supported formats: `dgl`, `graph_tool` (`gt`), `igraph` (`ig`), `networx` (`nx`), `networkit` (`nk`), and `torch_geometric` (`pyg`).
 
 ```python
 tx.convert_to(G, "igraph")
@@ -433,7 +426,7 @@ draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Snapshot Co
 
 ![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_66_0.png)
 
-#### Temporal community detection
+### Temporal community detection
 
 Detecting temporal communities instead allows us to correctly retrieve the clusters in all snapshots, while maintaining their indices/colors over time.
 
