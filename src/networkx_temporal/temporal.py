@@ -5,6 +5,8 @@ from typing import Any, Callable, Literal, Optional, Union
 import networkx as nx
 import pandas as pd
 
+from .convert import convert_to, TO_LITERAL
+
 
 class TemporalBase(metaclass=ABCMeta):
     """
@@ -148,7 +150,7 @@ class TemporalBase(metaclass=ABCMeta):
     @property
     def name(self) -> str:
         """ Returns name of temporal graph. """
-        return self.__dict__.get("_name", "")
+        return self.__dict__.get("_name", None)
 
     @name.setter
     def name(self, name: str) -> None:
@@ -260,7 +262,7 @@ class TemporalBase(metaclass=ABCMeta):
                 attr_level = "edge"
             if bins is None:
                 bins = True
-            if rank_first is None:
+            if rank_first is None and len(self) == 1:
                 rank_first = True
 
         # Set default temporal node (node-level attribute data).
@@ -471,45 +473,62 @@ class TemporalBase(metaclass=ABCMeta):
 
         return events
 
-    def to_snapshots(self) -> list:
+    def to_snapshots(self, to: Optional[TO_LITERAL] = None) -> list:
         """
         Returns a sequence of snapshots where each slice represent the state
         of the network at a given time, i.e., a list of NetworkX graphs.
 
-        Internally, the TemporalGraph class already stores its data as a list of
-        graphs, so this method simply returns the object itself (`self._data`).
+        Internally, the temporal graph objeect already stores data as a list of
+        graphs, so this method simply returns the object itself (`self._data`),
+        optionally converting it to another format if specified in `to`.
+
+        :param to: Format to convert the snapshots to (optional).
         """
-        return self.data
+        return [convert_to(G, to) for G in self] if to else self.data
 
-    def to_static(self, attr_name: Optional[str] = None) -> nx.Graph:
+    def to_static(
+        self,
+        to: Optional[TO_LITERAL] = None,
+        attr_name: Optional[str] = None,
+        multigraph: bool = True
+    ):
         """
-        Returns a static multigraph from a temporal graph.
+        Returns a static graph from temporal graph.
 
-        A static multigraph is a single object containing all nodes and
-        edges of a temporal graph concatenated in a single object.
+        A static graph is a single graph that contains all the nodes and edges of
+        the temporal graph. If `multigraph` is True, multiple edges among the same
+        pair of nodes among snapshots are preserved (default). The time of the
+        event can be stored as an edge attribute if `attr_name` is specified.
 
-        **Note**: as each node is unique, dyanamic node attributes from
-        the temporal graph are not preserved in the static multigraph.
+        **Note**: as each node is unique, dyanamic node attributes from the temporal
+        graph are not preserved in the static version; to preserve dynamic node
+        attributes, please see the `to_unified` method instead.
 
+        :param to: Format to convert the static graph to (optional).
         :param attr_name: Edge attribute name to store time (optional).
+        :param multigraph: If True, returns a multigraph (default).
         """
-        assert attr_name not in next(iter(self[0].edges(data=True)))[2],\
+        assert attr_name not in next(iter(self[0].edges(data=True)))[-1],\
                 f"Edge attribute '{attr_name}' already exists in graph."
 
-        G = getattr(nx, f"Multi{'Di' if self.is_directed() else ''}Graph")()
+        if len(self) == 1:
+            return convert_to(self[0], to) if to else self[0]
+
+        G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if self.is_directed() else ''}Graph")()
 
         list(G.add_nodes_from(nodes)
              for nodes in self.nodes(data=True))
 
         list(G.add_edges_from(
-             [(e[0], e[1], e[2] if not attr_name else e[2]|{attr_name: t}) for e in edges])
+             [(e[0], e[1], e[2]|({attr_name: t} if attr_name else {})) for e in edges])
              for t, edges in enumerate(self.edges(data=True)))
 
         G.name = self.name
-        return G
+        return convert_to(G, to) if to else G
 
     def to_unified(
         self,
+        to: Optional[TO_LITERAL] = None,
         add_couplings: bool = True,
         add_proxy_nodes: bool = True,
         proxy_nodes_with_attr: bool = True,
@@ -517,7 +536,7 @@ class TemporalBase(metaclass=ABCMeta):
         node_index: list = None,
     ) -> nx.Graph:
         """
-        Returns unified temporal graph (UTG) from snapshot temporal graph (STG).
+        Returns a unified temporal graph (UTG).
 
         The UTG is a single graph that contains all the nodes and edges of an STG,
         plus proxy nodes and edge couplings connecting sequential temporal nodes.
@@ -614,7 +633,7 @@ class TemporalBase(metaclass=ABCMeta):
             )
 
         UTG.name = self.name
-        return UTG
+        return convert_to(UTG, to) if to else UTG
 
     @staticmethod
     def _couplings(STG: Union[dict, list], proxy_nodes: Optional[dict] = None) -> set:
