@@ -229,18 +229,28 @@ ___
 
 Once a temporal graph is instantiated, some methods are implemented that allow converting it or returning snaphots, events or unified temporal graphs.
 
-* `to_static`: returns a single graph with all edges and unique nodes, does not support dynamic node attributes;
-* `to_unified`: returns a single graph with all edges and non-unique nodes, supports dynamic node attributes;
-* `to_snapshots`: returns a list of graphs with all edges and possibly repeated nodes, preserves edge information;
-* `to_events`: returns a list of observed events as 3-tuples or 4-tuples.
+* `to_static`: returns a single graph with unique nodes, does not support dynamic node attributes;
+* `to_unified`: returns a single graph with non-unique nodes, supports dynamic node attributes;
+* `to_snapshots`: returns a list of graphs with possibly repeated nodes among snapshots;
+* `to_events`: returns a list of edge-level events as 3-tuples or 4-tuples, without attributes.
 
-Graphs may be converteed a different object type by calling `convert_to` or passing `to={package}` to the above methods, provided `package` is locally installed. Supported formats: `dgl`, `graph_tool` (`gt`), `igraph` (`ig`), `networx` (`nx`), `networkit` (`nk`), and `torch_geometric` (`pyg`).
+### Convert to different object type
+
+Temporal graphs may be converted to a different object type by calling `convert_to` or passing `to={package}` to the above methods, provided `package` is locally installed. Supported formats:
+
+| Package | Parameter | Alias |
+| --- | :---: | :---: |
+| [Deep Graph Library](https://www.dgl.ai/) | `dgl` | -
+| [graph-tool](https://graph-tool.skewed.de/) | `graph_tool` | `gt`
+| [igraph](https://igraph.org/python/) | `igraph` | `ig`
+| [NetworKit](https://networkit.github.io/) | `networkit` | `nk`
+| [PyTorch Geometric](https://pytorch-geometric.readthedocs.io) | `torch_geometric` | `pyg`
 
 ```python
 tx.convert_to(G, "igraph")
 ```
 
-### Get static graph
+### Static graph
 
 Builds a static or flattened graph containing all the edges found at each time step:
 
@@ -251,20 +261,21 @@ draw_temporal_graph(G, suptitle="Static Graph")
 
 ![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_45_0.png)
 
-### Get snapshots
+### Snapshot-based temporal graph
 
-Returns a list of graphs internally stored under `data` in the temporal graph object, which may too be converted by passing `to={package}`:
+The snapshot-based temporal graph (STG) is a list of graphs directly accessible under `data` in the temporal graph object:
 
 ```python
 STG = TG.to_snapshots()
+# STG == TG.data
 ```
 
-### Get unified temporal graph
+### Unified temporal graph
 
 The unified temporal graph (UTG) is a single graph that contains the original data plus proxy nodes and edge couplings connecting sequential temporal nodes.
 
 ```python
-UTG = TG.to_unified(add_couplings=True, add_proxy_nodes=False, proxy_nodes_with_attr=True, prune_proxy_nodes=True)  # node_index=G.nodes()
+UTG = TG.to_unified()
 ```
 
 ```python
@@ -275,7 +286,7 @@ draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25
 
 ![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_50_0.png)
 
-### Get sequence of events
+### Event-based temporal graph
 
 An event-based temporal graph (ETG) is a sequence of 3- or 4-tuple edge-based events.
 
@@ -325,7 +336,7 @@ tx.from_snapshots(STG)
 ```
 
 ```python
-tx.from_events(ETG, directed=True, multigraph=True)
+tx.from_events(ETG, directed=False, multigraph=True)
 ```
 
 ```python
