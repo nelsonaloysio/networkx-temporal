@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from .temporal import empty_graph
+from .temporal import TemporalGraph
 
 
 def from_events(
@@ -23,9 +23,9 @@ def from_events(
     assert len(events[0]) in (3, 4),\
         f"Each event must have 3 or 4 elements, received: {len(events[0])}."
 
-    TG = empty_graph(directed=directed,
-                     multigraph=multigraph,
-                     t=1 + max(events, key=lambda x: x[2])[2])
+    TG = TemporalGraph(directed=directed,
+                       multigraph=multigraph,
+                       t=1 + max(events, key=lambda x: x[2])[2])
 
     if len(events[0]) == 3:
         list(TG[t].add_edge(u, v) for u, v, t in events)
@@ -52,6 +52,9 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
     """
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
+    directed = graphs[T[0]].is_directed()
+    multigraph = graphs[T[0]].is_multigraph()
+
     assert type(graphs) in (dict, list),\
            "Argument `graphs` must be a list or dictionary of NetworkX graphs."
 
@@ -61,13 +64,13 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
     assert all(type(graphs[t]) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) for t in T),\
             "All elements in data must be valid NetworkX graphs."
 
-    assert all(graphs[T[t]].is_directed() == graphs[T[0]].is_directed() for t in T),\
+    assert all(directed == graphs[T[t]].is_directed() for t in T),\
            "Mixed graphs and digraphs are not supported."
 
-    assert all(graphs[T[t]].is_multigraph() == graphs[T[0]].is_multigraph() for t in T),\
+    assert all(multigraph == graphs[T[t]].is_multigraph() for t in T),\
            "Mixed graphs and multigraphs are not supported."
 
-    TG = empty_graph(create_using=graphs[T[0]])
+    TG = TemporalGraph(directed=directed, multigraph=multigraph)
     TG.data = graphs
     return TG
 
@@ -95,8 +98,10 @@ def from_unified(UTG: nx.Graph) -> list:
 
     for node in UTG.nodes():
         t = node.rsplit("_", 1)[-1]
+
         assert t.isdigit(),\
-                f"Unified temporal graph (UTG) contains non-temporal nodes ('{node}')."
+               f"Unified temporal graph (UTG) contains non-temporal nodes ('{node}')."
+
         temporal_nodes[t] = temporal_nodes.get(t, []) + [node]
 
     return from_snapshots([
