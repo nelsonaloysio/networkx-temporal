@@ -1,5 +1,5 @@
-from abc import ABCMeta, abstractmethod
 from functools import reduce
+from operator import or_
 from typing import Any, Callable, Literal, Optional, Union
 
 import networkx as nx
@@ -8,7 +8,7 @@ import pandas as pd
 from .convert import convert_to, TO_LITERAL
 
 
-class TemporalBase(metaclass=ABCMeta):
+class TemporalGraph():
     """
     Base class for temporal graphs.
 
@@ -16,14 +16,13 @@ class TemporalBase(metaclass=ABCMeta):
     :param multigraph: If True, the graph will be a multigraph.
     :param t: Number of time steps to initialize (optional).
     """
-    @abstractmethod
     def __init__(
         self,
-        directed: bool,
-        multigraph: bool,
+        directed: bool = False,
+        multigraph: bool = False,
         t: Optional[int] = None,
     ) -> None:
-        """ Initializes a temporal graph. """
+        """ Initializes the class. """
         assert t is None or type(t) == int,\
                f"Argument 't' must be an integer, received: {type(t)}."
 
@@ -43,12 +42,12 @@ class TemporalBase(metaclass=ABCMeta):
             for method in [
                 m for m in dir(self.data[0] if len(self) else self._empty_graph())
                 if not m.startswith("_")
-                and m not in TemporalBase.__dict__
+                and m not in TemporalGraph.__dict__
             ]
         )
 
     def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
-        """ Returns temporal graph from a given interval. """
+        """ Returns snapshot from a given interval. """
         assert self.data,\
                "Temporal graph is empty."
 
@@ -70,7 +69,7 @@ class TemporalBase(metaclass=ABCMeta):
         if type(t) == int:
             return self.data[t]
 
-        TG = empty_graph(create_using=self)
+        TG = TemporalGraph(directed=self.directed, multigraph=self.multigraph)
         TG.data = self.data[t]
         return TG
 
@@ -82,16 +81,11 @@ class TemporalBase(metaclass=ABCMeta):
         """ Returns number of slices in the temporal graph. """
         return len(self.data)
 
-    def __new__(cls, *args, **kwargs) -> Any:
-        """ Creates a new instance of the temporal graph. """
-        if cls is TemporalBase:
-            raise TypeError(f"{cls.__name__} cannot be instantiated.")
-
-        return super().__new__(cls)
-
     def __repr__(self) -> str:
-        """ Returns string representation of the temporal graph. """
-        return f"{type(self).__name__}(t={len(self)})"
+        """ Returns string representation of the class. """
+        return f"Temporal{'Di' if self.directed else ''}"\
+               f"{'Multi' if self.multigraph else ''}Graph (t={len(self)}) "\
+               f"with {sum(self.order())} nodes and {sum(self.size())} edges"
 
     @property
     def data(self) -> list:
@@ -428,21 +422,31 @@ class TemporalBase(metaclass=ABCMeta):
         )
 
         # Create new temporal graph object.
-        TG = empty_graph(create_using=self)
+        TG = TemporalGraph(directed=self.directed, multigraph=self.multigraph)
         TG.data = graphs
         TG.names = names or list(indices.keys())
         return TG
 
-    def to_directed(self):
-        """ Returns directed version of the temporal graph. """
-        TG = empty_graph(directed=True, multigraph=self.is_multigraph())
-        TG.data = [G.to_directed() for G in self]
+    def to_directed(self, as_view: bool = False):
+        """
+        Returns directed version of the temporal graph.
+
+        :param as_view: If True, returns a view of the original graph.
+            Default is False.
+        """
+        TG = TemporalGraph(directed=True, multigraph=self.is_multigraph())
+        TG.data = [G.to_directed(as_view=as_view) for G in self]
         return TG
 
-    def to_undirected(self):
-        """ Returns undirected version of the temporal graph. """
-        TG = empty_graph(directed=False, multigraph=self.is_multigraph())
-        TG.data = [G.to_directed() for G in self]
+    def to_undirected(self, as_view: bool = False):
+        """
+        Returns undirected version of the temporal graph.
+
+        :param as_view: If True, returns a view of the original graph.
+            Default is False.
+        """
+        TG = TemporalGraph(directed=False, multigraph=self.is_multigraph())
+        TG.data = [G.to_directed(as_view=as_view) for G in self]
         return TG
 
     def to_events(self, stream: bool = True) -> list:
@@ -530,10 +534,8 @@ class TemporalBase(metaclass=ABCMeta):
         self,
         to: Optional[TO_LITERAL] = None,
         add_couplings: bool = True,
-        add_proxy_nodes: bool = True,
-        proxy_nodes_with_attr: bool = True,
-        prune_proxy_nodes: bool = True,
-        node_index: list = None,
+        node_index: Optional[list] = None,
+        relabel_nodes: Optional[Union[dict, list]] = None
     ) -> nx.Graph:
         """
         Returns a unified temporal graph (UTG).
@@ -541,153 +543,82 @@ class TemporalBase(metaclass=ABCMeta):
         The UTG is a single graph that contains all the nodes and edges of an STG,
         plus proxy nodes and edge couplings connecting sequential temporal nodes.
 
-        :param add_couplings: Add inter-slice couplings among temporal nodes.
-        :param add_proxy_nodes: Add proxy nodes on subsequent slices.
-        :param proxy_nodes_with_attr: Include proxy nodes with attributes.
-        :param prune_proxy_nodes: Prune proxy nodes from subsequent slices.
-        :param node_index: Node index to include as attribute.
+        :param to: Format to convert the static graph to (optional).
+        :param add_couplings: Add inter-slice edges among temporal nodes (default).
+        :param node_index: Node index from static graph to include as attribute.
+        :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
+            If a list, each dictionary is used to relabel nodes in a given snapshot.
+            If a single dictionary, all nodes are relabeled using the same mapping.
+            Not all nodes need to be included, but the list should have the same
+            length as the number of snapshots. Any nodes not included in the mapping
+            are by default relabeled as '{node}_{t}' for each time `t`. Examples:
+            - List: [{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]
+            - Dict: {"A": "A_0", "B": "B_0", "C": "C_2"}
         """
         T = range(len(self))
+        order, size = self.temporal_order(), self.temporal_size()
+
+        assert relabel_nodes is None or type(relabel_nodes) in (dict, list),\
+                f"Argument 'relabel_nodes' must be a dict or list, received: {type(relabel_nodes)}."
+
+        assert node_index is None or len(node_index) == len(set(node_index)),\
+               "Repeated node indices are not allowed (are label types both strings and integers?)."
 
         # Create graph with intra-slice nodes and edges,
         # relabeling nodes to include temporal index.
         UTG = nx.compose_all([
             nx.relabel_nodes(
                 self[t],
-                {v: f"{v}_{t}" for v in self[t].nodes()}
+                {
+                    v:
+                        relabel_nodes[t].get(v, f"{v}_{t}")
+                        if type(relabel_nodes) == list else
+                        relabel_nodes.get(v, f"{v}_{t}")
+                        if type(relabel_nodes) == dict else
+                        f"{v}_{t}"
+                    for v in self[t].nodes()
+                }
             )
             for t in T
         ])
 
-        # Add attributed proxy nodes on sebsequent slices.
-        if add_proxy_nodes:
-            proxy_nodes = self._proxy_nodes(self, prune_proxy_nodes)
-            # Compose attributed graph containing node isolates only.
-            if proxy_nodes_with_attr:
-                G = nx.compose_all(
-                    nx.create_empty_copy(
-                        self[t].subgraph(nodes)
-                    )
-                    for t, nodes in {
-                        t: [
-                            node
-                            for node, interval in proxy_nodes.items()
-                            if interval[0] == t
-                        ]
-                        for t in T
-                    }
-                    .items()
-                )
-            # Include proxy nodes in unified temporal graph.
-            list(
-                (
-                    UTG := nx.compose(
-                        UTG,
-                        nx.relabel_nodes(
-                            G.subgraph(nodes),
-                            {v: f"{v}_{t}" for v in nodes}
-                        )
-                    )
-                )
-                if proxy_nodes_with_attr else
-                    UTG.add_nodes_from(
-                        [f"{v}_{t}" for v in nodes]
-                    )
-                for t, nodes in {
-                    t: [
-                        node
-                        for node, interval in proxy_nodes.items()
-                        if t in range(interval[0]+1, interval[1]+1)
-                        and not self[t].has_node(node)
-                    ]
-                    for t in T
-                }
-                .items()
-            )
-
         # Add inter-slice couplings among temporal nodes.
         if add_couplings:
-            UTG.add_edges_from(
-                self._couplings(
-                    self,
-                    proxy_nodes if add_proxy_nodes else None
-                )
-            )
+            for i in range(len(T)-1):
+                for node in self[T[i]].nodes():
+                    if UTG.has_node(f"{node}_{T[i]}"):
+                        for j in range(i+1, len(T)):
+                            if UTG.has_node(f"{node}_{T[j]}"):
+                                UTG.add_edge(f"{node}_{T[i]}", f"{node}_{T[j]}")
+                                break
 
         # Add temporal node indices as attributes.
         if node_index:
             node_index = [str(v) for v in node_index]
-
-            assert len(node_index) == len(set(node_index)),\
-                    "Repeated node indices are not allowed "\
-                    "(are there strings and integers used as labels?)."
-
             nx.set_node_attributes(
                 UTG,
-                {
-                    node: {
-                        "index": node_index.index(node.rsplit("_", 1)[0]),
-                    }
-                    for node in UTG.nodes()
-                }
+                {node: node_index.index(node.rsplit("_", 1)[0]) for node in UTG.nodes()},
+                "node_index"
             )
 
-        UTG.name = self.name
-        return convert_to(UTG, to) if to else UTG
+        # Avoid using last snapshot's name for the unified graph.
+        UTG.name = f"{f'{self.name}' if self.name else 'UTG'} "\
+                   f"(t={len(self)}, proxy_nodes={len(UTG)-order}, edge_couplings={size-order})"
 
-    @staticmethod
-    def _couplings(STG: Union[dict, list], proxy_nodes: Optional[dict] = None) -> set:
-        """
-        Returns set of edges couplings from a snapshot temporal graph (STG).
+        if to:
+            return convert_to(UTG, to)
 
-        A coupling is an edge connecting two nodes from different time steps.
-        """
-        T = list(STG.keys() if type(STG) == dict else range(len(STG)))
+        return UTG
 
-        couplings = set()
-        for i in range(len(T)-1):
-            for node in STG[T[i]].nodes():
-                for j in range(i+1, len(T)):
-                    if STG[T[j]].has_node(node)\
-                    or ((proxy_nodes or {}).get(node) and j-1 in range(*proxy_nodes.get(node))):
-                        couplings.add((f"{node}_{T[i]}", f"{node}_{T[j]}"))
-                        break
-
-        if proxy_nodes:
-            list(
-                couplings.add((f"{node}_{T[t-1]}", f"{node}_{T[t]}"))
-                for node, bounds in proxy_nodes.items()
-                for t in range(bounds[0]+1, bounds[1]+1)
-            )
-
-        return couplings
-
-    @staticmethod
-    def _proxy_nodes(STG: Union[dict, list], prune: bool = True) -> dict:
-        """
-        Returns dictionary of proxy nodes from a snapshot temporal graph (STG).
-
-        A proxy node is a node that exists in a previous time step and is used
-        to represent a node that does not exist in a subsequent time step.
-        """
-        T = list(STG.keys() if type(STG) == dict else range(len(STG)))
-
-        proxy_nodes = {}
-        for i in range(len(T)-1):
-            for node in STG[T[i]].nodes():
-                if not proxy_nodes.get(node):
-                    for j in reversed(range(min(i+2, len(T)), len(T))):
-                        if STG[T[j]].has_node(node) or not prune:
-                            proxy_nodes[node] = (i, j)
-                            break
-
-        return proxy_nodes
+    def _edge_coupling_index(self, v: str, interval: range) -> int:
+        """ Returns index of next appearance for a given node. """
+        return next(iter([i for i in interval if self[i].has_node(v)]))
 
     def _empty_graph(self) -> nx.Graph:
         """ Returns empty graph of the same type. """
         return getattr(nx, f"{'Multi' if self.is_multigraph() else ''}{'Di' if self.is_directed() else ''}Graph")()
 
-    def __wrapper(self, method) -> Callable:
+    def __wrapper(self, method: str) -> Callable:
         """ Returns a wrapper function for a given method. """
         def func(*args, **kwargs):
             returns = list(G.__getattribute__(method)(*args, **kwargs) for G in self)
@@ -701,110 +632,29 @@ class TemporalBase(metaclass=ABCMeta):
         list(list(G.neighbors(v)) if G.has_node(v) else [] for G in self)
 
     temporal_neighbors = lambda self, v:\
-        list(set(n for G in self if G.has_node(v) for N in G.neighbors(v) for n in N))
+        reduce(or_, iter(set(N) for N in self.neighbors(v)))
 
     temporal_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_sum, self.degree(*args, **kwargs))
+        reduce(_reduce_deg, self.degree(*args, **kwargs))
 
     temporal_in_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_sum, self.in_degree(*args, **kwargs))
+        reduce(_reduce_deg, self.in_degree(*args, **kwargs))
 
     temporal_out_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_sum, self.out_degree(*args, **kwargs))
+        reduce(_reduce_deg, self.out_degree(*args, **kwargs))
 
-    temporal_nodes = lambda self, *args, **kwargs:\
-        (set if kwargs.get("data") is None else list)(v for V in self.nodes(*args, **kwargs) for v in V)
+    temporal_index = lambda self, v: [t for t in range(len(self)) if self[t].has_node(v)]
+    temporal_nodes = lambda self: reduce(or_, self.nodes(data=False))
+    temporal_edges = lambda self: list(e for E in self.edges() for e in E)
 
-    temporal_edges = lambda self, *args, **kwargs:\
-        (set if kwargs.get("data") is None else list)(e for E in self.edges(*args, **kwargs) for e in E)
+    temporal_order = lambda self: len(self.temporal_nodes())
+    temporal_size = lambda self: sum(self.size())
 
-    temporal_order = lambda self, *args, **kwargs:\
-        len(set([n if kwargs.get("data") in (None, False) else (n[0], *n[1].keys(), *n[1].values())
-        for n in self.temporal_nodes(*args, **kwargs)]))
-
-    temporal_size = lambda self, *args, **kwargs:\
-        len(set([e if kwargs.get("data") in (None, False) else (e[0], e[1], *e[2].keys(), *e[2].values())
-        for e in self.temporal_edges(*args, **kwargs)]))
-
-    total_order = lambda self: sum(self.order())
-    total_size = lambda self: sum(self.size())
+    total_nodes = lambda self: sum(self.order())
+    total_edges = lambda self: sum(self.size())
 
 
-class TemporalGraph(TemporalBase):
-    """
-    Temporal graph with undirected edges.
-
-    :param t: Number of snapshots to initialize (optional).
-    """
-    def __init__(self, t: Optional[int] = None) -> None:
-        super().__init__(t=t, directed=False, multigraph=False)
-
-
-class TemporalDiGraph(TemporalBase):
-    """
-    Temporal graph with directed edges.
-
-    :param t: Number of snapshots to initialize (optional).
-    """
-    def __init__(self, t: Optional[int] = None) -> None:
-        super().__init__(t=t, directed=True, multigraph=False)
-
-
-class TemporalMultiGraph(TemporalBase):
-    """
-    Temporal multigraph with undirected edges.
-
-    :param t: Number of snapshots to initialize (optional).
-    """
-    def __init__(self, t: Optional[int] = None) -> None:
-        super().__init__(t=t, directed=False, multigraph=True)
-
-
-class TemporalMultiDiGraph(TemporalBase):
-    """
-    Temporal multigraph with directed edges.
-
-    :param t: Number of snapshots to initialize (optional).
-    """
-    def __init__(self, t: Optional[int] = None) -> None:
-        super().__init__(t=t, directed=True, multigraph=True)
-
-
-def empty_graph(
-    t: Optional[int] = None,
-    directed: Optional[bool] = None,
-    multigraph: Optional[bool] = None,
-    create_using: Optional[Union[nx.Graph, TemporalGraph]] = None
-) -> TemporalGraph:
-    """
-    Returns empty temporal graph of specified type.
-
-    :param t: Number of snapshots to initialize.
-    :param directed: If True, the graph will be directed.
-    :param multigraph: If True, the graph will be a multigraph.
-    :param create_using: Graph or temporal graph to use as reference.
-    """
-    assert create_using is None or (directed is None and multigraph is None),\
-        "Arguments `directed` and `multigraph` are not allowed when `create_using` is passed."
-
-    if create_using:
-        directed = create_using.is_directed()
-        multigraph = create_using.is_multigraph()
-
-    if not directed and multigraph:
-        return TemporalMultiGraph(t=t)
-
-    elif directed and multigraph:
-        return TemporalMultiDiGraph(t=t)
-
-    elif not directed and not multigraph:
-        return TemporalGraph(t=t)
-
-    elif directed and not multigraph:
-        return TemporalDiGraph(t=t)
-
-
-def _reduce_sum(d1, d2):
+def _reduce_deg(d1: Union[int, dict], d2: Union[int, dict]):
     """ Returns sum of two integers or dictionaries. """
     if type(d1) == int or type(d2) == int:
         return (d1 if type(d1) == int else 0) + (d2 if type(d2) == int else 0)

@@ -12,6 +12,7 @@ DRAW_OPTS = {"arrows": True,
 def draw_temporal_graph(
     TG,
     pos: Optional[dict] = None,
+    layout: str = "kamada_kawai",
     nrows: int = 1,
     ncols: Optional[int] = None,
     figsize: tuple = (3, 3),
@@ -65,7 +66,7 @@ def draw_temporal_graph(
 
         nx.draw(G,
                 ax=ax_,
-                pos=pos or nx.kamada_kawai_layout(G),
+                pos=pos or getattr(nx, f"{layout}_layout")(G),
                 **DRAW_OPTS|draw_opts|temporal_opts.get(t, {}))
 
         ax_.set_title("" if is_static else f"$t$ = {G.name or t}")

@@ -34,7 +34,7 @@ The `Temporal{Di,Multi,MultiDi}Graph` class uses NetworkX graphs internally to a
 import networkx_temporal as tx
 from networkx_temporal.tests.example import draw_temporal_graph
 
-TG = tx.TemporalDiGraph(t=4)
+TG = tx.TemporalGraph(directed=True, multigraph=False, t=4)
 
 TG[0].add_edge("a", "b")
 TG[1].add_edge("c", "b")
@@ -48,7 +48,7 @@ TG[3].add_edge("f", "b")
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_8_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_8.png)
 
 ### Slice into temporal bins
 
@@ -59,7 +59,7 @@ TGS = TG.slice(bins=2)
 draw_temporal_graph(TGS, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_10_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_10.png)
 
 By default, created bins are composed of non-overlapping edges and might have uneven size. To balance them, pass `qcut=True`:
 
@@ -68,24 +68,17 @@ TGS = TG.slice(bins=2, qcut=True)
 draw_temporal_graph(TGS, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_12_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_12.png)
 
 Note that in some cases, `qcut` may not be able to split the graph into the number of bins requested and will instead return the maximum number of bins possible. Other exceptions can be worked around by setting `duplicates=True` to allow duplicate edges in bins, or `rank_first=True` to balance snapshots considering the order in which nodes or edges appear.
 
 ### Convert to directed or undirected
 
-We can easily convert the edge directions by calling the same methods available from `network`:
+We can easily convert the edge directions by calling the same methods available from `networkx`:
 
 ```python
 TG.to_undirected()
-
-# TemporalGraph(t=4)
-```
-
-```python
 TG.to_directed()
-
-# TemporalDiGraph(t=4)
 ```
 
 ___
@@ -139,22 +132,29 @@ TG.temporal_neighbors("c")
 
 ### Order and size
 
-The temporal order and size are defined as the number of unique nodes and edges, respectively, across all time steps.
+To get the number of nodes and edges in each time step:
 
 ```python
-TG.order(), TG.size()
+print("Order:", TG.order())
+print("Size:", TG.size())
 ```
 
+#### Temporal order and size
+
+The temporal order and size are respectively defined as the length of `TG.temporal_nodes()`, i.e., unique nodes in all time steps, and the length of `TG.temporal_size()`, i.e., sum of edges or interactions among nodes in all time steps.
+
 ```python
-TG.temporal_order(), TG.temporal_size()
+print("Temporal nodes:", TG.temporal_order())
+print("Temporal edges:", TG.temporal_size())
 ```
 
-Note that we are also able to consider nodes or edges with distinct attributes as not unique by passing `data=True` to `temporal_{order,size}`.
+#### Total number of nodes and edges
 
-Lastly, to obtain the total (non-unique) number of nodes and edges across all time steps, we may use the `total_order` and `total_size` methods:
+To get the actual number of nodes and edges across all time steps:
 
 ```python
-TG.total_order(), TG.total_size()  # sum(TG.order()), sum(TG.size())
+print("Total nodes:", TG.total_nodes())  # TG.total_nodes() != TG.temporal_order()
+print("Total edges:", TG.total_edges())  # TG.total_edges() == TG.temporal_size()
 ```
 
 ___
@@ -202,7 +202,7 @@ TG = tx.from_static(G).slice(attr="t", attr_level="node", node_level="source", b
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_35_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_35.png)
 
 Note that considering node-level attributes resulted in placing the edge `(a, c, 2)` in $t=0$ instead, as the source node `a` attribute is set to `t=0`:
 
@@ -219,7 +219,7 @@ TG = tx.from_static(G).slice(attr="t", attr_level="edge", bins=None, qcut=None)
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_39_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_39.png)
 
 In this case, considering edge-level attributes results in placing the edge `(a, c, 2)` in $t=2$, as expected.
 
@@ -259,7 +259,7 @@ G = TG.to_static()
 draw_temporal_graph(G, suptitle="Static Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_45_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_45.png)
 
 ### Snapshot-based temporal graph
 
@@ -275,7 +275,7 @@ STG = TG.to_snapshots()
 The unified temporal graph (UTG) is a single graph that contains the original data plus proxy nodes and edge couplings connecting sequential temporal nodes.
 
 ```python
-UTG = TG.to_unified()
+UTG = TG.to_unified(add_couplings=True)
 ```
 
 ```python
@@ -284,7 +284,7 @@ pos = {node: (nodes.index(node.rsplit("_")[0]), -int(node.rsplit("_")[1])) for n
 draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25", suptitle="Unified Temporal Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_50_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_50.png)
 
 ### Event-based temporal graph
 
@@ -356,10 +356,10 @@ Let's first use the [Stochastic Block Model](https://networkx.org/documentation/
 ```python
 snapshots = 4   # Temporal snapshots to creaete.
 clusters = 5    # Number of clusters/communities.
-order = 4       # Nodes in each cluster.
-intra = .95     # High probability of intra-community edges.
-inter = .05     # Low initial probability of inter-community edges.
-change = .25    # Change in intra- and inter-community edges over time.
+order = 5       # Nodes in each cluster.
+intra = .9      # High probability of intra-community edges.
+inter = .1      # Low initial probability of inter-community edges.
+change = .5    # Change in intra- and inter-community edges over time.
 
 # Get probabilities for each snapshot.
 probs = [[[(intra if i == j else inter) + (t * (change/snapshots) * (-1 if i == j else 1))
@@ -400,7 +400,7 @@ node_color = [c[m] for m in membership.membership]
 draw_temporal_graph(TG.to_static(), figsize=(4, 4), node_color=node_color, suptitle="Static Communities")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_61_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_61.png)
 
 We can plot all four generated snapshots, while keeping the community assignments from the previous run:
 
@@ -408,7 +408,7 @@ We can plot all four generated snapshots, while keeping the community assignment
 draw_temporal_graph(TG, figsize=(12, 4), node_color=node_color, suptitle="Static Communities")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_63_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_63.png)
 
 Note that running the same algorithm on the unified temporal graph also yields no significant advantages in terms of correctly retrieving the five clusters.
 
@@ -435,7 +435,7 @@ for t in range(len(TG)):
 draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Snapshot Communities", temporal_opts=temporal_opts)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_66_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_66.png)
 
 ### Temporal community detection
 
@@ -461,7 +461,7 @@ temporal_opts = {
 draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Temporal Communities", temporal_opts=temporal_opts)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_68_0.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_68.png)
 
 ___
 
