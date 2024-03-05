@@ -25,7 +25,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
-        path: build/
+        path: dist/
 
   publish-pypi:
     name: >-
@@ -50,7 +50,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
-        path: build/
+        path: dist/
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -75,9 +75,9 @@ jobs:
     steps:
     - name: Download all the dists
       uses: actions/download-artifact@v3
-      # with:
-      #   name: python-package-distributions
-      #   path: build/
+      with:
+        # name: python-package-distributions
+        path: dist/
     - name: Publish distribution 📦 to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
@@ -102,13 +102,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
-        path: build/
+        path: dist/
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v1.2.3
       with:
         inputs: >-
-          ./build/*.tar.gz
-          ./build/*.whl
+          ./dist/*.tar.gz
+          ./dist/*.whl
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -122,5 +122,5 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       run: >-
         gh release upload
-        '${{ github.ref_name }}' build/**
+        '${{ github.ref_name }}' dist/**
         --repo '${{ github.repository }}'
