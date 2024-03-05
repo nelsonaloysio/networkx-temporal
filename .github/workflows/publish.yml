@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
+name: Publish Python 🐍 distribution 📦
 
 on: push
 
@@ -10,9 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.x"
+        python-version: "3.9"
     - name: Install pypa/build
       run: >-
         python3 -m
