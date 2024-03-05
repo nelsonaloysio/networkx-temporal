@@ -48,7 +48,7 @@ TG[3].add_edge("f", "b")
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_8.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_0.png)
 
 ### Slice into temporal bins
 
@@ -59,7 +59,7 @@ TGS = TG.slice(bins=2)
 draw_temporal_graph(TGS, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_10.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_1.png)
 
 By default, created bins are composed of non-overlapping edges and might have uneven size. To balance them, pass `qcut=True`:
 
@@ -68,7 +68,7 @@ TGS = TG.slice(bins=2, qcut=True)
 draw_temporal_graph(TGS, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_12.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_2.png)
 
 Note that in some cases, `qcut` may not be able to split the graph into the number of bins requested and will instead return the maximum number of bins possible. Other exceptions can be worked around by setting `duplicates=True` to allow duplicate edges in bins, or `rank_first=True` to balance snapshots considering the order in which nodes or edges appear.
 
@@ -202,7 +202,7 @@ TG = tx.from_static(G).slice(attr="t", attr_level="node", node_level="source", b
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_35.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_3.png)
 
 Note that considering node-level attributes resulted in placing the edge `(a, c, 2)` in $t=0$ instead, as the source node `a` attribute is set to `t=0`:
 
@@ -219,7 +219,7 @@ TG = tx.from_static(G).slice(attr="t", attr_level="edge", bins=None, qcut=None)
 draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_39.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_4.png)
 
 In this case, considering edge-level attributes results in placing the edge `(a, c, 2)` in $t=2$, as expected.
 
@@ -259,7 +259,7 @@ G = TG.to_static()
 draw_temporal_graph(G, suptitle="Static Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_45.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_5.png)
 
 ### Snapshot-based temporal graph
 
@@ -284,7 +284,7 @@ pos = {node: (nodes.index(node.rsplit("_")[0]), -int(node.rsplit("_")[1])) for n
 draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25", suptitle="Unified Temporal Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_50.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_6.png)
 
 ### Event-based temporal graph
 
@@ -351,7 +351,7 @@ The [leidenalg](https://leidenalg.readthedocs.io) package implements community d
 
 Depending on the objectives, temporal community detection may bring significant advantages on what comes to descriptive tasks and post-hoc network analysis.
 
-Let's first use the [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to construct a temporal graph of 4 snapshots, in which each of the five clusters of four nodes each continuously mix together:
+Let's first use the [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to construct a temporal graph of 4 snapshots, in which each of the **five clusters** of five nodes each continuously mix together:
 
 ```python
 snapshots = 4   # Temporal snapshots to creaete.
@@ -400,7 +400,7 @@ node_color = [c[m] for m in membership.membership]
 draw_temporal_graph(TG.to_static(), figsize=(4, 4), node_color=node_color, suptitle="Static Communities")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_61.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_7.png)
 
 We can plot all four generated snapshots, while keeping the community assignments from the previous run:
 
@@ -408,7 +408,7 @@ We can plot all four generated snapshots, while keeping the community assignment
 draw_temporal_graph(TG, figsize=(12, 4), node_color=node_color, suptitle="Static Communities")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_63.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_8.png)
 
 Note that running the same algorithm on the unified temporal graph also yields no significant advantages in terms of correctly retrieving the five clusters.
 
@@ -435,7 +435,7 @@ for t in range(len(TG)):
 draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Snapshot Communities", temporal_opts=temporal_opts)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_66.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_9.png)
 
 ### Temporal community detection
 
@@ -461,7 +461,7 @@ temporal_opts = {
 draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Temporal Communities", temporal_opts=temporal_opts)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_68.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_10.png)
 
 ___
 
