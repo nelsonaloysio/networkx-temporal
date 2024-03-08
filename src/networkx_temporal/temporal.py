@@ -364,7 +364,8 @@ class TemporalGraph():
                 # Factorize to ensure strings can be binned,
                 # e.g., sortable dates in 'YYYY-MM-DD' format.
                 if times.dtype.__str__() == "object":
-                    times, names = pd.factorize(times, sort=sort)
+                    factorize, names = pd.factorize(times, sort=sort)
+                    times = pd.Series(factorize, index=times.index)
 
                 # Bin data points into time intervals.
                 times = getattr(pd, "qcut" if qcut else "cut")(
