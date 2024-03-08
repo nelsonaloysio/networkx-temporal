@@ -351,7 +351,7 @@ The [leidenalg](https://leidenalg.readthedocs.io) package implements community d
 
 Depending on the objectives, temporal community detection may bring significant advantages on what comes to descriptive tasks and post-hoc network analysis.
 
-Let's first use the [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to construct a temporal graph of 4 snapshots, in which each of the **5 clusters** of 5 nodes each continuously mix together:
+Let's first use the [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to construct a temporal graph of 4 snapshots, in which each of the **five clusters** of five nodes each continuously mix together:
 
 ```python
 snapshots = 4   # Temporal snapshots to creaete.
@@ -359,7 +359,7 @@ clusters = 5    # Number of clusters/communities.
 order = 5       # Nodes in each cluster.
 intra = .9      # High probability of intra-community edges.
 inter = .1      # Low initial probability of inter-community edges.
-change = .5     # Change in intra- and inter-community edges over time.
+change = .5    # Change in intra- and inter-community edges over time.
 
 # Get probabilities for each snapshot.
 probs = [[[(intra if i == j else inter) + (t * (change/snapshots) * (-1 if i == j else 1))
