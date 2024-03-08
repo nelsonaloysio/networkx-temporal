@@ -375,13 +375,15 @@ class TemporalGraph():
                 )
 
                 # Convert categorical time bins to string intervals.
-                if names is not None:
-                    names = [
-                        f"{'[' if c.closed_left else '('}{names[int(c.left)]}, {names[int(c.right)]}{']' if c.closed_right else ')'}"
-                        for c in times.categories
-                    ]
+                if names is None:
+                    names = [c.__str__()
+                             for c in times.cat.categories
+                             if c in set(times.unique())]
                 else:
-                    names = [c.__str__() for c in times.cat.categories]
+                    names = [f"{'[' if c.closed_left else '('}{names[int(c.left)]}, "
+                             f"{names[int(c.right)]}{']' if c.closed_right else ')'}"
+                             for c in times.cat.categories
+                             if c in set(times.unique())]
 
             # Obtain edge temporal values from node-level data [1/1].
             if node_level:
@@ -447,7 +449,7 @@ class TemporalGraph():
             Default is False.
         """
         TG = TemporalGraph(directed=False, multigraph=self.is_multigraph())
-        TG.data = [G.to_directed(as_view=as_view) for G in self]
+        TG.data = [G.to_undirected(as_view=as_view) for G in self]
         return TG
 
     def to_events(self, stream: bool = True) -> list:
