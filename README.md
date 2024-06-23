@@ -18,67 +18,92 @@ pip install networkx-temporal
 
 ## Usage
 
-The code provided as example below is also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/example/notebook.ipynb)).
+Examples of usage below are also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/extra/networkx-temporal-example.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/extra/networkx-temporal-example.ipynb)).
 
-* [Build temporal graph](#common-metrics): basics on manipulating a `networkx-temporal` graph object;
-* [Common metrics](#common-metrics): common metrics available from `networkx`;
-* [Convert from static to temporal graph](#convert-from-static-to-temporal-graph): converting `networkx` graphs to `networkx-temporal`;
-* [Transform temporal graph](#transform-temporal-graph): converting `networkx-temporal` to other graph formats or representations;
-* [Detect temporal communities](#detect-temporal-communities): example of temporal community detection with a `networkx-temporal` object.
+## Basics
 
 ### Build temporal graph
 
-The `Temporal{Di,Multi,MultiDi}Graph` class uses NetworkX graphs internally to allow easy manipulation of its data structures:
+The `TemporalGraph` class extends NetworkX to temporal graphs, allowing easy manipulation of its internal data structure:
 
 ```python
-import networkx_temporal as tx
-from networkx_temporal.tests.example import draw_temporal_graph
+>>> TG = tx.TemporalGraph(t=4, directed=True, multigraph=False)
 
-TG = tx.TemporalGraph(directed=True, multigraph=False, t=4)
+>>> TG[0].add_edge("a", "b")
+>>> TG[1].add_edge("c", "b")
+>>> TG[2].add_edge("d", "c")
+>>> TG[2].add_edge("d", "e")
+>>> TG[2].add_edge("a", "c")
+>>> TG[3].add_edge("f", "e")
+>>> TG[3].add_edge("f", "a")
+>>> TG[3].add_edge("f", "b")
 
-TG[0].add_edge("a", "b")
-TG[1].add_edge("c", "b")
-TG[2].add_edge("d", "c")
-TG[2].add_edge("d", "e")
-TG[2].add_edge("a", "c")
-TG[3].add_edge("f", "e")
-TG[3].add_edge("f", "a")
-TG[3].add_edge("f", "b")
-
-draw_temporal_graph(TG, figsize=(8, 2))
+>>> print(TG)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_0.png)
+```none
+TemporalDiGraph (t=4) with 12 nodes and 8 edges
+```
+
+```python
+>>> print(f"t = {len(TG)} time steps\n"
+>>>       f"V = {TG.order()} nodes ({TG.temporal_order()} unique, {TG.total_nodes()} total)\n"
+>>>       f"E = {TG.size()} edges ({TG.temporal_size()} unique, {TG.total_edges()} total)")
+```
+
+```none
+t = 4 time steps
+V = [2, 2, 4, 4] nodes (6 unique, 12 total)
+E = [1, 1, 3, 3] edges (8 unique, 8 total)
+```
+
+```python
+>>> draw_temporal_graph(TG, figsize=(8, 2))
+```
+
+![png](extra/fig/example_7.png)
 
 ### Slice into temporal bins
 
 Once initialized, a specified number of bins can be returned in a new object of the same type using `slice`:
 
 ```python
-TGS = TG.slice(bins=2)
-draw_temporal_graph(TGS, figsize=(4, 2))
+>>> TG = TG.slice(bins=2)
+>>> draw_temporal_graph(TG, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_1.png)
+![png](extra/fig/example_9.png)
 
-By default, created bins are composed of non-overlapping edges and might have uneven size. To balance them, pass `qcut=True`:
+By default, created bins are composed of non-overlapping edges and might have uneven size. To balance them, pass `qcut=True`.
+
+> Note that in some cases `qcut` may not be able to split the graph into the number of bins requested and will instead return the maximum number of bins possible.
+> Forcing a number of bins can be achieved by setting `duplicates=True` (allows duplicate edges in bins) or `rank_first=True` (balances snapshots considering the order of appearence of nodes/edges).
 
 ```python
-TGS = TG.slice(bins=2, qcut=True)
-draw_temporal_graph(TGS, figsize=(4, 2))
+>>> TG = TG.slice(bins=2, qcut=True)
+>>> draw_temporal_graph(TG, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_2.png)
-
-Note that in some cases, `qcut` may not be able to split the graph into the number of bins requested and will instead return the maximum number of bins possible. Other exceptions can be worked around by setting `duplicates=True` to allow duplicate edges in bins, or `rank_first=True` to balance snapshots considering the order in which nodes or edges appear.
+![png](extra/fig/example_11.png)
 
 ### Convert to directed or undirected
 
 We can easily convert the edge directions by calling the same methods available from `networkx`:
 
 ```python
-TG.to_undirected()
-TG.to_directed()
+>>> TG.to_undirected()
+```
+
+```none
+TemporalGraph (t=4) with 12 nodes and 8 edges
+```
+
+```python
+>>> TG.to_directed()
+```
+
+```none
+TemporalDiGraph (t=4) with 12 nodes and 16 edges
 ```
 
 ___
@@ -92,105 +117,152 @@ A few additional methods that consider all time slices are also implemented for 
 ### Degree centrality
 
 ```python
-TG.degree()
-# TG.in_degree()
-# TG.out_degree()
+>>> TG.degree()
+>>> # TG.in_degree()
+>>> # TG.out_degree()
 ```
 
+```none
+[DiDegreeView({'a': 2, 'b': 2}),
+ DiDegreeView({'c': 2, 'b': 2}),
+ DiDegreeView({'d': 4, 'c': 4, 'e': 2, 'a': 2}),
+ DiDegreeView({'f': 6, 'e': 2, 'a': 2, 'b': 2})]
+```
 
 ```python
-TG.temporal_degree()
-# TG.temporal_in_degree()
-# TG.temporal_out_degree()
+>>> TG.temporal_degree()
+>>> # TG.temporal_in_degree()
+>>> # TG.temporal_out_degree()
+```
+
+```none
+{'e': 4, 'b': 6, 'f': 6, 'a': 6, 'd': 4, 'c': 6}
 ```
 
 Or to obtain the degree of a specific node:
 
 ```python
-TG[0].degree("a")
-# TG[0].in_degree("a")
-# TG[0].out_degree("a")
+>>> TG[0].degree("a")
+>>> # TG[0].in_degree("a")
+>>> # TG[0].out_degree("a")
+```
+
+```none
+2
 ```
 
 ```python
-TG.temporal_degree("a")
-# TG.temporal_in_degree("a")
-# TG.temporal_out_degree("a")
+>>> TG.temporal_degree("a")
+>>> # TG.temporal_in_degree("a")
+>>> # TG.temporal_out_degree("a")
+```
+
+```none
+6
 ```
 
 ### Node neighborhoods
 
 ```python
-TG.neighbors("c")
+>>> TG.neighbors("c")
 ```
 
-To obtain the temporal neighborhood of a node considering all time steps, use the method `temporal_neighbors`:
+```none
+[[], ['b'], ['d', 'a'], []]
+```
+
+To obtain the neighborhood of a node considering all time steps, use the method `temporal_neighbors`:
 
 ```python
-TG.temporal_neighbors("c")
+>>> TG.temporal_neighbors("c")
+```
+
+```none
+{'a', 'b', 'd'}
 ```
 
 ### Order and size
 
-To get the number of nodes and edges in each time step:
+To get the number of nodes and edges in each step:
 
 ```python
-print("Order:", TG.order())
-print("Size:", TG.size())
+>>> print("Order:", TG.order())
+>>> print("Size:", TG.size())
+```
+
+```none
+Order: [2, 2, 4, 4]
+Size: [2, 2, 6, 6]
 ```
 
 #### Temporal order and size
 
-The temporal order and size are respectively defined as the length of `TG.temporal_nodes()`, i.e., unique nodes in all time steps, and the length of `TG.temporal_size()`, i.e., sum of edges or interactions among nodes in all time steps.
+The temporal order and size are respectively defined as the length of `TG.temporal_nodes()`, i.e., unique nodes in all time steps, and the length of `TG.temporal_size()`, i.e., sum of edges or interactions across all time steps.
 
 ```python
-print("Temporal nodes:", TG.temporal_order())
-print("Temporal edges:", TG.temporal_size())
+>>> print("Temporal nodes:", TG.temporal_order())
+>>> print("Temporal edges:", TG.temporal_size())
+```
+
+```none
+Temporal nodes: 6
+Temporal edges: 16
 ```
 
 #### Total number of nodes and edges
 
 To get the actual number of nodes and edges across all time steps:
 
+> Note that the temporal size of a graph will always be equal to its total number of edges, i.e., `TG.temporal_size() == TG.total_edges()`.
+
 ```python
-print("Total nodes:", TG.total_nodes())  # TG.total_nodes() != TG.temporal_order()
-print("Total edges:", TG.total_edges())  # TG.total_edges() == TG.temporal_size()
+>>> print("Total nodes:", TG.total_nodes())  # TG.total_nodes() != TG.temporal_order()
+>>> print("Total edges:", TG.total_edges())  # TG.total_edges() == TG.temporal_size()
+```
+
+```none
+Total nodes: 12
+Total edges: 16
 ```
 
 ___
 
 ## Convert from static to temporal graph
 
-Static graphs can also carry temporal information either in the node- or edge-level attributes.
+Static graphs can carry temporal information in either the node- or edge-level attributes.
 
-Slicing a graph into bins usually result in the same number of edges, but a higher number of nodes, as they may appear in more than one snapshot to preserve edge information.
+Slicing a graph into bins usually result in the same number of edges, but a higher number of nodes, as they may appear in more than one snapshot.
 
 In the example below, we create a static multigraph in which both nodes and edges are attributed with the time step `t` in which they are observed:
 
 ```python
-import networkx as nx
+>>> G = nx.MultiDiGraph()
 
-G = nx.MultiDiGraph()
+>>> G.add_nodes_from([
+>>>     ("a", {"time": 0}),
+>>>     ("b", {"time": 0}),
+>>>     ("c", {"time": 1}),
+>>>     ("d", {"time": 2}),
+>>>     ("e", {"time": 3}),
+>>>     ("f", {"time": 3}),
+>>> ])
 
-G.add_nodes_from([
-    ("a", {"t": 0}),
-    ("b", {"t": 0}),
-    ("c", {"t": 1}),
-    ("d", {"t": 2}),
-    ("e", {"t": 3}),
-    ("f", {"t": 3}),
-])
+>>> G.add_edges_from([
+>>>     ("a", "b", {"time": 0}),
+>>>     ("c", "b", {"time": 1}),
+>>>     ("d", "c", {"time": 2}),
+>>>     ("d", "e", {"time": 2}),
+>>>     ("a", "c", {"time": 2}),
+>>>     ("f", "e", {"time": 3}),
+>>>     ("f", "a", {"time": 3}),
+>>>     ("f", "b", {"time": 3}),
+>>> ])
 
-G.add_edges_from([
-    ("a", "b", {"t": 0}),
-    ("c", "b", {"t": 1}),
-    ("d", "c", {"t": 2}),
-    ("d", "e", {"t": 2}),
-    ("a", "c", {"t": 2}),
-    ("f", "e", {"t": 3}),
-    ("f", "a", {"t": 3}),
-    ("f", "b", {"t": 3}),
-])
+print(G)
+```
+
+```none
+MultiDiGraph with 6 nodes and 8 edges
 ```
 
 ### Node-level time attributes
@@ -198,16 +270,20 @@ G.add_edges_from([
 Converting a static graph with node-level temporal data to a temporal graph object (`node_level` considers the source node's time by default when slicing edges):
 
 ```python
-TG = tx.from_static(G).slice(attr="t", attr_level="node", node_level="source", bins=None, qcut=None)
-draw_temporal_graph(TG, figsize=(8, 2))
+>>> TG = tx.from_static(G).slice(attr="time", attr_level="node", node_level="source", bins=None, qcut=None)
+>>> draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_3.png)
+![png](extra/fig/example_35.png)
 
 Note that considering node-level attributes resulted in placing the edge `(a, c, 2)` in $t=0$ instead, as the source node `a` attribute is set to `t=0`:
 
 ```python
-G.nodes(data=True)["a"]
+>>> G.nodes(data="time")["a"]
+```
+
+```none
+0
 ```
 
 ### Edge-level time attributes
@@ -215,11 +291,11 @@ G.nodes(data=True)["a"]
 Converting a static graph with edge-level temporal data to a temporal graph object (edge's time applies to both source and target nodes):
 
 ```python
-TG = tx.from_static(G).slice(attr="t", attr_level="edge", bins=None, qcut=None)
-draw_temporal_graph(TG, figsize=(8, 2))
+>>> TG = tx.from_static(G).slice(attr="time", attr_level="edge", bins=None, qcut=None)
+>>> draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_4.png)
+![png](extra/fig/example_39.png)
 
 In this case, considering edge-level attributes results in placing the edge `(a, c, 2)` in $t=2$, as expected.
 
@@ -227,27 +303,38 @@ ___
 
 ## Transform temporal graph
 
-Once a temporal graph is instantiated, some methods are implemented that allow converting it or returning snaphots, events or unified temporal graphs.
+Once a temporal graph is instantiated, the following methods allow returning static graphs, snapshots, events or unified representations.
 
-* `to_static`: returns a single graph with unique nodes, does not support dynamic node attributes;
-* `to_unified`: returns a single graph with non-unique nodes, supports dynamic node attributes;
-* `to_snapshots`: returns a list of graphs with possibly repeated nodes among snapshots;
-* `to_events`: returns a list of edge-level events as 3-tuples or 4-tuples, without attributes.
+Due to the way the underlying data is represented, some of these objects (i.e., those with unique nodes) do not allow dynamic node attributes.
+
+> Note that the total number of nodes $V$ and edges $E$ of the returned object might differ from the number of temporal nodes $V_T$ and edges $E_T$.
+
+| Method | Order | Size | Dynamic node attributes | Dynamic edge attributes |
+| --- | :---: | :---: | :---: | :---: |
+| `to_static` | $V = V_T$ | $E = E_T$ | ❌ | ✅ |
+| `to_snapshots` | $V \ge V_T$ | $E = E_T$ | ✅ | ✅ |
+| `to_events` | $V = V_T$ | $E = E_T$ | ❌ | ❌ |
+| `to_unified` | $V \ge V_T$ | $E \ge E_T$ | ✅ | ✅ |
 
 ### Convert to different object type
 
-Temporal graphs may be converted to a different object type by calling `convert_to` or passing `to={package}` to the above methods, provided `package` is locally installed. Supported formats:
+Temporal graphs may be converted to a different object type by calling `convert` or passing `to={parameter}` to the above methods.
 
-| Package | Parameter | Alias |
+| Format | Parameter (Package) | Parameter (Alias) |
 | --- | :---: | :---: |
 | [Deep Graph Library](https://www.dgl.ai/) | `dgl` | -
 | [graph-tool](https://graph-tool.skewed.de/) | `graph_tool` | `gt`
 | [igraph](https://igraph.org/python/) | `igraph` | `ig`
 | [NetworKit](https://networkit.github.io/) | `networkit` | `nk`
 | [PyTorch Geometric](https://pytorch-geometric.readthedocs.io) | `torch_geometric` | `pyg`
+| [Teneto](https://teneto.readthedocs.io) | `teneto` | -
 
 ```python
-tx.convert_to(G, "igraph")
+>>> tx.convert(G, "igraph")
+```
+
+```none
+<igraph.Graph at 0x7fc242f76050>
 ```
 
 ### Static graph
@@ -255,19 +342,65 @@ tx.convert_to(G, "igraph")
 Builds a static or flattened graph containing all the edges found at each time step:
 
 ```python
-G = TG.to_static()
-draw_temporal_graph(G, suptitle="Static Graph")
+>>> G = TG.to_static()
+>>> draw_temporal_graph(G, suptitle="Static Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_5.png)
+![png](extra/fig/example_44.png)
 
 ### Snapshot-based temporal graph
 
 The snapshot-based temporal graph (STG) is a list of graphs directly accessible under `data` in the temporal graph object:
 
 ```python
-STG = TG.to_snapshots()
-# STG == TG.data
+>>> STG = TG.to_snapshots()
+```
+
+### Event-based temporal graph
+
+An event-based temporal graph (ETG) is a sequence of 3- or 4-tuple edge-based events.
+
+* 3-tuples ($u, v, t$), where elements are the source node, target node, and time step of the observed event (also known as a stream graph);
+
+* 4-tuples ($u, v, t, \epsilon$), where $\epsilon$ is either a positive (1) or negative (-1) unity representing edge addition and deletion events, respectively.
+
+Depending on the temporal graph data, one of these may allow a more compact representation than the other.
+
+```python
+>>> ETG = TG.to_events()  # stream=True (default)
+>>> ETG
+```
+
+```none
+[('a', 'b', 0),
+ ('c', 'b', 1),
+ ('a', 'c', 2),
+ ('d', 'c', 2),
+ ('d', 'e', 2),
+ ('f', 'e', 3),
+ ('f', 'a', 3),
+ ('f', 'b', 3)]
+```
+
+```python
+>>> ETG = TG.to_events(stream=False)
+>>> ETG
+```
+
+```none
+[('a', 'b', 0, 1),
+ ('c', 'b', 1, 1),
+ ('a', 'b', 1, -1),
+ ('a', 'c', 2, 1),
+ ('d', 'c', 2, 1),
+ ('d', 'e', 2, 1),
+ ('c', 'b', 2, -1),
+ ('f', 'e', 3, 1),
+ ('f', 'a', 3, 1),
+ ('f', 'b', 3, 1),
+ ('a', 'c', 3, -1),
+ ('d', 'c', 3, -1),
+ ('d', 'e', 3, -1)]
 ```
 
 ### Unified temporal graph
@@ -275,203 +408,221 @@ STG = TG.to_snapshots()
 The unified temporal graph (UTG) is a single graph that contains the original data plus proxy nodes and edge couplings connecting sequential temporal nodes.
 
 ```python
-UTG = TG.to_unified(add_couplings=True)
+>>> UTG = TG.to_unified(add_couplings=True)
+>>> print(UTG)
+```
+
+```none
+MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=2)' with 12 nodes and 14 edges
 ```
 
 ```python
-nodes = sorted(TG.temporal_nodes())
-pos = {node: (nodes.index(node.rsplit("_")[0]), -int(node.rsplit("_")[1])) for node in UTG.nodes()}
-draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25", suptitle="Unified Temporal Graph")
+>>> nodes = sorted(TG.temporal_nodes())
+>>> pos = {node: (nodes.index(node.rsplit("_")[0]), -int(node.rsplit("_")[1])) for node in UTG.nodes()}
+>>> draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25", suptitle="Unified Temporal Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_6.png)
-
-### Event-based temporal graph
-
-An event-based temporal graph (ETG) is a sequence of 3- or 4-tuple edge-based events.
-
-* 3-tuples: `(u, v, t)`, where elements are the source node, target node, and time step of the observed event (also known as a stream graph);
-
-* 4-tuples: `(u, v, t, e)`, where `e` is either a positive (1) or negative (-1) unity for edge addition and deletion, respectively.
-
-```python
-ETG = TG.to_events()  # stream=True (default)
-ETG
-
-# [('a', 'b', 0),
-#  ('c', 'b', 1),
-#  ('a', 'c', 2),
-#  ('d', 'c', 2),
-#  ('d', 'e', 2),
-#  ('f', 'e', 3),
-#  ('f', 'a', 3),
-#  ('f', 'b', 3)]
-```
-
-```python
-ETG = TG.to_events(stream=False)
-ETG
-
-# [('a', 'b', 0, 1),
-#  ('c', 'b', 1, 1),
-#  ('a', 'b', 1, -1),
-#  ('a', 'c', 2, 1),
-#  ('d', 'c', 2, 1),
-#  ('d', 'e', 2, 1),
-#  ('c', 'b', 2, -1),
-#  ('f', 'e', 3, 1),
-#  ('f', 'a', 3, 1),
-#  ('f', 'b', 3, 1),
-#  ('a', 'c', 3, -1),
-#  ('d', 'c', 3, -1),
-#  ('d', 'e', 3, -1)]
-```
+![png](extra/fig/example_52.png)
 
 ### Convert back to TemporalGraph object
 
 Functions to convert a newly created STG, ETG, or UTG back to a temporal graph object are also implemented.
 
 ```python
-tx.from_snapshots(STG)
+>>> tx.from_snapshots(STG)
+```
+
+```none
+TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
 ```
 
 ```python
-tx.from_events(ETG, directed=False, multigraph=True)
+>>> tx.from_events(ETG, directed=True, multigraph=True)
+```
+
+```none
+TemporalDiGraph (t=4) with 12 nodes and 8 edges
 ```
 
 ```python
-tx.from_unified(UTG)
+>>> tx.from_unified(UTG)
+```
+
+```none
+TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
 ```
 
 ___
 
-## Detect temporal communities
+## Community detection
 
-The [leidenalg](https://leidenalg.readthedocs.io) package implements community detection algorithms on snapshot-based temporal graphs.
-
-Depending on the objectives, temporal community detection may bring significant advantages on what comes to descriptive tasks and post-hoc network analysis.
-
-Let's first use the [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to construct a temporal graph of 4 snapshots, in which each of the **five clusters** of five nodes each continuously mix together:
+As a toy example, let's first use a [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to generate 4 snapshots, in which each of the 5 clusters of 4 nodes each continuously mix together:
 
 ```python
-snapshots = 4   # Temporal snapshots to creaete.
-clusters = 5    # Number of clusters/communities.
-order = 5       # Nodes in each cluster.
-intra = .9      # High probability of intra-community edges.
-inter = .1      # Low initial probability of inter-community edges.
-change = .5    # Change in intra- and inter-community edges over time.
+>>> snapshots = 4   # Temporal graphs to generate.
+>>> clusters = 5    # Number of clusters/communities.
+>>> order = 5       # Nodes in each cluster.
+>>> intra = .9      # High initial probability of intra-community edges.
+>>> inter = .1      # Low initial probability of inter-community edges.
+>>> change = .125   # Change in intra- and inter-community edges over time.
 
-# Get probabilities for each snapshot.
-probs = [[[(intra if i == j else inter) + (t * (change/snapshots) * (-1 if i == j else 1))
-            for j in range(clusters)
-        ] for i in range(clusters)
-    ] for t in range(snapshots)]
+>>> # Get probability matrix for each snapshot.
+>>> probs = [[[
+>>>     (intra if i == j else inter) + (t * change * (-1 if i == j else 1))
+>>>     for j in range(clusters)]
+>>>     for i in range(clusters)]
+>>>     for t in range(snapshots)]
 
-# Create graphs from probabilities.
-graphs = {}
-for t in range(snapshots):
-    graphs[t] = nx.stochastic_block_model(clusters*[order], probs[t], seed=10)
-    graphs[t].name = t
+>>> # Create graphs from probabilities.
+>>> graphs = {}
+>>> for t in range(snapshots):
+>>>     graphs[t] = nx.stochastic_block_model(clusters*[order], probs[t], seed=10)
+>>>     graphs[t].name = t
 
-# Create temporal graph from snapshots.
-TG = tx.from_snapshots(graphs)
+>>> # Create temporal graph from snapshots.
+>>> TG = tx.from_snapshots(graphs)
 ```
 
-### Static community detection
-
-#### On the static graph (flattened)
-
-Running the Leiden algorithm on the static graph to obtain the community modules fails to retrieve the five communities in the network:
+Let's plot the temporal graph snapshots, with colors representing the ground truths and highlighting intra-community edges.
 
 ```python
-import leidenalg as la
+>>> import matplotlib.pyplot as plt
 
-c = plt.cm.tab10.colors
+>>> def get_edge_color(edges: list, node_color: dict):
+>>>     return [node_color[u] if node_color[u] == node_color[v] else "#00000035" for u, v in edges]
 
-membership = la.find_partition(
-    TG.to_static("igraph"),
-    la.ModularityVertexPartition,
-    n_iterations=-1,
-    seed=0,
-)
+>>> c = plt.cm.tab10.colors
 
-node_color = [c[m] for m in membership.membership]
+>>> # Node positions.
+>>> pos = nx.circular_layout(TG.to_static())
 
-draw_temporal_graph(TG.to_static(), figsize=(4, 4), node_color=node_color, suptitle="Static Communities")
+>>> # Community ground truths.
+>>> node_color = [c[i // clusters] for i in range(TG.temporal_order())]
+
+>>> # Colorize intra-community edges.
+>>> temporal_opts = {t: {"edge_color": get_edge_color(TG[t].edges(), node_color)} for t in range(len(TG))}
+
+>>> # Plot snapshots with community ground truths.
+>>> draw_temporal_graph(
+>>>     TG,
+>>>     pos=pos,
+>>>     figsize=(14, 4),
+>>>     node_color=node_color,
+>>>     temporal_opts=temporal_opts,
+>>>     connectionstyle="arc3,rad=0.1",
+>>>     suptitle="Ground truth")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_7.png)
+![png](extra/fig/example_60.png)
 
-We can plot all four generated snapshots, while keeping the community assignments from the previous run:
+### Modularity: on static graph
+
+The [leidenalg](https://leidenalg.readthedocs.io) package implements optimization algorithms for community detection that may be applied on snapshot-based temporal graphs.
+
+Such algorithms may help with descriptive or exploratory tasks and post-hoc network analysis, although they lack statistical rigor for inference purposes.
+
+For example, depending on the initial node community assigments (e.g., with `seed=0` below), [modularity](https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition) fails to retrieve the true communities:
 
 ```python
-draw_temporal_graph(TG, figsize=(12, 4), node_color=node_color, suptitle="Static Communities")
+>>> import leidenalg as la
+
+>>> membership = la.find_partition(
+>>>     TG.to_static("igraph"),
+>>>     la.ModularityVertexPartition,
+>>>     n_iterations=-1,
+>>>     seed=0,
+>>> )
+
+>>> node_color = [c[m] for m in membership.membership]
+>>> edge_color = get_edge_color(TG.to_static().edges(), node_color)
+
+>>> draw_temporal_graph(
+>>>     TG.to_static(),
+>>>     pos=pos,
+>>>     figsize=(4, 4),
+>>>     node_color=node_color,
+>>>     edge_color=edge_color,
+>>>     connectionstyle="arc3,rad=0.1",
+>>>     suptitle="Communities found by modularity on static graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_8.png)
+![png](extra/fig/example_62.png)
 
-Note that running the same algorithm on the unified temporal graph also yields no significant advantages in terms of correctly retrieving the five clusters.
+### Modularity: on each snapshot
 
-#### On the snapshots (individually)
+Running the same algorithm separately on each of the generated snapshots retrieves the correct clusters only on the first ($t=0$).
 
-Running the same algorithm on each of the generated snapshots instead retrieves the correct clusters on the first snapshot only.
-
-Although results may seem initially better, we lose the community indices previously assigned to nodes in previous snapshots, represented by their different colors:
+In addition, community indices/colors along snapshots are not fixed, which makes understanding their mesoscale dynamics harder.
 
 ```python
-temporal_opts = {}
+>>> temporal_opts = {}
 
-for t in range(len(TG)):
-    membership = la.find_partition(
-        TG[t:t+1].to_static("igraph"),
-        la.ModularityVertexPartition,
-        n_iterations=-1,
-        seed=0,
-    )
-    temporal_opts[t] = {
-        "node_color": [c[m] for m in membership.membership]
-    }
+>>> for t in range(len(TG)):
+>>>     membership = la.find_partition(
+>>>         TG[t:t+1].to_static("igraph"),
+>>>         la.ModularityVertexPartition,
+>>>         n_iterations=-1,
+>>>         seed=0,
+>>>     )
+>>>     node_color = [c[m] for m in membership.membership]
+>>>     edge_color = get_edge_color(TG[t].edges(), node_color)
+>>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
 
-draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Snapshot Communities", temporal_opts=temporal_opts)
+>>> draw_temporal_graph(
+>>>     TG,
+>>>     pos=pos,
+>>>     figsize=(14, 4),
+>>>     temporal_opts=temporal_opts,
+>>>     connectionstyle="arc3,rad=0.1",
+>>>     suptitle="Communities found by modularity on snapshots")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_9.png)
+![png](extra/fig/example_64.png)
 
-### Temporal community detection
+### Modularity: on temporal graph
 
-Detecting temporal communities instead allows us to correctly retrieve the clusters in all snapshots, while maintaining their indices/colors over time.
+[Coupling temporal nodes](https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers) allows the same algorithm to correctly retrieve the ground truths in this case, and maintain community indices/colors fixed.
 
-The `interslice_weight` among temporal nodes in a sequence of snapshots defaults to `1.0` in unweighted graphs and may be adjusted accordingly:
+> Note that the `interslice_weight` among temporal nodes in a sequence of snapshots defaults to `1.0`, but may be adjusted accordingly.
 
 ```python
-temporal_membership, improvement = la.find_partition_temporal(
-    TG.to_snapshots("igraph"),
-    la.ModularityVertexPartition,
-    interslice_weight=1.0,
-    n_iterations=-1,
-    seed=0,
-    vertex_id_attr="_nx_name"
-)
+>>> temporal_opts = {}
 
-temporal_opts = {
-    t: {"node_color": [c[m] for m in temporal_membership[t]]}
-    for t in range(len(TG))
-}
+>>> temporal_membership, improvement = la.find_partition_temporal(
+>>>     TG.to_snapshots("igraph"),
+>>>     la.ModularityVertexPartition,
+>>>     interslice_weight=1.0,
+>>>     n_iterations=-1,
+>>>     seed=0,
+>>>     vertex_id_attr="_nx_name"
+>>> )
 
-draw_temporal_graph(TG, nrows=1, ncols=4, figsize=(12, 4), suptitle="Temporal Communities", temporal_opts=temporal_opts)
+>>> for t in range(len(TG)):
+>>>     node_color = [c[m] for m in membership.membership]
+>>>     edge_color = get_edge_color(TG[t].edges(), node_color)
+>>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
+
+>>> draw_temporal_graph(
+>>>     TG,
+>>>     figsize=(14, 4),
+>>>     pos=pos,
+>>>     temporal_opts=temporal_opts,
+>>>     connectionstyle="arc3,rad=0.1",
+>>>     suptitle="Communities found by modularity on temporal graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/example/fig/fig_10.png)
+![png](extra/fig/example_66.png)
 
 ___
 
-### References
+## References
 
 * [Deep Graph Library](https://www.dgl.ai/)
 * [graph-tool](https://graph-tool.skewed.de/)
 * [igraph](https://igraph.org/python/)
 * [Leiden](https://leidenalg.readthedocs.io)
-* [NetworKit]()
+* [NetworKit](https://networkit.github.io/)
 * [NetworkX](https://networkx.github.io)
 * [Pandas](https://pandas.pydata.org/)
 * [PyTorch Geometric](https://pytorch-geometric.readthedocs.io)
+* [Teneto](https://teneto.readthedocs.io)

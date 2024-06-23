@@ -1,5 +1,6 @@
 import snap
 
+
 def nx2snap(G):
     """
     Convert a NetworkX graph to a Snap graph.

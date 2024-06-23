@@ -1,5 +1,5 @@
 """
-Original networkx to graph_tool implementation:
+Original networkx to graph-tool implementation:
 https://gist.github.com/ioctls/8bef992707006969510e33c20a0d42b6
 """
 

@@ -3,10 +3,13 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import networkx as nx
 
-DRAW_OPTS = {"arrows": True,
-             "node_color": "#aaa",
-             "node_size": 250,
-             "with_labels": True}
+DRAW_OPTS = {
+    "arrows": True,
+    "edge_color": "#00000050",
+    "node_color": "#aaa",
+    "node_size": 250,
+    "with_labels": True
+}
 
 
 def draw_temporal_graph(
@@ -19,7 +22,7 @@ def draw_temporal_graph(
     suptitle: Optional[str] = None,
     temporal_opts: dict = {},
     **draw_opts
-):
+) -> plt.Figure:
     """
     Example code to draw a temporal graph(s).
 
@@ -61,6 +64,7 @@ def draw_temporal_graph(
                            constrained_layout=True)
 
     i, j = 0, 0
+
     for t, G in enumerate(TG):
         ax_ = ax if is_static else ax[t] if nrows == 1 else ax[i, j]
 
@@ -79,4 +83,6 @@ def draw_temporal_graph(
     if suptitle:
         plt.suptitle(suptitle)
 
-    plt.show()
+    plt.close()
+
+    return fig

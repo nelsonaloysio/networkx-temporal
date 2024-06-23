@@ -5,42 +5,44 @@ from typing import Any, Callable, Literal, Optional, Union
 import networkx as nx
 import pandas as pd
 
-from .convert import convert_to, TO_LITERAL
+from .transform.events import to_events
+from .transform.snapshots import to_snapshots
+from .transform.static import to_static
+from .transform.unified import to_unified
 
 
 class TemporalGraph():
     """
     Base class for temporal graphs.
 
-    :param directed: If True, the graph will be directed.
+    :param directed: If True, the graph will be a digraph.
     :param multigraph: If True, the graph will be a multigraph.
     :param t: Number of time steps to initialize (optional).
     """
-    def __init__(
-        self,
-        directed: bool = False,
-        multigraph: bool = False,
-        t: Optional[int] = None,
-    ) -> None:
-        """ Initializes the class. """
+    to_events = to_events
+    to_snapshots = to_snapshots
+    to_static = to_static
+    to_unified = to_unified
+
+    def __init__(self, directed: bool = False, multigraph: bool = False, t: Optional[int] = None) -> None:
         assert t is None or type(t) == int,\
-               f"Argument 't' must be an integer, received: {type(t)}."
+            f"Argument 't' must be an integer, received: {type(t)}."
 
         assert t is None or t > 0,\
-               f"Argument 't' must be greater than zero, received: {t}."
+            f"Argument 't' must be greater than zero, received: {t}."
 
         self.directed = directed
         self.multigraph = multigraph
 
         self.data = [
-            self._empty_graph()
+            getattr(nx, f"{'Multi' if self.is_multigraph() else ''}{'Di' if self.is_directed() else ''}Graph")()
             for t in range(t or 1)
         ]
 
         list(
             self.__setattr__(method, self.__wrapper(method))
             for method in [
-                m for m in dir(self.data[0] if len(self) else self._empty_graph())
+                m for m in dir(self.data[0])
                 if not m.startswith("_")
                 and m not in TemporalGraph.__dict__
             ]
@@ -49,19 +51,19 @@ class TemporalGraph():
     def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
         """ Returns snapshot from a given interval. """
         assert self.data,\
-               "Temporal graph is empty."
+            "Temporal graph is empty."
 
         assert type(t) in (str, int, slice),\
-               f"Parameter must be a str, integer or slice, received: {type(t)}."
+            f"Parameter must be a str, integer or slice, received: {type(t)}."
 
         assert type(t) != str or self.names,\
-                "Temporal graph snapshots are not named."
+            "Temporal graph snapshots are not named."
 
         assert type(t) != int or -len(self) <= t < len(self),\
-               f"Received index {t}, but temporal graph has {len(self)} snapshots."
+            f"Received index {t}, but temporal graph has {len(self)} snapshots."
 
         assert type(t) != slice or -len(self) <= (t.start or 0) < (t.stop or len(self)) <= len(self),\
-               f"Received slice {t.start, t.stop}, but temporal graph has {len(self)} snapshots."
+            f"Received slice {t.start, t.stop}, but temporal graph has {len(self)} snapshots."
 
         if type(t) == str:
             return self.data[self.names.index(t)]
@@ -83,8 +85,10 @@ class TemporalGraph():
 
     def __repr__(self) -> str:
         """ Returns string representation of the class. """
-        return f"Temporal{'Di' if self.directed else ''}"\
-               f"{'Multi' if self.multigraph else ''}Graph (t={len(self)}) "\
+        return f"Temporal"\
+               f"{'Multi' if self.is_multigraph() else ''}"\
+               f"{'Di' if self.directed else ''}"\
+               f"Graph (t={len(self)}) "\
                f"with {sum(self.order())} nodes and {sum(self.size())} edges"
 
     @property
@@ -96,7 +100,7 @@ class TemporalGraph():
     def data(self, data: Union[list, dict]) -> None:
         """ Assigns list of snapshots to the temporal graph. """
         assert type(data) in (list, dict),\
-                f"Argument 'data' must be a list or dictionary, received: {type(data)}."
+            f"Argument 'data' must be a list or dictionary, received: {type(data)}."
 
         data = data if type(data) == list else list(data.values())
 
@@ -117,11 +121,11 @@ class TemporalGraph():
     def directed(self, value: bool) -> None:
         """ Assigns directed property to temporal graph. """
         assert self.directed is None or not len(self),\
-               "Property 'directed' can only be set once. "\
-               f"Use `to_{'un' if not self.directed else ''}directed` to convert the graph."
+            "Property 'directed' can only be set once. "\
+            f"Use `to_{'un' if not self.directed else ''}directed` to convert the graph."
 
         assert type(value) is bool,\
-               "Property 'directed' must be either True or False."
+            "Property 'directed' must be either True or False."
 
         self._directed = value
 
@@ -149,29 +153,30 @@ class TemporalGraph():
     @name.setter
     def name(self, name: str) -> None:
         """ Assigns name to the temporal graph. """
-        self._name = name
+        self._name = str(name)
 
     @property
     def names(self) -> list:
         """ Returns names of temporal graph snapshots. """
         names = list(G.name for G in self)
-        return names if any(n != '' for n in names) else None
+        return names if any(n for n in names) else None
 
     @names.setter
     def names(self, names: list) -> None:
         """ Returns names of temporal graph snapshots. """
         assert type(names) == list,\
-                f"Argument 'names' must be a list, received: {type(names)}."
+            f"Argument 'names' must be a list, received: {type(names)}."
+
         assert len(names) == len(self),\
-                f"Length of names ({len(names)}) differs from number of snapshots ({len(self)})."
+            f"Length of names ({len(names)}) differs from number of snapshots ({len(self)})."
+
         assert all(type(n) in (str, int) and type(n) == type(names[0]) for n in names),\
-                "All elements in names must be either strings or integers."
+            "All elements in names must be either strings or integers."
+
         assert len(names) == len(set(names)),\
-                "All elements in names must be unique."
-        list(
-            setattr(self.data[t], "name", names[t])
-            for t in range(len(self))
-        )
+            "All elements in names must be unique."
+
+        list(setattr(self.data[t], "name", names[t]) for t in range(len(self)))
 
     @property
     def t(self) -> int:
@@ -188,14 +193,14 @@ class TemporalGraph():
             G = self._empty_graph()
 
         assert type(t) == int,\
-                f"Argument 't' must be an integer, received: {type(t)}."
+            f"Argument 't' must be an integer, received: {type(t)}."
 
         assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
-                f"Argument 'G' must be a valid NetworkX graph, received: {type(G)}."
+            f"Argument 'G' must be a valid NetworkX graph, received: {type(G)}."
 
         assert G.is_directed() == self.is_directed(),\
-                f"Received a{' directed' if G.is_directed() else 'n undirected'} graph, "\
-                f"but temporal graph is {'not ' if self.is_directed() else ''}directed."
+            f"Received a{' directed' if G.is_directed() else 'n undirected'} graph, "\
+            f"but temporal graph is {'not ' if self.is_directed() else ''}directed."
 
         assert G.is_multigraph() == self.is_multigraph(),\
                 f"Received a {'multi' if G.is_multigraph() else ''}graph, "\
@@ -242,13 +247,13 @@ class TemporalGraph():
         :param apply_func: Function to apply to time attribute values.
         """
         assert self.data,\
-                "Temporal graph is empty."
+            "Temporal graph is empty."
 
         assert sum(self.order()),\
-                "Temporal graph has no nodes."
+            "Temporal graph has no nodes."
 
         assert sum(self.size()),\
-                "Temporal graph has no edges."
+            "Temporal graph has no edges."
 
         # Set default slicing method (edge-level attribute data).
         if attr is None:
@@ -265,19 +270,19 @@ class TemporalGraph():
 
         # Check if attribute data is valid.
         assert attr is None or type(attr) in (str, list, dict, pd.Series, pd.DataFrame),\
-               f"Argument `attr` accepts a str, list, dict, pandas Series or DataFrame, received: {type(attr)}."
+            f"Argument `attr` accepts a str, list, dict, pandas Series or DataFrame, received: {type(attr)}."
 
         assert type(attr) != str or attr_level in ("node", "edge"),\
-               f"Argument `attr_level` must be either 'node' or 'edge' when `attr` is a string."
+            f"Argument `attr_level` must be either 'node' or 'edge' when `attr` is a string."
 
         assert node_level is None or attr_level == "node",\
-               f"Argument `node_level` is not applicable to edge-level attribute data."
+            f"Argument `node_level` is not applicable to edge-level attribute data."
 
         assert node_level in ("source", "target") or attr_level != "node",\
-               f"Argument `node_level` must be either 'source' or 'target' when slicing node-level attribute data."
+            f"Argument `node_level` must be either 'source' or 'target' when slicing node-level attribute data."
 
         assert bins in (None, True, False) or bins > 0,\
-               f"Argument `bins` must be positive integer or True."
+            f"Argument `bins` must be positive integer or True."
 
         # Obtain static graph object and edge data.
         G = self.to_static()
@@ -312,10 +317,10 @@ class TemporalGraph():
 
         # Check if attribute data has the right length.
         assert attr_level == "node" or len(times) == G.size(),\
-               f"Length of `attr` ({len(times)}) differs from number of edges ({G.size()})."
+            f"Length of `attr` ({len(times)}) differs from number of edges ({G.size()})."
 
         assert attr_level == "edge" or len(times) == G.order(),\
-               f"Length of `attr` ({len(times)}) differs from number of nodes ({G.order()})."
+            f"Length of `attr` ({len(times)}) differs from number of nodes ({G.order()})."
 
         # Fill null values in attribute data.
         if times.isna().any():
@@ -432,194 +437,41 @@ class TemporalGraph():
 
     def to_directed(self, as_view: bool = False):
         """
-        Returns directed version of the temporal graph.
+        Returns directed version of temporal graph.
 
         :param as_view: If True, returns a view of the original graph.
             Default is False.
         """
-        TG = TemporalGraph(directed=True, multigraph=self.is_multigraph())
-        TG.data = [G.to_directed(as_view=as_view) for G in self]
-        return TG
+        assert as_view in (True, False),\
+            f"Argument 'as_view' must be either True or False."
+
+        self.data = [G.to_directed(as_view=as_view) for G in self]
+
+        if as_view is False:
+            self._directed = True
+
+        return self
 
     def to_undirected(self, as_view: bool = False):
         """
-        Returns undirected version of the temporal graph.
+        Returns undirected version of temporal graph.
 
         :param as_view: If True, returns a view of the original graph.
             Default is False.
         """
-        TG = TemporalGraph(directed=False, multigraph=self.is_multigraph())
-        TG.data = [G.to_undirected(as_view=as_view) for G in self]
-        return TG
+        assert as_view in (True, False),\
+            f"Argument 'as_view' must be either True or False."
 
-    def to_events(self, stream: bool = True) -> list:
-        """
-        Returns a sequence of events, e.g., (u, v, t), where u and v are nodes
-        and t specifies the time of the event, or (u, v, t, e), where e is either
-        an edge addition if a positive unit (1) or deletion if a negative unit (-1).
+        self.data = [G.to_undirected(as_view=as_view) for G in self]
 
-        **Note**: as sequences of events are edge-based, node isolates are not preserved.
+        if as_view is False:
+            self._directed = False
 
-        :param stream: If `False`, returns events as 4-tuples, i.e., (u, v, t, e).
-        """
-        if stream:
-            return [(e[0], e[1], t) for t, G in enumerate(self) for e in G.edges()]
-
-        events = []
-        for t in range(len(self)):
-            if t == 0:
-                for edge in self[0].edges():
-                    events.append((*edge, t, 1))
-            else:
-                for edge in self[t].edges():
-                    if not self[t-1].has_edge(*edge):
-                        events.append((*edge, t, 1))
-                for edge in self[t-1].edges():
-                    if not self[t].has_edge(*edge):
-                        events.append((*edge, t, -1))
-
-        return events
-
-    def to_snapshots(self, to: Optional[TO_LITERAL] = None) -> list:
-        """
-        Returns a sequence of snapshots where each slice represent the state
-        of the network at a given time, i.e., a list of NetworkX graphs.
-
-        Internally, the temporal graph objeect already stores data as a list of
-        graphs, so this method simply returns the object itself (`self._data`),
-        optionally converting it to another format if specified in `to`.
-
-        :param to: Format to convert the snapshots to (optional).
-        """
-        return [convert_to(G, to) for G in self] if to else self.data
-
-    def to_static(
-        self,
-        to: Optional[TO_LITERAL] = None,
-        attr_name: Optional[str] = None,
-        multigraph: bool = True
-    ):
-        """
-        Returns a static graph from temporal graph.
-
-        A static graph is a single graph that contains all the nodes and edges of
-        the temporal graph. If `multigraph` is True, multiple edges among the same
-        pair of nodes among snapshots are preserved (default). The time of the
-        event can be stored as an edge attribute if `attr_name` is specified.
-
-        **Note**: as each node is unique, dyanamic node attributes from the temporal
-        graph are not preserved in the static version; to preserve dynamic node
-        attributes, please see the `to_unified` method instead.
-
-        :param to: Format to convert the static graph to (optional).
-        :param attr_name: Edge attribute name to store time (optional).
-        :param multigraph: If True, returns a multigraph (default).
-        """
-        assert attr_name not in next(iter(self[0].edges(data=True)))[-1],\
-                f"Edge attribute '{attr_name}' already exists in graph."
-
-        if len(self) == 1:
-            return convert_to(self[0], to) if to else self[0]
-
-        G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if self.is_directed() else ''}Graph")()
-
-        list(G.add_nodes_from(nodes)
-             for nodes in self.nodes(data=True))
-
-        list(G.add_edges_from(
-             [(e[0], e[1], e[2]|({attr_name: t} if attr_name else {})) for e in edges])
-             for t, edges in enumerate(self.edges(data=True)))
-
-        G.name = self.name
-        return convert_to(G, to) if to else G
-
-    def to_unified(
-        self,
-        to: Optional[TO_LITERAL] = None,
-        add_couplings: bool = True,
-        node_index: Optional[list] = None,
-        relabel_nodes: Optional[Union[dict, list]] = None
-    ) -> nx.Graph:
-        """
-        Returns a unified temporal graph (UTG).
-
-        The UTG is a single graph that contains all the nodes and edges of an STG,
-        plus proxy nodes and edge couplings connecting sequential temporal nodes.
-
-        :param to: Format to convert the static graph to (optional).
-        :param add_couplings: Add inter-slice edges among temporal nodes (default).
-        :param node_index: Node index from static graph to include as attribute.
-        :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
-            If a list, each dictionary is used to relabel nodes in a given snapshot.
-            If a single dictionary, all nodes are relabeled using the same mapping.
-            Not all nodes need to be included, but the list should have the same
-            length as the number of snapshots. Any nodes not included in the mapping
-            are by default relabeled as '{node}_{t}' for each time `t`. Examples:
-            - List: [{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]
-            - Dict: {"A": "A_0", "B": "B_0", "C": "C_2"}
-        """
-        T = range(len(self))
-        order, size = self.temporal_order(), self.temporal_size()
-
-        assert relabel_nodes is None or type(relabel_nodes) in (dict, list),\
-                f"Argument 'relabel_nodes' must be a dict or list, received: {type(relabel_nodes)}."
-
-        assert node_index is None or len(node_index) == len(set(node_index)),\
-               "Repeated node indices are not allowed (are label types both strings and integers?)."
-
-        # Create graph with intra-slice nodes and edges,
-        # relabeling nodes to include temporal index.
-        UTG = nx.compose_all([
-            nx.relabel_nodes(
-                self[t],
-                {
-                    v:
-                        relabel_nodes[t].get(v, f"{v}_{t}")
-                        if type(relabel_nodes) == list else
-                        relabel_nodes.get(v, f"{v}_{t}")
-                        if type(relabel_nodes) == dict else
-                        f"{v}_{t}"
-                    for v in self[t].nodes()
-                }
-            )
-            for t in T
-        ])
-
-        # Add inter-slice couplings among temporal nodes.
-        if add_couplings:
-            for i in range(len(T)-1):
-                for node in self[T[i]].nodes():
-                    if UTG.has_node(f"{node}_{T[i]}"):
-                        for j in range(i+1, len(T)):
-                            if UTG.has_node(f"{node}_{T[j]}"):
-                                UTG.add_edge(f"{node}_{T[i]}", f"{node}_{T[j]}")
-                                break
-
-        # Add temporal node indices as attributes.
-        if node_index:
-            node_index = [str(v) for v in node_index]
-            nx.set_node_attributes(
-                UTG,
-                {node: node_index.index(node.rsplit("_", 1)[0]) for node in UTG.nodes()},
-                "node_index"
-            )
-
-        # Avoid using last snapshot's name for the unified graph.
-        UTG.name = f"{f'{self.name}' if self.name else 'UTG'} "\
-                   f"(t={len(self)}, proxy_nodes={len(UTG)-order}, edge_couplings={size-order})"
-
-        if to:
-            return convert_to(UTG, to)
-
-        return UTG
+        return self
 
     def _edge_coupling_index(self, v: str, interval: range) -> int:
         """ Returns index of next appearance for a given node. """
         return next(iter([i for i in interval if self[i].has_node(v)]))
-
-    def _empty_graph(self) -> nx.Graph:
-        """ Returns empty graph of the same type. """
-        return getattr(nx, f"{'Multi' if self.is_multigraph() else ''}{'Di' if self.is_directed() else ''}Graph")()
 
     def __wrapper(self, method: str) -> Callable:
         """ Returns a wrapper function for a given method. """
@@ -638,13 +490,13 @@ class TemporalGraph():
         reduce(or_, iter(set(N) for N in self.neighbors(v)))
 
     temporal_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_deg, self.degree(*args, **kwargs))
+        reduce(reduce_sum, self.degree(*args, **kwargs))
 
     temporal_in_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_deg, self.in_degree(*args, **kwargs))
+        reduce(reduce_sum, self.in_degree(*args, **kwargs))
 
     temporal_out_degree = lambda self, *args, **kwargs:\
-        reduce(_reduce_deg, self.out_degree(*args, **kwargs))
+        reduce(reduce_sum, self.out_degree(*args, **kwargs))
 
     temporal_index = lambda self, v: [t for t in range(len(self)) if self[t].has_node(v)]
     temporal_nodes = lambda self: reduce(or_, self.nodes(data=False))
@@ -654,10 +506,10 @@ class TemporalGraph():
     temporal_size = lambda self: sum(self.size())
 
     total_nodes = lambda self: sum(self.order())
-    total_edges = lambda self: sum(self.size())
+    total_edges = temporal_size
 
 
-def _reduce_deg(d1: Union[int, dict], d2: Union[int, dict]):
+def reduce_sum(d1: Union[int, dict], d2: Union[int, dict]):
     """ Returns sum of two integers or dictionaries. """
     if type(d1) == int or type(d2) == int:
         return (d1 if type(d1) == int else 0) + (d2 if type(d2) == int else 0)
