@@ -1,8 +1,3 @@
-"""
-Original networkx to graph-tool implementation:
-https://gist.github.com/ioctls/8bef992707006969510e33c20a0d42b6
-"""
-
 from typing import Any
 
 import graph_tool as gt
@@ -27,7 +22,7 @@ def get_prop_type(value: Any, key=None, encoding: str = "ascii", errors: str = "
     elif type(value) == bytes:
         value = value.decode(encoding, errors=errors)
 
-    key = key.encode(encoding, errors=errors)
+    key = key.encode(encoding, errors=errors).decode(encoding)
     type_name = type(value).__name__
     type_name = TYPE_NAME.get(type_name, type_name)
     return type_name, value, key
@@ -36,6 +31,9 @@ def get_prop_type(value: Any, key=None, encoding: str = "ascii", errors: str = "
 def nx2gt(nxG: nx.Graph, encoding: str = "ascii", errors: str = "strict"):
     """
     Converts a NetworkX graph to a graph-tool graph.
+
+    Original implementation:
+    https://gist.github.com/ioctls/8bef992707006969510e33c20a0d42b6
     """
     gtG = gt.Graph(directed=nxG.is_directed())
     nprops, eprops = set(), set()
@@ -91,5 +89,4 @@ def nx2gt(nxG: nx.Graph, encoding: str = "ascii", errors: str = "strict"):
         for key, value in data.items():
             gtG.ep[key][e] = value
 
-    # Done, finally!
     return gtG
