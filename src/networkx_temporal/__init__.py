@@ -6,6 +6,7 @@ from .transform.events import from_events
 from .transform.snapshots import from_snapshots
 from .transform.static import from_static
 from .transform.unified import from_unified
+
 __all__ = (
     "__version__",
     "TemporalGraph",
