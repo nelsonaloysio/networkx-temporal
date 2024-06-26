@@ -28,7 +28,7 @@ The `TemporalGraph` class extends NetworkX to temporal graphs, allowing easy man
 
 ```python
 >>> TG = tx.TemporalGraph(t=4, directed=True, multigraph=False)
-
+>>>
 >>> TG[0].add_edge("a", "b")
 >>> TG[1].add_edge("c", "b")
 >>> TG[2].add_edge("d", "c")
@@ -37,7 +37,7 @@ The `TemporalGraph` class extends NetworkX to temporal graphs, allowing easy man
 >>> TG[3].add_edge("f", "e")
 >>> TG[3].add_edge("f", "a")
 >>> TG[3].add_edge("f", "b")
-
+>>>
 >>> print(TG)
 ```
 
@@ -239,7 +239,7 @@ In the example below, we create a static multigraph in which both nodes and edge
 
 ```python
 >>> G = nx.MultiDiGraph()
-
+>>>
 >>> G.add_nodes_from([
 >>>     ("a", {"time": 0}),
 >>>     ("b", {"time": 0}),
@@ -248,7 +248,7 @@ In the example below, we create a static multigraph in which both nodes and edge
 >>>     ("e", {"time": 3}),
 >>>     ("f", {"time": 3}),
 >>> ])
-
+>>>
 >>> G.add_edges_from([
 >>>     ("a", "b", {"time": 0}),
 >>>     ("c", "b", {"time": 1}),
@@ -259,8 +259,8 @@ In the example below, we create a static multigraph in which both nodes and edge
 >>>     ("f", "a", {"time": 3}),
 >>>     ("f", "b", {"time": 3}),
 >>> ])
-
-print(G)
+>>>
+>>> print(G)
 ```
 
 ```none
@@ -467,20 +467,20 @@ As a toy example, let's first use a [Stochastic Block Model](https://networkx.or
 >>> intra = .9      # High initial probability of intra-community edges.
 >>> inter = .1      # Low initial probability of inter-community edges.
 >>> change = .125   # Change in intra- and inter-community edges over time.
-
+>>>
 >>> # Get probability matrix for each snapshot.
 >>> probs = [[[
 >>>     (intra if i == j else inter) + (t * change * (-1 if i == j else 1))
 >>>     for j in range(clusters)]
 >>>     for i in range(clusters)]
 >>>     for t in range(snapshots)]
-
+>>>
 >>> # Create graphs from probabilities.
 >>> graphs = {}
 >>> for t in range(snapshots):
 >>>     graphs[t] = nx.stochastic_block_model(clusters*[order], probs[t], seed=10)
 >>>     graphs[t].name = t
-
+>>>
 >>> # Create temporal graph from snapshots.
 >>> TG = tx.from_snapshots(graphs)
 ```
@@ -489,21 +489,21 @@ Let's plot the temporal graph snapshots, with colors representing the ground tru
 
 ```python
 >>> import matplotlib.pyplot as plt
-
+>>>
 >>> def get_edge_color(edges: list, node_color: dict):
 >>>     return [node_color[u] if node_color[u] == node_color[v] else "#00000035" for u, v in edges]
-
+>>>
 >>> c = plt.cm.tab10.colors
-
+>>>
 >>> # Node positions.
 >>> pos = nx.circular_layout(TG.to_static())
-
+>>>
 >>> # Community ground truths.
 >>> node_color = [c[i // clusters] for i in range(TG.temporal_order())]
-
+>>>
 >>> # Colorize intra-community edges.
 >>> temporal_opts = {t: {"edge_color": get_edge_color(TG[t].edges(), node_color)} for t in range(len(TG))}
-
+>>>
 >>> # Plot snapshots with community ground truths.
 >>> draw_temporal_graph(
 >>>     TG,
@@ -527,17 +527,17 @@ For example, depending on the initial node community assigments (e.g., with `see
 
 ```python
 >>> import leidenalg as la
-
+>>>
 >>> membership = la.find_partition(
 >>>     TG.to_static("igraph"),
 >>>     la.ModularityVertexPartition,
 >>>     n_iterations=-1,
 >>>     seed=0,
 >>> )
-
+>>>
 >>> node_color = [c[m] for m in membership.membership]
 >>> edge_color = get_edge_color(TG.to_static().edges(), node_color)
-
+>>>
 >>> draw_temporal_graph(
 >>>     TG.to_static(),
 >>>     pos=pos,
@@ -558,7 +558,7 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 
 ```python
 >>> temporal_opts = {}
-
+>>>
 >>> for t in range(len(TG)):
 >>>     membership = la.find_partition(
 >>>         TG[t:t+1].to_static("igraph"),
@@ -569,7 +569,7 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 >>>     node_color = [c[m] for m in membership.membership]
 >>>     edge_color = get_edge_color(TG[t].edges(), node_color)
 >>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
-
+>>>
 >>> draw_temporal_graph(
 >>>     TG,
 >>>     pos=pos,
@@ -589,7 +589,7 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 
 ```python
 >>> temporal_opts = {}
-
+>>>
 >>> temporal_membership, improvement = la.find_partition_temporal(
 >>>     TG.to_snapshots("igraph"),
 >>>     la.ModularityVertexPartition,
@@ -598,12 +598,12 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 >>>     seed=0,
 >>>     vertex_id_attr="_nx_name"
 >>> )
-
+>>>
 >>> for t in range(len(TG)):
 >>>     node_color = [c[m] for m in membership.membership]
 >>>     edge_color = get_edge_color(TG[t].edges(), node_color)
 >>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
-
+>>>
 >>> draw_temporal_graph(
 >>>     TG,
 >>>     figsize=(14, 4),
