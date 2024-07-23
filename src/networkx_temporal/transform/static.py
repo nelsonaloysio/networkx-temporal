@@ -46,11 +46,11 @@ def to_static(
     G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if self.is_directed() else ''}Graph")()
 
     list(G.add_nodes_from(nodes)
-            for nodes in self.nodes(data=True))
+         for nodes in self.nodes(data=True))
 
     list(G.add_edges_from(
-            [(e[0], e[1], e[2]|({attr: t} if attr else {})) for e in edges])
-            for t, edges in enumerate(self.edges(data=True)))
+         [(e[0], e[1], {**e[2], **({attr: t} if attr else {})}) for e in edges])
+         for t, edges in enumerate(self.edges(data=True)))
 
     G.name = self.name
     return convert(G, to) if to else G
