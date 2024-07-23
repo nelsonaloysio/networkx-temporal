@@ -71,7 +71,7 @@ def draw_temporal_graph(
         nx.draw(G,
                 ax=ax_,
                 pos=pos or getattr(nx, f"{layout}_layout")(G),
-                **DRAW_OPTS|draw_opts|temporal_opts.get(t, {}))
+                **{**DRAW_OPTS, **draw_opts, **temporal_opts.get(t, {})})
 
         ax_.set_title("" if is_static else f"$t$ = {G.name or t}")
 
