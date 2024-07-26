@@ -2,8 +2,8 @@ from typing import Optional
 
 import networkx as nx
 
-from .convert import convert, FORMAT
 from .snapshots import from_snapshots
+from ..convert import convert, FORMATS
 
 
 def from_static(G: nx.Graph) -> dict:
@@ -17,7 +17,7 @@ def from_static(G: nx.Graph) -> dict:
 
 def to_static(
     self,
-    to: Optional[FORMAT] = None,
+    to: Optional[FORMATS] = None,
     attr: Optional[str] = None,
     multigraph: bool = True
 ):
@@ -29,9 +29,9 @@ def to_static(
     pair of nodes among snapshots are preserved (default). The time of the
     event can be stored as an edge attribute if `attr` is specified.
 
-    **Note**: as each node is unique, dyanamic node attributes from the temporal
-    graph are not preserved in the static version; to preserve dynamic node
-    attributes, please see the `to_unified` method instead.
+    **Note**: as each node in a static graph is unique, dynamic node attributes
+    from a temporal graph are not preserved in the static version; to preserve
+    dynamic node attributes in a single graph, see the `to_unified` method.
 
     :param to: Format to convert the static graph to (optional).
     :param attr: Edge attribute name to store time (optional).

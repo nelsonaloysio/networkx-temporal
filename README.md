@@ -18,7 +18,7 @@ pip install networkx-temporal
 
 ## Usage
 
-Examples of usage below are also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/extra/example/networkx-temporal-example.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/extra/example/networkx-temporal-example.ipynb)).
+Examples of usage below are also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-example.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-example.ipynb)).
 
 ## Basics
 
@@ -61,7 +61,7 @@ E = [1, 1, 3, 3] edges (8 unique, 8 total)
 >>> draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_7.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_7.png)
 
 ### Slice into temporal bins
 
@@ -72,7 +72,7 @@ Once initialized, a specified number of bins can be returned in a new object of 
 >>> draw_temporal_graph(TG, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_9.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_9.png)
 
 By default, created bins are composed of non-overlapping edges and might have uneven order and size.
 
@@ -83,10 +83,10 @@ To balance them, pass `qcut=True`:
 >>> draw_temporal_graph(TG, figsize=(4, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_11.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_11.png)
 
-> Note that in some cases [qcut](https://pandas.pydata.org/docs/reference/api/pandas.qcut.html) may not be able to split the graph into the number of bins requested and will instead return the maximum number of bins possible.
-> Forcing a number of bins can be achieved by setting `duplicates=True` (allows duplicate edges in bins) or `rank_first=True` (balances snapshots considering the order of appearence of nodes/edges).
+> Note that in some cases it may not be able to split the graph into the number of bins requested, returning the maximum possible number instead.
+> Forcing a number of bins can be achieved by setting `rank_first=True` to balance snapshots considering the order of appearence of nodes or edges.
 
 ### Convert to directed or undirected
 
@@ -276,7 +276,7 @@ Converting a static graph with node-level temporal data to a temporal graph obje
 >>> draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_35.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_35.png)
 
 Note that considering node-level attributes resulted in placing the edge `(a, c, 2)` in $t=0$ instead, as the source node `a` attribute is set to `t=0`:
 
@@ -297,7 +297,7 @@ Converting a static graph with edge-level temporal data to a temporal graph obje
 >>> draw_temporal_graph(TG, figsize=(8, 2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_39.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_39.png)
 
 In this case, considering edge-level attributes results in placing the edge `(a, c, 2)` in $t=2$, as expected.
 
@@ -348,7 +348,7 @@ Builds a static or flattened graph containing all the edges found at each time s
 >>> draw_temporal_graph(G, suptitle="Static Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_44.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_44.png)
 
 ### Snapshot-based temporal graph
 
@@ -424,7 +424,7 @@ MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=2)' with 12 nodes an
 >>> draw_temporal_graph(UTG, pos=pos, figsize=(4, 4), connectionstyle="arc3,rad=0.25", suptitle="Unified Temporal Graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_52.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_52.png)
 
 ### Convert back to TemporalGraph object
 
@@ -458,7 +458,7 @@ ___
 
 ## Community detection
 
-As a toy example, let's first use a [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to generate 4 snapshots, in which each of the 5 clusters of 4 nodes each continuously mix together:
+As a toy example, let's first use a [Stochastic Block Model](https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html) to generate 4 snapshots, in which each of the 5 clusters of 5 nodes each continuously mix together:
 
 ```python
 >>> snapshots = 4   # Temporal graphs to generate.
@@ -515,7 +515,7 @@ Let's plot the temporal graph snapshots, with colors representing the ground tru
 >>>     suptitle="Ground truth")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_60.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_60.png)
 
 ### Modularity: on static graph
 
@@ -548,7 +548,7 @@ For example, depending on the initial node community assigments (e.g., with `see
 >>>     suptitle="Communities found by modularity on static graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_62.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_62.png)
 
 ### Modularity: on each snapshot
 
@@ -579,7 +579,7 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 >>>     suptitle="Communities found by modularity on snapshots")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_64.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_64.png)
 
 ### Modularity: on temporal graph
 
@@ -613,7 +613,7 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 >>>     suptitle="Communities found by modularity on temporal graph")
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/extra/fig/example_66.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_66.png)
 
 ___
 

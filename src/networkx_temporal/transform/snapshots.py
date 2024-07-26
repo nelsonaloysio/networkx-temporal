@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from .convert import convert, FORMAT
+from ..convert import convert, FORMATS
 
 
 def from_snapshots(graphs: Union[dict, list]) -> list:
@@ -37,7 +37,7 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
     return TG
 
 
-def to_snapshots(self, to: Optional[FORMAT] = None) -> list:
+def to_snapshots(self, to: Optional[FORMATS] = None) -> list:
     """
     Returns a sequence of snapshots where each slice represent the state
     of the network at a given time, i.e., a list of NetworkX graphs.

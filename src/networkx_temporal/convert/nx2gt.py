@@ -1,7 +1,8 @@
 from typing import Any
 
-import graph_tool as gt
 import networkx as nx
+
+import graph_tool as gt
 
 TYPE_NAME = {
     "dict": "object",

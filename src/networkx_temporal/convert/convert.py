@@ -9,7 +9,7 @@ except ImportError:
     nx2dgl = None
 
 try:
-    from ..utils.nx2gt import nx2gt
+    from .nx2gt import nx2gt
 except ImportError:
     nx2gt = None
 
@@ -26,7 +26,7 @@ except ImportError:
     nx2nk = None
 
 try:
-    from ..utils.nx2snap import nx2snap
+    from .nx2snap import nx2snap
 except ImportError:
     nx2snap = None
 
@@ -37,7 +37,7 @@ except ImportError:
     nx2pyg = None
 
 try:
-    from ..utils.nx2teneto import nx2teneto
+    from .nx2teneto import nx2teneto
 except ImportError:
     nx2teneto = None
 
@@ -48,18 +48,18 @@ ALIAS = {
     "pyg": "torch_geometric",
 }
 
-FORMAT = Literal[
+FORMATS = Literal[
     "dgl",
     "graph_tool",
     "igraph",
     "networkit",
-    "torch_geometric"
+    "torch_geometric",
     "snap",
-    "teneto"
+    "teneto",
 ]
 
 
-def convert(G: nx.Graph, to: FORMAT, *args, **kwargs):
+def convert(G: nx.Graph, to: FORMATS, *args, **kwargs):
     """
     Returns converted NetworkX graph object.
 
@@ -73,20 +73,20 @@ def convert(G: nx.Graph, to: FORMAT, *args, **kwargs):
     - `"teneto"`: Teneto
 
     :param G: NetworkX graph object.
-    :param to: Format to convert the graph to.
+    :param to: Format to convert the graph.
     :param args: Additional arguments for the conversion.
     :param kwargs: Additional keyword arguments for the conversion.
     """
-    to = ALIAS.get(to, to)
-    func = "nx2%s" % {v: k for k, v in ALIAS.items()}.get(to, to)
+    pkg = ALIAS.get(to, to)
+    func = "nx2%s" % {v: k for k, v in ALIAS.items()}.get(pkg, pkg)
 
     assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
         f"Argument `G` must be a networkx or temporal-networkx graph object, received: {type(G)}."
 
-    assert to in FORMAT.__args__,\
-        f"Argument `to` must be in {FORMAT.__args__}."
+    assert pkg in FORMATS.__args__,\
+        f"Argument `pkg` must be in {FORMATS.__args__}."
 
-    assert globals()[func] is not None,\
-        f"Package '{to}' is not installed."
+    if globals()[func] is None:
+        raise ModuleNotFoundError(f"No module named '{pkg}'.")
 
     return globals()[func](G, *args, **kwargs)

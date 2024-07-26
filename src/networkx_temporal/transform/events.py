@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def from_events(events: list, directed: bool = False, multigraph: bool = False) -> list:
+def from_events(events: list, directed: bool = False, multigraph: bool = True) -> list:
     """
     Returns temporal graph from sequence of events.
 
@@ -20,7 +20,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = False) 
     t = 1 + max(events, key=lambda x: x[2])[2]
 
     from ..temporal import TemporalGraph
-    TG = TemporalGraph(directed=directed, t=t)
+    TG = TemporalGraph(directed=directed, multigraph=multigraph, t=t)
 
     if len(events[0]) == 3:
         list(TG[t].add_edge(u, v) for u, v, t in events)
