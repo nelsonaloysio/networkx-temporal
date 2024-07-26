@@ -2,8 +2,8 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from .convert import convert, FORMAT
 from .snapshots import from_snapshots
+from ..convert import convert, FORMATS
 
 
 def from_unified(UTG: nx.Graph) -> list:
@@ -37,7 +37,7 @@ def from_unified(UTG: nx.Graph) -> list:
 
 def to_unified(
     self,
-    to: Optional[FORMAT] = None,
+    to: Optional[FORMATS] = None,
     add_couplings: bool = True,
     node_index: Optional[list] = None,
     relabel_nodes: Optional[Union[dict, list]] = None
