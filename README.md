@@ -1,6 +1,8 @@
-# networkx-temporal
+<!--# networkx-temporal-->
 
-Python package to build and manipulate temporal NetworkX graphs.
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/logo.png)
+
+Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
 ## Requirements
 
