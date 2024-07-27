@@ -384,9 +384,7 @@ class TemporalGraph():
         .cat\
         .remove_unused_categories()
 
-        # Convert categorical time bins to string intervals.
-        print(times)
-
+        # Convert categories to string intervals.
         names = [f"{'[' if c.closed_left else '('}"
                  f"{c.left if names is None else names[int(c.left)]}, "
                  f"{c.right if names is None else names[int(c.right)]}"
