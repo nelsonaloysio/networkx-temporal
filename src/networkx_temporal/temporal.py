@@ -273,8 +273,10 @@ class TemporalGraph():
                 "Attribute level must be set for graphs with the same number of nodes and edges."
             attr_level = "node" if length == self.temporal_order() else "edge"
 
-        # Set default node level (source) to consider for snapshots.
-        if attr_level == "node" and node_level is None:
+        # Set default attribute level (edge or source if node-level).
+        if attr is not None and attr_level is None:
+            attr_level = "edge"
+        elif attr_level == "node" and node_level is None:
             node_level = "source"
 
         # Check if arguments are valid.
