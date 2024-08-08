@@ -29,22 +29,24 @@ Examples of usage below are also available as an interactive [Jupyter notebook](
 The `TemporalGraph` class extends NetworkX to temporal graphs, allowing easy manipulation of its internal data structure:
 
 ```python
->>> TG = tx.TemporalGraph(t=4, directed=True, multigraph=False)
+>>> TG = tx.TemporalGraph(directed=True)
 >>>
->>> TG[0].add_edge("a", "b")
->>> TG[1].add_edge("c", "b")
->>> TG[2].add_edge("d", "c")
->>> TG[2].add_edge("d", "e")
->>> TG[2].add_edge("a", "c")
->>> TG[3].add_edge("f", "e")
->>> TG[3].add_edge("f", "a")
->>> TG[3].add_edge("f", "b")
+>>> TG.add_edge("a", "b", time=0)
+>>> TG.add_edge("c", "b", time=1)
+>>> TG.add_edge("d", "c", time=2)
+>>> TG.add_edge("d", "e", time=2)
+>>> TG.add_edge("a", "c", time=2)
+>>> TG.add_edge("f", "e", time=3)
+>>> TG.add_edge("f", "a", time=3)
+>>> TG.add_edge("f", "b", time=3)
+>>>
+>>> TG = TG.slice(attr="time")
 >>>
 >>> print(TG)
 ```
 
 ```none
-TemporalDiGraph (t=4) with 12 nodes and 8 edges
+TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
 ```
 
 ```python
