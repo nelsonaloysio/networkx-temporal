@@ -1,45 +1,7 @@
+from importlib import import_module
 from typing import Literal
 
 import networkx as nx
-
-try:
-    import dgl
-    nx2dgl = dgl.from_networkx
-except ImportError:
-    nx2dgl = None
-
-try:
-    from .nx2gt import nx2gt
-except ImportError:
-    nx2gt = None
-
-try:
-    import igraph as ig
-    nx2ig = ig.Graph.from_networkx
-except ImportError:
-    nx2ig = None
-
-try:
-    import networkit as nk
-    nx2nk = nk.nxadapter.nx2nk
-except ImportError:
-    nx2nk = None
-
-try:
-    from .nx2snap import nx2snap
-except ImportError:
-    nx2snap = None
-
-try:
-    import torch_geometric as pyg
-    nx2pyg = pyg.utils.convert.from_networkx
-except ImportError:
-    nx2pyg = None
-
-try:
-    from .nx2teneto import nx2teneto
-except ImportError:
-    nx2teneto = None
 
 ALIAS = {
     "gt": "graph_tool",
@@ -84,9 +46,11 @@ def convert(G: nx.Graph, to: FORMATS, *args, **kwargs):
         f"Argument `G` must be a networkx or temporal-networkx graph object, received: {type(G)}."
 
     assert pkg in FORMATS.__args__,\
-        f"Argument `pkg` must be in {FORMATS.__args__}."
+        f"Argument `to` must be in {FORMATS.__args__} or aliases {list(ALIAS)}."
 
-    if globals()[func] is None:
-        raise ModuleNotFoundError(f"No module named '{pkg}'.")
+    try:
+        func = import_module(f".{func}", package=__package__).__dict__[func]
+    except ImportError as e:
+        raise e
 
-    return globals()[func](G, *args, **kwargs)
+    return func(G, *args, **kwargs)
