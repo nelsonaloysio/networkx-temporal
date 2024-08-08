@@ -53,9 +53,7 @@ def draw_temporal_graph(
     assert type(temporal_opts) == dict,\
         "Argument `temporal_opts` must be a dictionary."
 
-    is_static = type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
-
-    if is_static:
+    if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         TG = [TG]  # Allows a single graph to be passed as input.
 
     fig, ax = plt.subplots(nrows=nrows,
@@ -65,15 +63,15 @@ def draw_temporal_graph(
 
     i, j = 0, 0
 
-    for t, G in enumerate(TG):
-        ax_ = ax if is_static else ax[t] if nrows == 1 else ax[i, j]
+    for t in range(len(TG)):
+        ax_ = ax if len(TG) == 1 else ax[t] if nrows == 1 else ax[i, j]
 
-        nx.draw(G,
+        nx.draw(TG[t],
                 ax=ax_,
-                pos=pos or getattr(nx, f"{layout}_layout")(G),
+                pos=pos or getattr(nx, f"{layout}_layout")(TG[t]),
                 **{**DRAW_OPTS, **draw_opts, **temporal_opts.get(t, {})})
 
-        ax_.set_title("" if is_static else f"$t$ = {G.name or t}")
+        ax_.set_title("" if len(TG) == 1 else f"$t$ = {TG.names[t] or TG[t].name or t}")
 
         j += 1
         if ncols and j % ncols == 0:
