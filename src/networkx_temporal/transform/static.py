@@ -19,7 +19,8 @@ def to_static(
     self,
     to: Optional[FORMATS] = None,
     attr: Optional[str] = None,
-    multigraph: bool = True
+    directed: Optional[bool] = None,
+    multigraph: Optional[bool] = None,
 ):
     """
     Returns a static graph from temporal graph.
@@ -35,7 +36,8 @@ def to_static(
 
     :param to: Format to convert the static graph to (optional).
     :param attr: Edge attribute name to store time (optional).
-    :param multigraph: If True, returns a multigraph (default).
+    :param directed: Set returned object as digraph (optional).
+    :param multigraph: Set returned object as multigraph (optional).
     """
     assert attr not in next(iter(self[0].edges(data=True)))[-1],\
         f"Edge attribute '{attr}' already exists in graph."
@@ -43,7 +45,13 @@ def to_static(
     if len(self) == 1:
         return convert(self[0], to) if to else self[0]
 
-    G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if self.is_directed() else ''}Graph")()
+    if directed is None:
+        directed = self.is_directed()
+
+    if multigraph is None:
+        multigraph = self.is_multigraph()
+
+    G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
 
     list(G.add_nodes_from(nodes)
          for nodes in self.nodes(data=True))
