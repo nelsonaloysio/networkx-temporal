@@ -18,17 +18,20 @@ Package is available to install on [PyPI](https://pypi.org/project/networkx-temp
 pip install networkx-temporal
 ```
 
+___
+
 ## Usage
 
 Examples of usage below are also available as an interactive [Jupyter notebook](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-example.ipynb) ([open on **Colab**](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-example.ipynb)).
-
-## Basics
 
 ### Build temporal graph
 
 The `TemporalGraph` class extends NetworkX to temporal graphs, allowing easy manipulation of its internal data structure:
 
 ```python
+>>> import networkx_temporal as tx
+>>> from networkx_temporal.example.draw import draw_temporal_graph
+>>>
 >>> TG = tx.TemporalGraph(directed=True)
 >>>
 >>> TG.add_edge("a", "b", time=0)
@@ -618,6 +621,23 @@ In addition, community indices/colors along snapshots are not fixed, which makes
 ```
 
 ![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_66.png)
+
+___
+
+## Cite
+
+At present, we do not have a published article about networkx-temporal.
+
+For the time being, you may cite it linking to the project page instead:
+
+```tex
+@misc{networkxtemporal_2024,
+    title = {The networkx-temporal Python library: build and manipulate dynamic graphs},
+    author = {Nelson Aloysio Reis de Almeida Passos and Emanuele Carlini and Salvatore Trani},
+    url = {http://pypi.org/p/networkx-temporal},
+    year = {2024}
+}
+```
 
 ___
 
