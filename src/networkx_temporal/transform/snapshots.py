@@ -9,7 +9,7 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
     """
     Returns temporal graph from sequence of snapshots.
 
-    :param graphs: List or dictionary of NetworkX graphs
+    :param graphs: List or dictionary of NetworkX graphs.
     """
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
@@ -32,20 +32,29 @@ def from_snapshots(graphs: Union[dict, list]) -> list:
         "Mixed graphs and multigraphs are not supported."
 
     from ..temporal import TemporalGraph
-    TG = TemporalGraph(directed=directed, multigraph=multigraph, t=len(T))
+    TG = TemporalGraph(directed=directed, multigraph=multigraph)
     TG.data = graphs
     return TG
 
 
-def to_snapshots(self, to: Optional[FORMATS] = None) -> list:
+def to_snapshots(self, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
     """
-    Returns a sequence of snapshots where each slice represent the state
-    of the network at a given time, i.e., a list of NetworkX graphs.
+    Returns a sequence of snapshots, each representing the state
+    of the network at a given interval.
 
-    Internally, the temporal graph objeect already stores data as a list of
-    graphs, so this method simply returns the object itself (`self._data`),
-    optionally converting it to another format if specified in `to`.
+    .. note::
 
-    :param to: Format to convert the snapshots to (optional).
+        Internally, the temporal graph object already stores data as a list of graph views when
+        sliced. This method simply returns the underlying data, unless ``as_view`` is set as
+        ``False`` or a conversion format is specified with argument ``to``.
+
+    :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
+        Optional.
+    :param as_view: If ``False``, returns copies instead of views of the original graph.
+        Default is ``True``.
     """
-    return [convert(G, to) for G in self] if to else self.data
+    if not as_view and to is not None:
+        return [G.copy() for G in self.data]
+    if to is not None:
+        return [convert(G, to) for G in self.data]
+    return self.data

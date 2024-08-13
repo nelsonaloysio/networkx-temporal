@@ -16,7 +16,6 @@ FORMATS = Literal[
     "igraph",
     "networkit",
     "torch_geometric",
-    "snap",
     "teneto",
 ]
 
@@ -25,19 +24,35 @@ def convert(G: nx.Graph, to: FORMATS, *args, **kwargs):
     """
     Returns converted NetworkX graph object.
 
-    Accepted formats:
-    - `"dgl"`: Deep Graph Library
-    - `"gt"`: Graph Tool
-    - `"ig"`: iGraph
-    - `"nk"`: NetworKit
-    - `"pyg"`: PyTorch Geometric
-    - `"snap"`: Stanford Network Analysis Platform
-    - `"teneto"`: Teneto
+    Note that the required package for the conversion is imported on function
+    call based on the given argument parameter. This is done to reduce the
+    dependencies of the package and to avoid unnecessary imports.
+
+    Supported packages and their respective aliases:
+
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    | Format                                                          | Parameter (Package)                | Parameter (Alias)      |
+    +=================================================================+====================================+========================+
+    |`Deep Graph Library <https://www.dgl.ai/>`_                      | .. centered :: ``dgl``             | .. centered :: -       |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    |`graph-tool <https://graph-tool.skewed.de/>`_                    | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    |`igraph <https://igraph.org/python/>`_                           | .. centered :: ``igraph``          | .. centered :: ``ig``  |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    |`NetworKit <https://networkit.github.io/>`_                      | .. centered :: ``networkit``       | .. centered :: ``nk``  |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    |`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`_  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    |`Teneto <https://teneto.readthedocs.io>`_                        | .. centered :: ``teneto``          | .. centered :: -       |
+    +-----------------------------------------------------------------+------------------------------------+------------------------+
 
     :param G: NetworkX graph object.
-    :param to: Format to convert the graph.
-    :param args: Additional arguments for the conversion.
+    :param str to: Format to convert data to.
+    :param args: Additional positional arguments for the conversion.
     :param kwargs: Additional keyword arguments for the conversion.
+
+    :return: Converted graph object.
+    :rtype: Any
     """
     pkg = ALIAS.get(to, to)
     func = "nx2%s" % {v: k for k, v in ALIAS.items()}.get(pkg, pkg)

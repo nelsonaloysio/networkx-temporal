@@ -48,17 +48,20 @@ def to_unified(
     The UTG is a single graph that contains all the nodes and edges of an STG,
     plus proxy nodes and edge couplings connecting sequential temporal nodes.
 
-    :param to: Format to convert the static graph to (optional).
-    :param add_couplings: Add inter-slice edges among temporal nodes (default).
+    :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
+        Optional.
+    :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
     :param node_index: Node index from static graph to include as attribute.
     :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
         If a list, each dictionary is used to relabel nodes in a given snapshot.
         If a single dictionary, all nodes are relabeled using the same mapping.
         Not all nodes need to be included, but the list should have the same
         length as the number of snapshots. Any nodes not included in the mapping
-        are by default relabeled as '{node}_{t}' for each time `t`. Examples:
-        - List: [{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]
-        - Dict: {"A": "A_0", "B": "B_0", "C": "C_2"}
+        are by default relabeled as ``'{node}_{t}'`` for each time ``t``. Examples:
+
+        - List: ``[{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]``
+
+        - Dictionary: ``{"A": "A_0", "B": "B_0", "C": "C_2"}``
     """
     T = range(len(self))
     order, size = self.temporal_order(), self.temporal_size()
