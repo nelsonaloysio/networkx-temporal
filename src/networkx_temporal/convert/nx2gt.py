@@ -12,9 +12,17 @@ TYPE_NAME = {
 
 def get_prop_type(value: Any, key=None, encoding: str = "ascii", errors: str = "strict") -> tuple:
     """
-    Performs typing and value conversion for the graph_tool PropertyMap class.
+    Performs typing and value conversion for graph-tool `PropertyMap` class.
+
     If a key is provided, it also ensures the key is in a format that can be
-    used with the PropertyMap. Returns a 3-tuple, (type_name, value, key).
+    used with the PropertyMap.
+
+    :param value: Attribute value to convert.
+    :param key: Attribute key name.
+    :param encoding: Encoding to use for string conversion.
+        Default is `"ascii"`.
+    :param errors: Error handling scheme for string conversion.
+        Default is `"strict"`.
     """
     if type(value) == int:
         value = float(value)
@@ -31,10 +39,18 @@ def get_prop_type(value: Any, key=None, encoding: str = "ascii", errors: str = "
 
 def nx2gt(nxG: nx.Graph, encoding: str = "ascii", errors: str = "strict"):
     """
-    Converts a NetworkX graph to a graph-tool graph.
+    Converts a NetworkX object to a graph-tool object with
+    properties and attributes preserved as much as possible.
 
-    Original implementation:
-    https://gist.github.com/ioctls/8bef992707006969510e33c20a0d42b6
+    Original implementation by [ioctls](https://gist.github.com/ioctls/8bef992707006969510e33c20a0d42b6).
+
+    :param nxG: NetworkX graph object.
+    :param encoding: Encoding to use for string conversion.
+        Default is `"ascii"`.
+    :param errors: Error handling scheme for string conversion.
+        Default is `"strict"`.
+
+    :return gt.Graph: Graph-tool graph object.
     """
     gtG = gt.Graph(directed=nxG.is_directed())
     nprops, eprops = set(), set()

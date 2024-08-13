@@ -5,11 +5,15 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
     """
     Returns temporal graph from sequence of events.
 
-    :param events: List of events, where each event is a tuple (u, v, t) or (u, v, t, e),
-        where `u` is the source node, `v` is the target node, `t` is the time of interaction,
-        and `e` is either 1 (representing edge addition) or -1 (representing edge deletion).
-    :param directed: If True, the graph will be a digraph.
-    :param multigraph: If True, the graph will be a multigraph.
+    :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or :math:`(u, v, t, \epsilon)`,
+        where :math:`u` is the source node, :math:`v` is the target node, :math:`t` is the time of interaction,
+        and :math:`e` is either ``1`` (edge addition) or ``-1`` (edge deletion).
+    :param bool directed: If ``True``, returns a
+        `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
+        Default is ``False``.
+    :param bool multigraph: If ``True``, the returns a
+        `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
+        Default is ``True``.
     """
     assert events,\
         "Argument `events` must be a non-empty list."
@@ -42,13 +46,21 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
 
 def to_events(self, stream: bool = True) -> list:
     """
-    Returns a sequence of events, e.g., (u, v, t), where u and v are nodes
-    and t specifies the time of the event, or (u, v, t, e), where e is either
-    an edge addition if a positive unit (1) or deletion if a negative unit (-1).
+    Returns a sequence of 3-tuples or 4-tuples representing events in the temporal graph.
 
-    **Note**: as sequences of events are edge-based, node isolates are not preserved.
+    - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
 
-    :param stream: If `False`, returns events as 4-tuples, i.e., (u, v, t, e).
+    - **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a positive (1) or negative (-1) unity representing edge addition and deletion events, respectively..
+
+    .. note::
+
+        As sequences of events are edge-based, node isolates are not preserved.
+
+    .. important::
+
+        Event-based temporal graphs do not currently store node- or edge-level attribute data.
+
+    :param bool stream: If ``False``, returns events as 4-tuples. Default is ``True``.
     """
     if stream:
         return [(e[0], e[1], t) for t, G in enumerate(self) for e in G.edges()]
