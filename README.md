@@ -46,7 +46,7 @@ TG = TG.slice(attr="time")
 draw_temporal_graph(TG)
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figures/fig_7.png)
+![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/fig_7.png)
 
 ## Cite
 
