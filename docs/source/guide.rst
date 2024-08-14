@@ -13,8 +13,8 @@ Build temporal graph
 ====================
 
 The main class of the package is the
-`TemporalGraph <documentation.html#networkx_temporal.TemporalGraph>`_
-object, which extends ``networkx``
+`TemporalGraph <#networkx_temporal.TemporalGraph>`_
+object, which extends NetworkX's
 `Graph <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`_
 to handle temporal data.
 Let's start by creating a simple directed graph using ``time`` as attribute key:
@@ -39,19 +39,22 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
 
    TemporalMultiDiGraph (t=1) with 6 nodes and 8 edges
 
-Note that the resulting graph object reports a **single** time step ``t=1``, as it haven't yet been sliced.
+Note that the resulting graph object reports a **single** time step ``t=1``, as it has not yet been
+sliced.
 
 .. note::
 
-   By default, graphs created with the package allow multiple edges between the same pair of nodes (`MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_).
-   This is particularly useful for temporal graphs, as it allows to store multiple interactions between the same nodes at different time steps
-   within a single graph object.
-   This behavior can be changed by setting ``multigraph=False`` when creating the ``TemporalGraph`` object.
+   By default, graphs created with the package allow multiple edges between the same pair of nodes
+   (`MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_).
+   This is particularly useful for temporal graphs, as it allows to store multiple interactions
+   between the same nodes at different time steps within a single graph object. This behavior can
+   be changed by setting ``multigraph=False`` when creating the ``TemporalGraph`` object.
 
 Slice temporal graph
 --------------------
 
-We may now call `slice <documentation.html#networkx_temporal.TemporalGraph.slice>`_ to split the graph we created into a number of snapshots:
+We may now call `slice <#networkx_temporal.TemporalGraph.slice>`_ to split the
+graph we created into a number of snapshots:
 
 .. code-block:: python
 
@@ -74,7 +77,7 @@ We may further inspect the resulting temporal graph's properties using the follo
 
 
 Let's now visualize the resulting temporal graph using the
-`draw_temporal_graph <documentation.html#networkx_temporal.example.draw.draw_temporal_graph>`_
+`draw_temporal_graph <#networkx_temporal.example.draw.draw_temporal_graph>`_
 function:
 
 .. code-block:: python
@@ -108,10 +111,9 @@ Note that this usually leads to snapshots with differing numbers of nodes and ed
 Considering quantiles
 ^^^^^^^^^^^^^^^^^^^^^
 
-By default, created bins are composed of non-overlapping edges and might have uneven order and/or size.
-To try and balance them using quantiles, pass ``qcut=True`` (see
-`pandas.qcut <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.qcut.html>`_
-for details):
+By default, created bins are composed of non-overlapping edges and might have uneven order and/or
+size. To try and balance them using quantiles, pass ``qcut=True`` (see `pandas.qcut
+<https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.qcut.html>`_ for details):
 
 .. code-block:: python
 
@@ -121,7 +123,8 @@ for details):
 .. image:: ../figure/fig_11.png
 
 Though not perfectly balanced due to node :math:`a` appearing multiple times (in :math:`t={1,2,3}`),
-the resulting snapshots have a more even number of edges. Results are expected to vary in a case-by-case basis.
+the resulting snapshots have a more even number of edges. Results are expected to vary in a
+case-by-case basis.
 
 Ranking nodes or edges
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -140,15 +143,18 @@ As the `time` attribute is here located in the edge level, each resulting snapsh
 In case of node-level times, the number of nodes in each snapshot would be more evenly distributed.
 
 .. note::
-   In some cases, ``slice`` may still not be able to split the graph into the number of bins requested (e.g., insufficient data), returning the maximum possible number of temporal snapshots instead.
+   In some cases, ``slice`` may still not be able to split the graph into the number of bins
+   requested (e.g., insufficient data), returning the maximum possible number of temporal snapshots
+   instead.
 
 Convert from static graph
 -------------------------
 
 Static graphs may carry temporal information in both node- and edge-level attributes.
 
-Slicing a graph into bins usually result in the same number of edges, but a higher number of nodes, as they may appear in more than one snapshot.
-In the example below, we create a static multigraph in which both nodes and edges are attributed with the time step in which they are observed:
+Slicing a graph into bins usually result in the same number of edges, but a higher number of nodes,
+as they may appear in more than one snapshot. In the example below, we create a static multigraph in
+which both nodes and edges are attributed with the time step in which they are observed:
 
 .. code-block:: python
 
@@ -191,8 +197,8 @@ Converting a static graph with edge-level temporal data to a temporal graph obje
 
 .. image:: ../figure/fig_39.png
 
-The resulting temporal graph has the same number of edges as the original graph, but a higher number of nodes,
-as they appear in more than one snapshot.
+The resulting temporal graph has the same number of edges as the original graph, but a higher number
+of nodes, as they appear in more than one snapshot.
 
 .. note::
 
@@ -318,7 +324,9 @@ Obtaining the number of nodes and edges in each snapshot:
 Temporal order and size
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Differently to the above, the ``temporal_order`` and ``temporal_size`` functions return the total number of nodes and edges across all time steps, **without** considering duplicated nodes across snapshots:
+Differently to the above, the ``temporal_order`` and ``temporal_size`` functions return the total
+number of nodes and edges across all time steps, **without** considering duplicated nodes across
+snapshots:
 
 .. code-block:: python
 
@@ -330,7 +338,9 @@ Differently to the above, the ``temporal_order`` and ``temporal_size`` functions
 
 .. note::
 
-   The temporal order and size are respectively defined as the length of ``TG.temporal_nodes()``, i.e., set of all nodes over time, and the length of ``TG.temporal_size()``, i.e., sum of all their edges.
+   The temporal order and size are respectively defined as the length of ``TG.temporal_nodes()``,
+   i.e., set of all nodes over time, and the length of ``TG.temporal_size()``, i.e., sum of all
+   their edges.
 
 Total number of nodes and edges
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -347,7 +357,8 @@ Obtaining the actual number of nodes and edges across all snapshots, **with** du
 
 .. note::
 
-   The total nodes and edges are respectively defined as the sum of ``TG.nodes()`` lengths, i.e., nodes in each snapshot, and the sum of ``TG.edges()`` lengths, i.e., edges in each snapshot.
+   The total nodes and edges are respectively defined as the sum of ``TG.nodes()`` lengths, i.e.,
+   nodes in each snapshot, and the sum of ``TG.edges()`` lengths, i.e., edges in each snapshot.
 
 Node neighborhoods
 ------------------
@@ -413,11 +424,13 @@ Support for the following packages are implemented, with their respective aliase
 Transform graph representation
 ==============================
 
-Once a temporal graph is instantiated, the following methods allow returning static graphs, snapshots, events or unified representations.
-Due to the way the underlying data is represented, some of these objects (i.e., those with unique nodes) do not allow dynamic node attributes.
+Once a temporal graph is instantiated, the following methods allow returning static graphs,
+snapshots events or unified representations.  Due to the way the underlying data is represented,
+some of these objects (i.e., those with unique nodes) do not allow dynamic node attributes.
 
-Observe that the total number of nodes :math:`V` and edges :math:`E` of the returned object might differ from the number of
-temporal nodes :math:`V_T` and edges :math:`E_T`, depending on the data and method used:
+Observe that the total number of nodes :math:`V` and edges :math:`E` of the returned object might
+differ from the number of temporal nodes :math:`V_T` and edges :math:`E_T`, depending on the data
+and method used:
 
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
 | Method           | .. centered :: Order | .. centered :: Size | Dynamic node attributes            | Dynamic edge attributes             |
@@ -472,11 +485,14 @@ G → TemporalGraph
 Snapshot-based temporal graph
 -----------------------------
 
-A snapshot-based temporal graph ``STG`` is a sequence of graphs where each element represents a snapshot of the original temporal graph. It is the most common representation of temporal graphs.
+A snapshot-based temporal graph ``STG`` is a sequence of graphs where each element represents a
+snapshot of the original temporal graph. It is the most common representation of temporal graphs.
 
 .. note::
 
-   Like the ``slice`` method, this function internally returns views of the original graph data, so no data is copied unless specified otherwise (i.e., by passing ``as_view=False`` to the function).
+   Like the ``slice`` method, this function internally returns views of the original graph data,
+   so no data is copied unless specified otherwise (i.e., by passing ``as_view=False`` to the
+   function).
 
 TemporalGraph → STG
 ^^^^^^^^^^^^^^^^^^^
@@ -507,12 +523,13 @@ Event-based temporal graph
 
 An event-based temporal graph ``ETG`` is a sequence of 3- or 4-tuple edge-based events.
 
-- **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
+* **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
 
-- **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a positive (1) or negative (-1) unity representing edge addition and deletion events, respectively.
+* **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a
+  positive (``1``) or negative (``-1``) unity representing edge addition and deletion events, respectively.
 
-Depending on the temporal graph data, one of these may allow a more compact representation than the other.
-The default is to return a 3-tuple sequence (also known as a *stream graph*).
+Depending on the temporal graph data, one of these may allow a more compact representation than the
+other. The default is to return a 3-tuple sequence (also known as a *stream graph*).
 
 .. important::
 
@@ -572,8 +589,9 @@ Unified temporal graph
 ----------------------
 
 A unified temporal graph ``UTG`` is a single graph object that contains the original temporal data,
-plus ''proxy'' nodes (*from each snapshot*) and edge ''couplings'' (*linking sequential temporal nodes*).
-Its usefulness is restricted to certain types of analysis and visualization, e.g., based on temporal flows.
+plus ''proxy'' nodes (*from each snapshot*) and edge ''couplings'' (*linking sequential temporal
+nodes*). Its usefulness is restricted to certain types of analysis and visualization, e.g., based on
+temporal flows.
 
 TemporalGraph → UTG
 ^^^^^^^^^^^^^^^^^^^
@@ -615,9 +633,10 @@ UTG → TemporalGraph
 Community detection
 ====================
 
-As a toy example, let's first use the simplest
-`Stochastic Block Model <https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html>`_
-to generate 4 graph snapshots, in which each of the 5 clusters of 5 nodes each continuously mix together over time:
+As a toy example, let's first use the simplest `Stochastic Block Model
+<https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html>`_
+to generate 4 graph snapshots, in which each of the 5 clusters of 5 nodes each continuously mix
+together over time:
 
 .. code-block:: python
 
@@ -644,8 +663,7 @@ to generate 4 graph snapshots, in which each of the 5 clusters of 5 nodes each c
     >>> # Create temporal graph from snapshots.
     >>> TG = tx.from_snapshots(graphs)
 
-Let's plot the temporal graph snapshots, with colors representing the ground truths and highlighting intra-community edges.
-These are generated with the same community structure, but continuously decreasing assortativity over time, and will serve as our reference for later comparison:
+Let's plot the graphs, with node colors representing communities and intra-community edges:
 
 .. code-block:: python
 
@@ -681,12 +699,25 @@ These are generated with the same community structure, but continuously decreasi
 
 .. image:: ../figure/fig_60.png
 
+We see the graphs are generated with the same community structure, but continuously decreasing
+assortativity. Let's try and retrieve these communities using a modularity optimization algorithm.
+
+.. attention ::
+
+   Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network
+   analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
+   <https://skewed.de/tiago/posts/descriptive-inferential/>`_ [1]_ for a discussion.
+
 Modularity: on static graph
 ---------------------------
 
-The `leidenalg <https://leidenalg.readthedocs.io>`_ package implements optimization algorithms for community detection that may be applied on snapshot-based temporal graphs, allowing to better capture their underlying structure.
+The `leidenalg <https://leidenalg.readthedocs.io>`_ package implements optimization algorithms
+for community detection that may be applied on snapshot-based temporal graphs, allowing to better
+capture their underlying structure.
 
-For example, depending on the initial node community assigments (e.g., with ``seed=0`` below), `modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`_ fails to retrieve the true communities (their ground truths) in the network:
+For example, depending on the initial node community assigments (e.g., with ``seed=0`` below),
+`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`_
+fails to retrieve the true communities (their ground truths) in the network:
 
 .. code-block:: python
 
@@ -713,13 +744,11 @@ For example, depending on the initial node community assigments (e.g., with ``se
 
 .. image:: ../figure/fig_62.png
 
-Although two communities are correctly retrieved (in red and green), nodes :math:`0` to :math:`4`, which
-form a fifth community in the network, are misclassified as belonging to the blue and orange communities.
-In the next sections, we'll try and exploit the network's temporal structure to improve the results.
+Although two communities are correctly retrieved (in red and green), nodes :math:`0` to :math:`4`,
+which form a fifth community in the network, are misclassified as belonging to the blue and orange
+communities.
 
-.. note ::
-
-    Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021) <https://skewed.de/tiago/posts/descriptive-inferential/>`_ [1]_ for a discussion.
+Next, let's try and exploit the network's temporal information to improve on these results.
 
 Modularity: on each snapshot
 ----------------------------
@@ -763,7 +792,9 @@ the evolution of communities over time to analyze a network's temporal mesoscale
 Modularity: on temporal graph
 -----------------------------
 
-`Coupling temporal nodes <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers>`_ allows the same algorithm to correctly retrieve the ground truths in this case, while at the same time maintaining community indices consistent over time, as seen below:
+`Coupling temporal nodes <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers>`_
+allows the same algorithm to correctly retrieve the ground truths in this case, while at the same
+time maintaining community indices consistent over time, as seen below:
 
 .. code-block:: python
 
@@ -793,10 +824,16 @@ Modularity: on temporal graph
 
 .. image:: ../figure/fig_66.png
 
-This method is particularly useful for tracking communities over time, as it allows to maintain the same community indices across snapshots, potentially contributing to the study of their dynamics.
+This method is particularly useful to track communities over time, as it allows to maintain the
+same community indices across snapshots, potentially contributing to the study of their dynamics.
+
+Although very simple, this example showcased how considering a network's temporal information can benefit
+its analysis, as well as help to better understand and visualize its mesoscale structures.
 
 -----
 
 .. rubric:: References
 
-.. [1] Tiago. P. Peixoto. ''Descriptive Vs. Inferential Community Detection in Networks: Pitfalls, Myths and Half-Truths'' (2023). Elements in the Structure and Dynamics of Complex Networks, Cambridge U.P.
+.. [1] Tiago. P. Peixoto. ''Descriptive Vs. Inferential Community Detection in Networks: Pitfalls,
+   Myths and Half-Truths'' (2023). Elements in the Structure and Dynamics of Complex Networks,
+   Cambridge U.P.

@@ -27,21 +27,22 @@
 Overview
 ########
 
-**NetworX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
+**NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
 i.e., temporal graph data.
 
-This package provides a new class, `TemporalGraph <documentation.html#networkx_temporal.TemporalGraph>`_,
-which extends ``networkx`` main
-`Graph <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`_
-class and implements additional functions to manipulate
-temporal data within. Most importantly, it provides methods to `slice <documentation.html#networkx_temporal.slice>`__
-graphs into snapshots and convert between different formats and representations.
+This package provides a new class, `TemporalGraph
+<guide.html#networkx_temporal.TemporalGraph>`_, which extends NetworkX's main `Graph
+<https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`_
+class and implements additional functions to manipulate temporal data within. Most importantly, it
+provides methods to `slice <guide.html#networkx_temporal.slice>`__ graphs into snapshots and
+convert between formats and representations.
 
 .. note::
 
    This package does not currently provide new methods to analyze temporal graphs, such as computing
    temporal centrality measures, or detecting temporal communities --- although it makes it arguably
-   easier to handle these tasks (see `Get started: Community detection <guide.html#community-detection>`_).
+   easier to handle these tasks (see `Get started: Community detection
+   <guide.html#community-detection>`_).
 
 Install
 =======
@@ -50,7 +51,7 @@ The package is readily available from `PyPI <https://pypi.org/project/networkx-t
 
 .. code-block:: bash
 
-   pip install networkx-temporal
+   $ pip install networkx-temporal
 
 It supports **Python 3.7+** and has been tested on Linux, Windows, and macOS.
 
@@ -58,17 +59,15 @@ It supports **Python 3.7+** and has been tested on Linux, Windows, and macOS.
 Quick start
 ===========
 
-The following is a quick example of the package in action, covering its basic functionalities.
-For further details on its general usage, please refer to the `Get started <guide.html>`_ and
-`API Reference <api.html>`_ sections.
+The following is a quick example of the package in action, covering its basic functionality.
 
 Build and slice temporal graph
 ------------------------------
 
 Creating a
-`TemporalGraph <documentation.html#networkx_temporal.TemporalGraph>`_
+`TemporalGraph <guide.html#networkx_temporal.TemporalGraph>`_
 object and
-`slice <documentation.html#networkx_temporal.TemporalGraph.slice>`_
+`slice <guide.html#networkx_temporal.TemporalGraph.slice>`_
 it into a number of snapshots:
 
 .. code-block:: python
@@ -98,7 +97,7 @@ It internally stores views of the original graph data, so no data is copied unle
 Plot temporal graph
 ^^^^^^^^^^^^^^^^^^^
 
-We may visualize the resulting temporal graph using the `draw_temporal_graph <documentation.html#networkx_temporal.draw.draw_temporal_graph>`_ function:
+We may visualize the resulting temporal graph using the `draw_temporal_graph <guide.html#networkx_temporal.draw.draw_temporal_graph>`_ function:
 
 .. code-block:: python
 
@@ -121,15 +120,15 @@ Convert and transform graph
 
 This package provides a set of functions to convert to different graph formats and representations:
 
-- `convert <documentation.html#networkx_temporal.convert>`_: Convert static graph object among different packages.
-- `from_events <documentation.html#networkx_temporal.from_events>`_: Create a ``TemporalGraph`` from a list of events.
-- `from_snapshots <documentation.html#networkx_temporal.from_snapshots>`_: Create a ``TemporalGraph`` from a list of snapshots.
-- `from_static <documentation.html#networkx_temporal.from_static>`_: Create a ``TemporalGraph`` from a static graph.
-- `from_unified <documentation.html#networkx_temporal.from_unified>`_: Create a ``TemporalGraph`` from a unified graph.
-- `to_events <documentation.html#networkx_temporal.TemporalGraph.to_events>`_: Transform a ``TemporalGraph`` to a list of events.
-- `to_snapshots <documentation.html#networkx_temporal.TemporalGraph.to_snapshots>`_: Transform a ``TemporalGraph`` to a list of snapshots.
-- `to_static <documentation.html#networkx_temporal.TemporalGraph.to_static>`_: Transform a ``TemporalGraph`` to a static graph.
-- `to_unified <documentation.html#networkx_temporal.TemporalGraph.to_unified>`_: Transform a ``TemporalGraph`` to a unified graph.
+- `convert <guide.html#networkx_temporal.convert>`_: Convert static graph object among different packages.
+- `from_events <guide.html#networkx_temporal.from_events>`_: Create a ``TemporalGraph`` from a list of events.
+- `from_snapshots <guide.html#networkx_temporal.from_snapshots>`_: Create a ``TemporalGraph`` from a list of snapshots.
+- `from_static <guide.html#networkx_temporal.from_static>`_: Create a ``TemporalGraph`` from a static graph.
+- `from_unified <guide.html#networkx_temporal.from_unified>`_: Create a ``TemporalGraph`` from a unified graph.
+- `to_events <guide.html#networkx_temporal.TemporalGraph.to_events>`_: Transform a ``TemporalGraph`` to a list of events.
+- `to_snapshots <guide.html#networkx_temporal.TemporalGraph.to_snapshots>`_: Transform a ``TemporalGraph`` to a list of snapshots.
+- `to_static <guide.html#networkx_temporal.TemporalGraph.to_static>`_: Transform a ``TemporalGraph`` to a static graph.
+- `to_unified <guide.html#networkx_temporal.TemporalGraph.to_unified>`_: Transform a ``TemporalGraph`` to a unified graph.
 
 As of now, the package supports converting static and temporal graphs to the following formats:
 
@@ -148,7 +147,7 @@ For more information on how to use the package, please refer to the following se
 
 - `Get started <guide.html>`_ for examples and use cases covering the package's main functionalities.
 
-- `API reference <documentation.html>`_ for further details on its implemented classes and functions.
+- `API reference <guide.html>`_ for further details on its implemented classes and functions.
 
 .. seealso::
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os.path as osp
 from functools import reduce
 from operator import or_
 from typing import Any, Callable, Literal, Optional, Union
@@ -17,17 +18,15 @@ class TemporalGraph():
     """
     Base class for temporal graphs.
 
-    This class is a wrapper around NetworkX's `Graph
-    <https://networkx.org/documentation/stable/reference/classes/graph.html>`_,
+    This class is a wrapper around NetworkX's
+    `Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_,
     `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_,
-    `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_
-    and
+    `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_ and
     `MultiDiGraph <https://networkx.org/documentation/stable/reference/classes/multidigraph.html>`_
     classes, and includes most methods from NetworkX's graph classes, such as `add_node`, `add_edge`,
-    `remove_node`, `remove_edge`, `neighbors`, `degree`, `in_degree`, `out_degree`, `subgraph`, `copy`,
-    `to_directed`, `to_undirected`, among others.
-    The default graph type if no parameters are given is a
-    `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
+    `remove_node`, `remove_edge`, `neighbors`, `degree`, `in_degree`, `out_degree`, `subgraph`,
+    `copy`, `to_directed`, `to_undirected`, among others. The default graph type if no parameters
+    are given is a **multigraph**.
 
     For a full list of methods available, please refer to NetworkX's documentation.
 
@@ -37,16 +36,15 @@ class TemporalGraph():
     :param multigraph: If ``True``, returns a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Default is ``True``.
-    :param t: Number of time steps to initialize.
-        Default is ``1``.
+    :param t: Number of temporal graphs to initialize. Default is ``1``.
 
     .. note::
 
-        Setting a number of time steps greater than ``1`` will create a list of NetworkX graph objects,
-        each representing a snapshot in time. Alternatively, the
-        `slice <#networkx_temporal.TemporalGraph.slice>`_ method can be used to create
-        less resource-demanding graph views on-the-fly (see
-        `Get started: Slice temporal graph <./guide.html#slice-temporal-graph>`__).
+        Setting a number of time steps greater than ``1`` will create a list of NetworkX graph
+        objects, each representing a snapshot in time. Alternatively, the `slice
+        <#networkx_temporal.TemporalGraph.slice>`_ method can be used to create less
+        resource-demanding graph views on-the-fly (see `Get started: Slice temporal graph
+        <./guide.html#slice-temporal-graph>`__).
 
     """
     to_events = to_events
@@ -54,7 +52,7 @@ class TemporalGraph():
     to_static = to_static
     to_unified = to_unified
 
-    def __init__(self, directed: bool = False, multigraph: bool = True, t: Optional[int] = 1):
+    def __init__(self, directed: bool = False, multigraph: bool = True, t: Optional[int] = None):
         assert type(directed) == bool,\
             f"Argument 'directed' must be a boolean, received: {type(directed)}."
 
@@ -163,7 +161,7 @@ class TemporalGraph():
         :param rank_first: If `True`, rank data points before slicing.
             Automatically set to True if temporal data is categorical.
         :param sort: If `True`, sort unique temporal values after slicing.
-            Only applies to categorical temporal data. Defualt is ``True``.
+            Only applies to categorical temporal data. Default is ``True``.
         :param as_view: If ``False``, returns copies instead of views of the original graph.
             Default is ``True``.
         :param fillna: Value to fill null values in attribute data.
@@ -589,6 +587,26 @@ class TemporalGraph():
     def total_edges(self):
         """ Returns total number of edges in the temporal graph. Same as ``temporal_size``."""
         return sum(self.size())
+
+    def write(self, path: str):
+        """
+        Writes temporal graph to file.
+
+        :param path: Path to write graph. Must include file extension (e.g., ``'graph.gml'``).
+            For a list of supported formats, see NetworkX's `documentation
+            <https://networkx.org/documentation/stable/reference/readwrite/index.html>`_.
+        """
+        name, ext = osp.splitext(path)
+        func = getattr(nx, f"write_{ext.lstrip('.')}", None)
+
+        assert ext,\
+            "Missing file extension to write graph."
+
+        assert func is not None,\
+            f"Extension '{ext}' is not supported by NetworkX."\
+            f"Supported formats: {[f.split('write_', 1)[-1] for f in dir(nx) if f.startswith('write_')]}."
+
+        list(func(G, f"{name}_{t}{ext}") for t, G in enumerate(self))
 
     def _edge_coupling_index(self, v: str, interval: range) -> int:
         """ Returns index of next appearance for a given node. """
