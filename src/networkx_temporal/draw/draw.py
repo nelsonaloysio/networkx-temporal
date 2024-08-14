@@ -28,44 +28,26 @@ def draw_temporal_graph(
     """
     Draws a temporal or static graph using NetworkX
     `draw <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
-    as back-end.
+    as backend.
     Requires `matplotlib <https://matplotlib.org/>`_.
+
+    See `Get started: Slice temporal graph <#slice-temporal-graph>`_ for examples.
 
     .. note::
 
-        The ``draw_temporal_graph`` function is currently meant only as an example to showcase the
-        package's capabilities. It does not scale well to large graphs, which usually require more
-        sophisticated approaches or specialized visualization tools.
-
-    .. code-block:: python
-
-        >>> import networkx_temporal as tx
-        >>> from networkx_temporal.draw import draw_temporal_graph
-        >>>
-        >>> TG = tx.TemporalGraph(directed=True)
-        >>>
-        >>> TG.add_edges_from([
-        >>>     ("a", "b", {"time": 0}),
-        >>>     ("c", "b", {"time": 1}),
-        >>>     ("d", "c", {"time": 2}),
-        >>>     ("d", "e", {"time": 2}),
-        >>>     ("a", "c", {"time": 2}),
-        >>>     ("f", "e", {"time": 3}),
-        >>>     ("f", "a", {"time": 3}),
-        >>>     ("f", "b", {"time": 3})
-        >>> ])
-        >>>
-        >>> draw_temporal_graph(TG.slice(attr="time"), figsize=(8, 2))
-
-    .. image:: ../figure/fig_7.png
+        The ``draw_temporal_graph`` function simply calls networkx draw in the backend
+        and is meant only to showcase the package's capabilities. It does not scale well to
+        large graphs, which usually require more sophisticated approaches or specialized
+        visualization tools.
 
     :param TG: Temporal graph or list of temporal graphs.
     :param pos: A dictionary with nodes as keys and positions as values.
+    :param layout: Layout algorithm to use when ``pos`` is not provided.
     :param nrows: Number of rows in the figure.
     :param ncols: Number of columns in the figure.
     :param figsize: Tuple with the dimensions of the figure.
     :param suptitle: Title of the figure.
-    :param temporal_opts: Dictionary with drawing options for each temporal graph.
+    :param temporal_opts: Dictionary with drawing options for snapshots.
     :param draw_opts: Additional drawing options for all graph(s).
     """
     assert pos is None or type(pos) == dict,\

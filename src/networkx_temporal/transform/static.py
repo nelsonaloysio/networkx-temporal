@@ -6,11 +6,13 @@ from .snapshots import from_snapshots
 from ..convert import convert, FORMATS
 
 
-def from_static(G: nx.Graph) -> dict:
+def from_static(G: nx.Graph):
     """
     Returns temporal graph from a static graph.
 
     :param G: NetworkX graph.
+
+    :rtype: networkx_temporal.TemporalGraph
     """
     return from_snapshots([G])
 
@@ -30,21 +32,24 @@ def to_static(
     returned graph type will be the same as the temporal graph. The time of
     the event can be stored as an edge attribute if `attr` is specified.
 
-    .. note::
+    .. important::
 
-        As each node in a static graph is unique, dynamic node attributes
-        from a temporal graph are not preserved in the static version; to preserve
-        dynamic node attributes in a single graph object, see the
-        `to_unified <#networkx_temporal.TemporalGraph.to_unified>`_
-        method instead.
+        As each node in a static graph is unique, dynamic node attributes from a ``TemporalGraph``
+        are not preserved when transformed to a static graph.
+
+    .. seealso::
+        The `to_unified <#networkx_temporal.TemporalGraph.to_unified>`_ method may be used to
+        preserve dynamic nodes in a single graph object.
 
     :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
         Optional.
     :param attr: Edge attribute name to store time. Optional.
     :param directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
+        Optional.
     :param multigraph: If ``True``, returns a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
+        Optional.
     """
     assert attr not in next(iter(self[0].edges(data=True)))[-1],\
         f"Edge attribute '{attr}' already exists in graph."

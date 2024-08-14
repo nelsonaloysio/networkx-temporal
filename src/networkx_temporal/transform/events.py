@@ -1,7 +1,7 @@
 import networkx as nx
 
 
-def from_events(events: list, directed: bool = False, multigraph: bool = True) -> list:
+def from_events(events: list, directed: bool = False, multigraph: bool = True):
     """
     Returns temporal graph from sequence of events.
 
@@ -11,9 +11,11 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
     :param bool directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
         Default is ``False``.
-    :param bool multigraph: If ``True``, the returns a
+    :param bool multigraph: If ``True``, returns a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Default is ``True``.
+
+    :rtype: networkx_temporal.TemporalGraph
     """
     assert events,\
         "Argument `events` must be a non-empty list."
@@ -50,15 +52,12 @@ def to_events(self, stream: bool = True) -> list:
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
 
-    - **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a positive (1) or negative (-1) unity representing edge addition and deletion events, respectively..
-
-    .. note::
-
-        As sequences of events are edge-based, node isolates are not preserved.
+    - **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a positive (``1``) or negative (``-1``) unity representing edge addition and deletion events, respectively.
 
     .. important::
 
         Event-based temporal graphs do not currently store node- or edge-level attribute data.
+        Moreover, as sequences of events are edge-based, node isolates are not preserved.
 
     :param bool stream: If ``False``, returns events as 4-tuples. Default is ``True``.
     """

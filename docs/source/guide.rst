@@ -53,6 +53,8 @@ Slice temporal graph
 
 We may now call `slice <documentation.html#networkx_temporal.TemporalGraph.slice>`_ to split the graph we created into a number of snapshots:
 
+.. code-block:: python
+
    >>> TG = TG.slice(attr="time")
    >>> TG
 
@@ -85,7 +87,7 @@ function:
 
    The ``draw_temporal_graph`` function currently simply calls ``networkx``
    `draw <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`_
-   in the back-end and is meant only as an example to showcase the package's capabilities. It does
+   in the backend and is meant only as an example to showcase the package's capabilities. It does
    not scale well to large graphs, which usually require more sophisticated approaches or specialized
    visualization tools.
 
@@ -403,7 +405,7 @@ Support for the following packages are implemented, with their respective aliase
 
 .. note::
 
-    Currently, only static graphs of ``networkx`` type are accepted as input for this function.
+   Only static ``networkx`` graphs are currently accepted as input for this function.
 
 
 -----
@@ -435,9 +437,10 @@ Static graph
 
 Builds a static or flattened graph ``G`` containing all the edges found at each time step.
 
-.. attention::
+.. important::
 
-   Dynamic node attributes in the temporal graph are **not** preserved in the static graph.
+   Dynamic node attributes from a ``TemporalGraph`` are not preserved in a static graph.
+
 
 TemporalGraph → G
 ^^^^^^^^^^^^^^^^^
@@ -445,7 +448,13 @@ TemporalGraph → G
 .. code-block:: python
 
     >>> G = TG.to_static()
-    >>> draw_temporal_graph(G, suptitle="Static Graph")
+    >>> G
+
+    MultiDiGraph with 6 nodes and 8 edges
+
+.. code-block:: python
+
+   >>> draw_temporal_graph(G, suptitle="Static Graph")
 
 .. image:: ../figure/fig_44.png
 
@@ -505,13 +514,10 @@ An event-based temporal graph ``ETG`` is a sequence of 3- or 4-tuple edge-based 
 Depending on the temporal graph data, one of these may allow a more compact representation than the other.
 The default is to return a 3-tuple sequence (also known as a *stream graph*).
 
-.. note::
-
-   As sequences of events are edge-based, node isolates are not preserved in this representation.
-
-.. warning::
+.. important::
 
    Event-based temporal graphs do not currently store node- or edge-level attribute data.
+   Moreover, as sequences of events are edge-based, node isolates are not preserved.
 
 TemporalGraph → ETG
 ^^^^^^^^^^^^^^^^^^^
@@ -578,8 +584,6 @@ TemporalGraph → UTG
    >>> print(UTG)
 
    MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=2)' with 12 nodes and 14 edges
-
-To better understand this representation, let's plot the resulting object with fixed node positions:
 
 .. code-block:: python
 
@@ -682,10 +686,6 @@ Modularity: on static graph
 
 The `leidenalg <https://leidenalg.readthedocs.io>`_ package implements optimization algorithms for community detection that may be applied on snapshot-based temporal graphs, allowing to better capture their underlying structure.
 
-.. note ::
-
-    Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021) <https://skewed.de/tiago/posts/descriptive-inferential/>`_ [1]_ for details.
-
 For example, depending on the initial node community assigments (e.g., with ``seed=0`` below), `modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`_ fails to retrieve the true communities (their ground truths) in the network:
 
 .. code-block:: python
@@ -713,14 +713,24 @@ For example, depending on the initial node community assigments (e.g., with ``se
 
 .. image:: ../figure/fig_62.png
 
+Although two communities are correctly retrieved (in red and green), nodes :math:`0` to :math:`4`, which
+form a fifth community in the network, are misclassified as belonging to the blue and orange communities.
+In the next sections, we'll try and exploit the network's temporal structure to improve the results.
+
+.. note ::
+
+    Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021) <https://skewed.de/tiago/posts/descriptive-inferential/>`_ [1]_ for a discussion.
+
 Modularity: on each snapshot
 ----------------------------
 
-Running the same algorithm separately on each of the generated snapshots retrieves the correct clusters only on the first graph (:math:`t=0`).
-This is mostly due to modularity optimization expecting an assortative community structure, which is not present in the later snapshots, as they mix together.
+Running the same algorithm separately on each of the generated snapshots retrieves the correct
+clusters only on the first graph (:math:`t=0`). This is mostly due to modularity optimization
+expecting an assortative community structure, which is not present in the later snapshots, as they
+mix together.
 
-In addition, community indices (represented by their colors) are not fixed over snapshots, which makes understanding their mesoscale dynamics harder.
-This is illustrated in the plot below:
+In addition, community indices (represented by their colors) are not fixed over snapshots, which
+makes understanding their mesoscale dynamics harder. This is illustrated in the plot below:
 
 .. code-block:: python
 
@@ -746,6 +756,9 @@ This is illustrated in the plot below:
     >>>     suptitle="Communities found by modularity on snapshots")
 
 .. image:: ../figure/fig_64.png
+
+Not only the results of subsequent snapshots are suboptimal, it is also particularly hard to track
+the evolution of communities over time to analyze a network's temporal mesoscale dynamics.
 
 Modularity: on temporal graph
 -----------------------------
@@ -780,7 +793,7 @@ Modularity: on temporal graph
 
 .. image:: ../figure/fig_66.png
 
-This method is particularly useful for tracking communities over time, as it allows to maintain the same community indices across snapshots, facilitating the interpretation of their dynamics.
+This method is particularly useful for tracking communities over time, as it allows to maintain the same community indices across snapshots, potentially contributing to the study of their dynamics.
 
 -----
 
