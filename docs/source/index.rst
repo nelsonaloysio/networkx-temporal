@@ -23,11 +23,11 @@
 
    This documentation was generated on |today| for package release |release|.
 
-#################
-networkx-temporal
-#################
+########
+Overview
+########
 
-**networkx-temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
+**NetworX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
 i.e., temporal graph data.
 
 This package provides a new class, `TemporalGraph <documentation.html#networkx_temporal.TemporalGraph>`_,
@@ -39,9 +39,9 @@ graphs into snapshots and convert between different formats and representations.
 
 .. note::
 
-   At the moment, this package does not provide new methods to analyze temporal graphs, such as computing
+   This package does not currently provide new methods to analyze temporal graphs, such as computing
    temporal centrality measures, or detecting temporal communities --- although it makes it arguably
-   easier to implement such methods on top of it (see some of the `Examples <examples.html>`_).
+   easier to handle these tasks (see `Get started: Community detection <guide.html#community-detection>`_).
 
 Install
 =======
@@ -59,13 +59,13 @@ Quick start
 ===========
 
 The following is a quick example of the package in action, covering its basic functionalities.
-For further details on its general usage, please refer to the `Examples <examples.html>`_ and
-`Package reference <documentation.html>`_ sections.
+For further details on its general usage, please refer to the `Get started <guide.html>`_ and
+`API Reference <api.html>`_ sections.
 
 Build and slice temporal graph
 ------------------------------
 
-Quickly create a
+Creating a
 `TemporalGraph <documentation.html#networkx_temporal.TemporalGraph>`_
 object and
 `slice <documentation.html#networkx_temporal.TemporalGraph.slice>`_
@@ -74,7 +74,6 @@ it into a number of snapshots:
 .. code-block:: python
 
    >>> import networkx_temporal as tx
-   >>> from networkx_temporal.example.draw import draw_temporal_graph
    >>>
    >>> TG = tx.TemporalGraph(directed=True)
    >>>
@@ -90,8 +89,6 @@ it into a number of snapshots:
    >>> TG = TG.slice(attr="time")
    >>>
    >>> print(TG)
-
-.. code-block:: none
 
    TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
 
@@ -115,7 +112,7 @@ We may visualize the resulting temporal graph using the `draw_temporal_graph <do
 
    The ``draw_temporal_graph`` function currently simply calls ``networkx``
    `draw <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`_
-   in the back-end and is meant only as an example to showcase the package's capabilities. It does
+   in the backend and is meant only as an example to showcase the package's capabilities. It does
    not scale well to large graphs, which usually require more sophisticated approaches or specialized
    visualization tools.
 

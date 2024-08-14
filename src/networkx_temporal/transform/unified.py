@@ -6,15 +6,17 @@ from .snapshots import from_snapshots
 from ..convert import convert, FORMATS
 
 
-def from_unified(UTG: nx.Graph) -> list:
+def from_unified(UTG: nx.Graph):
     """
-    Returns temporal graph from unified temporal graph (UTG).
+    Returns ``TemporalGraph`` object from unified temporal graph.
 
     Note that the UTG must be a valid unified temporal graph, i.e., it must contain
-    temporal nodes in the format `node_timestamp`, where `node` is the original node
-    name and `timestamp` is a non-negative integer.
+    temporal nodes in the format ``{node}_{t}``, where ``node`` is the original node
+    name and ``t`` is a positive integer.
 
     :param UTG: Unified temporal graph.
+
+    :rtype: networkx_temporal.TemporalGraph
     """
     temporal_nodes = {}
 
@@ -43,7 +45,7 @@ def to_unified(
     relabel_nodes: Optional[Union[dict, list]] = None
 ) -> nx.Graph:
     """
-    Returns a unified temporal graph (UTG).
+    Returns a unified temporal graph.
 
     The UTG is a single graph that contains all the nodes and edges of an STG,
     plus proxy nodes and edge couplings connecting sequential temporal nodes.
@@ -51,7 +53,7 @@ def to_unified(
     :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
         Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
-    :param node_index: Node index from static graph to include as attribute.
+    :param node_index: Node index from static graph to include as attribute. Optional.
     :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
         If a list, each dictionary is used to relabel nodes in a given snapshot.
         If a single dictionary, all nodes are relabeled using the same mapping.
@@ -59,9 +61,9 @@ def to_unified(
         length as the number of snapshots. Any nodes not included in the mapping
         are by default relabeled as ``'{node}_{t}'`` for each time ``t``. Examples:
 
-        - List: ``[{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]``
+        - **List**: ``[{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]``
 
-        - Dictionary: ``{"A": "A_0", "B": "B_0", "C": "C_2"}``
+        - **Dictionary**: ``{"A": "A_0", "B": "B_0", "C": "C_2"}``
     """
     T = range(len(self))
     order, size = self.temporal_order(), self.temporal_size()

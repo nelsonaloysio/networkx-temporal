@@ -34,7 +34,7 @@ class TemporalGraph():
     :param directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
         Default is ``False``.
-    :param multigraph: If ``True``, the returns a
+    :param multigraph: If ``True``, returns a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Default is ``True``.
     :param t: Number of time steps to initialize.

@@ -5,11 +5,13 @@ import networkx as nx
 from ..convert import convert, FORMATS
 
 
-def from_snapshots(graphs: Union[dict, list]) -> list:
+def from_snapshots(graphs: Union[dict, list]):
     """
     Returns temporal graph from sequence of snapshots.
 
     :param graphs: List or dictionary of NetworkX graphs.
+
+    :rtype: networkx_temporal.TemporalGraph
     """
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
@@ -44,9 +46,8 @@ def to_snapshots(self, to: Optional[FORMATS] = None, as_view: bool = True) -> li
 
     .. note::
 
-        Internally, the temporal graph object already stores data as a list of graph views when
-        sliced. This method simply returns the underlying data, unless ``as_view`` is set as
-        ``False`` or a conversion format is specified with argument ``to``.
+        Internally, ``TemporalGraph`` already stores data as a list of graph views when sliced.
+        This method simply returns the underlying data, unless ``as_view`` is set as ``False``.
 
     :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
         Optional.

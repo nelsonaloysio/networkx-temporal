@@ -6,7 +6,7 @@ To build the documentation, the following requirements are needed:
 pip install sphinx sphinx-autodoc-typehints sphinx_rtd_theme sphinxemoji
 ```
 
-Optionally install **networkx-temporal** in development mode from source with:
+Optionally install the package in development mode from source with:
 
 ```bash
 pip install -e .
@@ -19,4 +19,4 @@ cd docs &&
 make html
 ```
 
-It should then be available in the folder `docs/build`.
+The whole documentation should then be available in the folder `docs/build`.
