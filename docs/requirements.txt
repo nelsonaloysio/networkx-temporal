@@ -1,6 +1,4 @@
-matplotlib>=3.8.4
 networkx>=2.1
-pandas>=1.1.0
 sphinx-autodoc-typehints>=2.2.3
 sphinx-rtd-theme>=2.0.0
 sphinxemoji>=0.3.1
