@@ -68,7 +68,7 @@ def draw(
         >>> # fig.savefig("figure.png")
         >>> fig.show()
 
-    .. image:: ../../figure/fig_7.png
+    .. image:: ../../figure/fig-0.png
 
     .. important::
 

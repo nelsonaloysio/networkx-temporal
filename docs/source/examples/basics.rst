@@ -102,7 +102,7 @@ Converting a static graph with edge-level temporal data to a temporal graph obje
    >>> TG = tx.from_static(G).slice(attr="time")
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig_39.png
+.. image:: ../../figure/fig-5.png
 
 The resulting temporal graph has the same number of edges as the original graph, but a higher number
 of nodes. This is expected, as the same nodes appear in more than one snapshot.
@@ -123,7 +123,7 @@ Converting a static graph with node-level temporal data to a temporal graph obje
    >>> TG = tx.from_static(G).slice(attr="time", attr_level="node")
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig_35.png
+.. image:: ../../figure/fig-4.png
 
 Note that even though the edge :math:`(a, c)` contains the attribute ``time=2``, considering
 node-level attributes resulted in it being placed at :math:`t=0` instead, as the source node
@@ -174,7 +174,7 @@ We may now visualize the resulting snapshots using the :func:`~networkx_temporal
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig_7.png
+.. image:: ../../figure/fig-0.png
 
 Specifying number of snapshots
 ------------------------------
@@ -187,7 +187,7 @@ A new object can be created with a specific number of snapshots by setting the
    >>> TG = TG.slice(attr="time", bins=2)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
 
-.. image:: ../../figure/fig_9.png
+.. image:: ../../figure/fig-1.png
 
 Note that this usually leads to snapshots with differing numbers of nodes and edges, as expected.
 
@@ -203,7 +203,7 @@ size. To try and balance them using quantiles, pass ``qcut=True`` (see `pandas.q
    >>> TG = TG.slice(attr="time", bins=2, qcut=True)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
 
-.. image:: ../../figure/fig_11.png
+.. image:: ../../figure/fig-2.png
 
 Though not perfectly balanced due to node :math:`a` appearing multiple times (in :math:`t={1,2,3}`),
 the resulting snapshots have a more even number of edges. Results are expected to vary in a
@@ -221,7 +221,7 @@ their order of appearance in the original graph (see `pandas.Series.rank
    >>> TG = TG.slice(attr="time", bins=2, rank_first=True)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
 
-.. image:: ../../figure/fig_22.png
+.. image:: ../../figure/fig-3.png
 
 As the `time` attribute is here located in the edge level, each resulting snapshot has 4 edges each.
 In case of node-level times, the number of nodes in each snapshot would be more evenly distributed.

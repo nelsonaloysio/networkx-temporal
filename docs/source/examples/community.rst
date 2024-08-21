@@ -88,7 +88,7 @@ Let's plot the graphs, with node colors representing communities and intra-commu
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Ground truth")
 
-.. image:: ../../figure/fig_60.png
+.. image:: ../../figure/fig-8.png
 
 We see the graphs are generated with the same community structure, but continuously decreasing
 assortativity. Let's try and retrieve the ground truths using a simple community detection algorithm.
@@ -143,7 +143,7 @@ fails to retrieve the true communities (their ground truths) in the network:
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found by modularity on static graph")
 
-.. image:: ../../figure/fig_62.png
+.. image:: ../../figure/fig-9.png
 
 Although two communities are correctly retrieved (in red and green), nodes :math:`0` to :math:`4`,
 which form a fifth community in the network, are misclassified as belonging to the blue and orange
@@ -181,7 +181,7 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found by modularity on snapshots")
 
-.. image:: ../../figure/fig_64.png
+.. image:: ../../figure/fig-10.png
 
 This is mostly due to modularity optimization expecting an assortative community structure, while
 our network grows more disassortative over time. Not only the results of later snapshots are here
@@ -221,7 +221,7 @@ time maintaining community indices consistent over time, as seen below:
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found by modularity on temporal graph")
 
-.. image:: ../../figure/fig_66.png
+.. image:: ../../figure/fig-11.png
 
 This method seems particularly useful to track communities over time, as it allows to maintain the
 same community indices across snapshots, potentially contributing to the study of their dynamics.
