@@ -1,13 +1,12 @@
-<!--# networkx-temporal-->
-
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/banner.png)
+[![networkx-temporal](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/banner.png)]()
 
 ___
 
-[![PyPI version](https://badge.fury.io/py/networkx-temporal.svg)](https://badge.fury.io/py/networkx-temporal)
-[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/en/latest/?badge=latest)
+[![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
+[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/en/latest)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal)
+[![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
@@ -33,7 +32,6 @@ For detailed information on using the package, please refer to its [official doc
 
 ```python
 >>> import networkx_temporal as tx
->>> from networkx_temporal.example.draw import draw_temporal_graph
 >>>
 >>> # Build temporal graph.
 >>> TG = tx.TemporalGraph(directed=True)
@@ -46,11 +44,11 @@ For detailed information on using the package, please refer to its [official doc
 >>> TG.add_edge("f", "a", time=3)
 >>> TG.add_edge("f", "b", time=3)
 >>>
->>> # Slice into snapshots.
+>>> # Slice it into snapshots.
 >>> TG = TG.slice(attr="time")
 >>>
 >>> # Plot resulting object.
->>> draw_temporal_graph(TG)
+>>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
 ```
 
 ![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/fig_7.png)
