@@ -1,9 +1,9 @@
-import networkx as nx
+from ..typing import TemporalGraph
 
 
-def from_events(events: list, directed: bool = False, multigraph: bool = True):
+def from_events(events: list, directed: bool = False, multigraph: bool = True) -> TemporalGraph:
     """
-    Returns temporal graph from sequence of events.
+    Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of events.
 
     :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or
         :math:`(u, v, t, \epsilon)`, where :math:`u` is the source node, :math:`v` is the target
@@ -16,7 +16,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True):
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Default is ``True``.
 
-    :rtype: networkx_temporal.TemporalGraph
+    :rtype: TemporalGraph
     """
     assert events,\
         "Argument `events` must be a non-empty list."
@@ -26,7 +26,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True):
 
     t = 1 + max(events, key=lambda x: x[2])[2]
 
-    from ..temporal import TemporalGraph
+    from ..graph import TemporalGraph
     TG = TemporalGraph(directed=directed, multigraph=multigraph, t=t)
 
     if len(events[0]) == 3:
@@ -49,7 +49,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True):
 
 def to_events(self, stream: bool = True) -> list:
     """
-    Returns a sequence of 3-tuples or 4-tuples representing events in the temporal graph.
+    Returns a sequence of 3-tuples or 4-tuples representing events.
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;

@@ -1,1 +1,1 @@
-from .draw import draw_temporal_graph
+from .draw import draw

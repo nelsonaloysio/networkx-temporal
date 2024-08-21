@@ -3,15 +3,16 @@ from typing import Optional, Union
 import networkx as nx
 
 from ..convert import convert, FORMATS
+from ..typing import TemporalGraph
 
 
-def from_snapshots(graphs: Union[dict, list]):
+def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     """
-    Returns temporal graph from sequence of snapshots.
+    Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of snapshots.
 
     :param graphs: List or dictionary of NetworkX graphs.
 
-    :rtype: networkx_temporal.TemporalGraph
+    :rtype: TemporalGraph
     """
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
@@ -33,7 +34,7 @@ def from_snapshots(graphs: Union[dict, list]):
     assert all(multigraph == graphs[T[t]].is_multigraph() for t in T),\
         "Mixed graphs and multigraphs are not supported."
 
-    from ..temporal import TemporalGraph
+    from ..graph import TemporalGraph
     TG = TemporalGraph(directed=directed, multigraph=multigraph)
     TG.data = graphs
     return TG
@@ -41,16 +42,16 @@ def from_snapshots(graphs: Union[dict, list]):
 
 def to_snapshots(self, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
     """
-    Returns a sequence of snapshots, each representing the state
+    Returns a list of snapshots, each representing the state
     of the network at a given interval.
 
     .. note::
 
-        Internally, ``TemporalGraph`` already stores data as a list of graph views when sliced.
-        This method simply returns the underlying data, unless ``as_view`` is set as ``False``.
+        Internally, :class:`~networkx_temporal.TemporalGraph` already stores data as a list of graph views on :func:`~networkx_temporal.TemporalGraph.slice`.
+        This method simply returns the underlying data, unless a conversion is requested.
 
-    :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
-        Optional.
+    :param str to: Package name or alias to convert the graph object
+        (see :func:`~networkx_temporal.convert`). Optional.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
     """
