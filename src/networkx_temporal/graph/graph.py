@@ -134,9 +134,6 @@ class TemporalGraph():
         assert self.data,\
             "Temporal graph is empty."
 
-        assert type(t) in (str, int, slice),\
-            f"Parameter must be a str, integer or slice, received: {type(t)}."
-
         assert type(t) != str or self.names,\
             "Temporal graph snapshots are not named."
 
