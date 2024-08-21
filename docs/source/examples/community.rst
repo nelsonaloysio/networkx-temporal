@@ -145,9 +145,6 @@ fails to retrieve the true communities (their ground truths) in the network:
 
 .. image:: ../../figure/fig-9.png
 
-Although two communities are correctly retrieved (in red and green), nodes :math:`0` to :math:`4`,
-which form a fifth community in the network, are misclassified as belonging to the blue and orange
-communities.
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
 
