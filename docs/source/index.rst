@@ -36,7 +36,7 @@
 networkx-temporal
 #################
 
-.. image:: https://img.shields.io/pypi/v/networkx-temporal?color=%234dc71f
+.. image:: https://badge.fury.io/py/networkx-temporal.svg
    :target: https://pypi.org/project/networkx-temporal/
    :alt: PyPI version
 
@@ -110,7 +110,7 @@ Create a :class:`~networkx_temporal.TemporalGraph` object and :func:`~networkx_t
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
-We can also specify the number of snapshots to create using the ``bins`` parameter:
+The number of snapshots to create may be specified with the ``bins`` parameter:
 
 .. code-block:: python
 
@@ -143,7 +143,8 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 Save and load data
 ------------------
 
-The :func:`~networkx_temporal.write_graph` and :func:`~networkx_temporal.read_graph` functions accept compressed temporal graphs:
+The :func:`~networkx_temporal.write_graph` and :func:`~networkx_temporal.read_graph`
+functions accept compressed temporal graphs:
 
 .. code-block:: python
 
@@ -161,10 +162,14 @@ Convert and transform object
 This package allows to transform a :class:`~networkx_temporal.TemporalGraph` between different
 `graph representations <examples/convert.html#graph-representations>`__:
 
-* `Static graphs <examples/convert.html#static-graph>`__: flattened or aggregated versions of the temporal graph.
-* `Snapshot-based temporal graphs <examples/convert.html#snapshot-based-temporal-graph>`__: a list of node- or edge-level snapshots.
-* `Event-based temporal graphs <examples/convert.html#event-based-temporal-graph>`__: a sequence of edge-level events.
-* `Unified temporal graphs <examples/convert.html#unified-temporal-graph>`__: a single graph with time-stamped nodes and edges.
+* `Static graphs <examples/convert.html#static-graph>`__:
+  flattened or aggregated versions of the temporal graph.
+* `Snapshot-based temporal graphs <examples/convert.html#snapshot-based-temporal-graph>`__:
+  a list of node- or edge-level snapshots.
+* `Event-based temporal graphs <examples/convert.html#event-based-temporal-graph>`__:
+  a sequence of edge-level events.
+* `Unified temporal graphs <examples/convert.html#unified-temporal-graph>`__:
+  a single graph with time-stamped nodes and edges.
 
 .. code-block:: python
 
@@ -202,6 +207,8 @@ For more information on using this package, please refer to the following sectio
 
 .. seealso::
 
-   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__ for the latest updates and issues. Contributions are welcome!
+   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__ for
+   the latest updates and issues. Contributions are welcome!
 
-If you have any questions or feedback to share, please also feel free to `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|
+If you have any questions or feedback to share, please also feel free to
+`contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|

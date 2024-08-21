@@ -44,11 +44,10 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
     |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
     +------------------------------------------------------------------+------------------------------------+------------------------+
 
-    .. attention::
+    .. important::
 
-       To reduce package dependencies and avoid unnecessary imports, the required library
-       for the conversion is imported on function call based on the ``to`` parameter and
-       must be installed.
+       To reduce package dependencies and avoid unnecessary imports, the required library is
+       imported on function call based on the ``to`` parameter and must be separately installed.
 
     :param TG: Temporal or static graph object.
     :param str to: Package name or alias to convert the graph object.
