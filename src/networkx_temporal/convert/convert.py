@@ -1,7 +1,9 @@
 from importlib import import_module
-from typing import Literal
+from typing import Any, Literal, Union
 
 import networkx as nx
+
+from ..typing import TemporalGraph
 
 ALIAS = {
     "gt": "graph_tool",
@@ -20,52 +22,53 @@ FORMATS = Literal[
 ]
 
 
-def convert(G: nx.Graph, to: FORMATS, *args, **kwargs):
+def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) -> Any:
     """
-    Returns converted NetworkX graph object.
+    Returns converted graph object.
 
-    Note that the required package for the conversion is imported on function
-    call based on the given argument parameter. This is done to reduce the
-    dependencies of the package and to avoid unnecessary imports.
+    The ``to`` parameter supports the following packages and their respective aliases:
 
-    Supported packages and their respective aliases:
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    | Format                                                           | Parameter (Package)                | Parameter (Alias)      |
+    +==================================================================+====================================+========================+
+    |`Deep Graph Library <https://www.dgl.ai/>`__                      | .. centered :: ``dgl``             | .. centered :: -       |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`graph-tool <https://graph-tool.skewed.de/>`__                    | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`igraph <https://igraph.org/python/>`__                           | .. centered :: ``igraph``          | .. centered :: ``ig``  |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`NetworKit <https://networkit.github.io/>`__                      | .. centered :: ``networkit``       | .. centered :: ``nk``  |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
 
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    | Format                                                          | Parameter (Package)                | Parameter (Alias)      |
-    +=================================================================+====================================+========================+
-    |`Deep Graph Library <https://www.dgl.ai/>`_                      | .. centered :: ``dgl``             | .. centered :: -       |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    |`graph-tool <https://graph-tool.skewed.de/>`_                    | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    |`igraph <https://igraph.org/python/>`_                           | .. centered :: ``igraph``          | .. centered :: ``ig``  |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    |`NetworKit <https://networkit.github.io/>`_                      | .. centered :: ``networkit``       | .. centered :: ``nk``  |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    |`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`_  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
-    |`Teneto <https://teneto.readthedocs.io>`_                        | .. centered :: ``teneto``          | .. centered :: -       |
-    +-----------------------------------------------------------------+------------------------------------+------------------------+
+    .. attention::
 
-    :param G: NetworkX graph object.
-    :param str to: Format to convert data to.
-    :param args: Additional positional arguments for the conversion.
-    :param kwargs: Additional keyword arguments for the conversion.
+       To reduce package dependencies and avoid unnecessary imports, the required library
+       for the conversion is imported on function call based on the ``to`` parameter and
+       must be installed.
+
+    :param TG: Temporal or static graph object.
+    :param str to: Package name or alias to convert the graph object.
+    :param args: Additional positional arguments for the conversion function.
+    :param kwargs: Additional keyword arguments for the conversion function.
 
     :return: Converted graph object.
-    :rtype: Any
     """
     pkg = ALIAS.get(to, to)
     func = "nx2%s" % {v: k for k, v in ALIAS.items()}.get(pkg, pkg)
 
-    assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
-        f"Argument `G` must be a networkx or temporal-networkx graph object, received: {type(G)}."
-
     assert pkg in FORMATS.__args__,\
-        f"Argument `to` must be in {FORMATS.__args__} or aliases {list(ALIAS)}."
+        f"Argument `to` must be among packages {FORMATS.__args__} or aliases {list(ALIAS)}."
 
     try:
         func = import_module(f".{func}", package=__package__).__dict__[func]
     except ImportError as e:
         raise e
 
-    return func(G, *args, **kwargs)
+    if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
+        return func(TG, *args, **kwargs)
+
+    return [func(G, *args, **kwargs) for G in TG]

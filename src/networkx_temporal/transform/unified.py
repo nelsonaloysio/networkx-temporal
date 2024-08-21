@@ -4,19 +4,20 @@ import networkx as nx
 
 from .snapshots import from_snapshots
 from ..convert import convert, FORMATS
+from ..typing import TemporalGraph
 
 
-def from_unified(UTG: nx.Graph):
+def from_unified(UTG: nx.Graph) -> TemporalGraph:
     """
-    Returns ``TemporalGraph`` object from unified temporal graph.
+    Returns :class:`~networkx_temporal.TemporalGraph` object from unified temporal graph.
 
     Note that the UTG must be a valid unified temporal graph, i.e., it must contain
-    temporal nodes in the format ``{node}_{t}``, where ``node`` is the original node
-    name and ``t`` is a positive integer.
+    temporal nodes in the format ``{name}_{t}``, where ``name`` is the original label
+    and ``t`` is a non-negative integer.
 
     :param UTG: Unified temporal graph.
 
-    :rtype: networkx_temporal.TemporalGraph
+    :rtype: TemporalGraph
     """
     temporal_nodes = {}
 
@@ -47,23 +48,23 @@ def to_unified(
     """
     Returns a unified temporal graph.
 
-    The UTG is a single graph that contains all the nodes and edges of an STG,
-    plus proxy nodes and edge couplings connecting sequential temporal nodes.
+    A unified temporal graph is a single graph that contains all the nodes and edges of its
+    snapshots, plus ''proxy'' nodes and edge ''couplings'' connecting sequential temporal nodes.
 
-    :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
-        Optional.
+    :param str to: Package name or alias to convert the graph object
+        (see :func:`~networkx_temporal.convert`). Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
-    :param node_index: Node index from static graph to include as attribute. Optional.
+    :param node_index: Node index from static graph to include as node-level attribute. Optional.
     :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
         If a list, each dictionary is used to relabel nodes in a given snapshot.
         If a single dictionary, all nodes are relabeled using the same mapping.
         Not all nodes need to be included, but the list should have the same
         length as the number of snapshots. Any nodes not included in the mapping
-        are by default relabeled as ``'{node}_{t}'`` for each time ``t``. Examples:
+        are by default relabeled as ``'{name}_{t}'`` for each time ``t``. Examples:
 
-        - **List**: ``[{"A": "A_0", "B": "B_0"}, {}, {"A": "A_0", "C": "C_2"}]``
+        - **list**: ``[{"a": "a_0", "b": "b_0"}, {}, {"a": "a_0", "c": "c_2"}]``
 
-        - **Dictionary**: ``{"A": "A_0", "B": "B_0", "C": "C_2"}``
+        - **dictionary**: ``{"a": "a_0", "b": "b_0", "c": "c_2"}``
     """
     T = range(len(self))
     order, size = self.temporal_order(), self.temporal_size()

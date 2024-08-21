@@ -4,15 +4,16 @@ import networkx as nx
 
 from .snapshots import from_snapshots
 from ..convert import convert, FORMATS
+from ..typing import TemporalGraph
 
 
-def from_static(G: nx.Graph):
+def from_static(G: nx.Graph) -> TemporalGraph:
     """
-    Returns temporal graph from a static graph.
+    Returns :class:`~networkx_temporal.TemporalGraph` object from a static graph.
 
     :param G: NetworkX graph.
 
-    :rtype: networkx_temporal.TemporalGraph
+    :rtype: TemporalGraph
     """
     return from_snapshots([G])
 
@@ -23,26 +24,26 @@ def to_static(
     attr: Optional[str] = None,
     directed: Optional[bool] = None,
     multigraph: Optional[bool] = None,
-):
+) -> nx.Graph:
     """
-    Returns a static or flattened graph from temporal graph.
+    Returns a static (flattened) graph.
 
     A static graph is a single graph that contains all the nodes and edges of
     the temporal graph. If ``directed`` and ``multigraph`` are unset, the
     returned graph type will be the same as the temporal graph. The time of
     the event can be stored as an edge attribute if `attr` is specified.
 
-    .. important::
+    .. attention::
 
-        As each node in a static graph is unique, dynamic node attributes from a ``TemporalGraph``
-        are not preserved when transformed to a static graph.
+        As each node in a static graph is unique, dynamic node attributes are not preserved.
 
     .. seealso::
-        The `to_unified <#networkx_temporal.TemporalGraph.to_unified>`_ method may be used to
-        preserve dynamic nodes in a single graph object.
 
-    :param str to: Format to convert data to (see `available formats <#networkx_temporal.convert>`_).
-        Optional.
+        The :func:`~networkx_temporal.to_unified` method allows to preserve dynamic node attributes
+        in a single graph.
+
+    :param str to: Package name or alias to convert the graph object
+        (see :func:`~networkx_temporal.convert`). Optional.
     :param attr: Edge attribute name to store time. Optional.
     :param directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.

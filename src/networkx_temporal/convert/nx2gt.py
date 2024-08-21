@@ -10,7 +10,7 @@ TYPE_NAME = {
 }
 
 
-def get_prop_type(value: Any, key=None, encoding: str = "ascii", errors: str = "strict") -> tuple:
+def get_prop_type(value: Any, key: str, encoding: str = "ascii", errors: str = "strict") -> tuple:
     """
     Performs typing and value conversion for graph-tool `PropertyMap` class.
 
@@ -64,10 +64,10 @@ def nx2gt(nxG: nx.Graph, encoding: str = "ascii", errors: str = "strict"):
 
     # Add node property map.
     for node, data in nxG.nodes(data=True):
-        for key, val in data.items():
+        for key, value in data.items():
             if key in nprops:
                 continue
-            type_name, _, key  = get_prop_type(val, key, encoding=encoding, errors=errors)
+            type_name, _, key  = get_prop_type(value, key, encoding=encoding, errors=errors)
             prop = gtG.new_vertex_property(type_name)
             gtG.vertex_properties[key] = prop
             nprops.add(key)
@@ -79,10 +79,10 @@ def nx2gt(nxG: nx.Graph, encoding: str = "ascii", errors: str = "strict"):
 
     # Add edge property map.
     for src, dst, data in nxG.edges(data=True):
-        for key, val in data.items():
+        for key, value in data.items():
             if key in eprops:
                 continue
-            type_name, _, key = get_prop_type(val, key, encoding=encoding, errors=errors)
+            type_name, _, key = get_prop_type(value, key, encoding=encoding, errors=errors)
             prop = gtG.new_edge_property(type_name)
             gtG.edge_properties[key] = prop
             eprops.add(key)
