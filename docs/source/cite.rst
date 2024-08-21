@@ -19,8 +19,9 @@ it by referencing the project's page instead:
       year   = {2024}
    }
 
-Please also consider citing the corresponding `NetworkX paper
-<https://conference.scipy.org/proceedings/scipy2008/paper_2/>`_:
+Please also consider citing the corresponding `paper
+<https://conference.scipy.org/proceedings/scipy2008/paper_2/>`_
+to the NetworkX library:
 
    Hagberg, Aric A., Schult, Daniel A., Swart, Pieter J. (2008).
    ''Exploring Network Structure, Dynamics, and Function using NetworkX''.
