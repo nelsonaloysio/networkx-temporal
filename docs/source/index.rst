@@ -137,7 +137,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../figure/fig_7.png
+.. image:: ../figure/fig-0.png
 
 
 Save and load data

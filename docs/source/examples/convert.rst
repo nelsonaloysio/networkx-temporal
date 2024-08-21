@@ -132,7 +132,7 @@ Builds a static or flattened graph ``G`` containing all the edges found at each 
 
    >>> tx.draw(G, layout="kamada_kawai", suptitle="Static Graph")
 
-.. image:: ../../figure/fig_44.png
+.. image:: ../../figure/fig-6.png
 
 .. rubric:: G → TemporalGraph
 
@@ -270,7 +270,7 @@ temporal flows.
                connectionstyle="arc3,rad=0.25",
                suptitle="Unified Temporal Graph")
 
-.. image:: ../../figure/fig_52.png
+.. image:: ../../figure/fig-7.png
 
 .. rubric:: UTG → TemporalGraph
 
