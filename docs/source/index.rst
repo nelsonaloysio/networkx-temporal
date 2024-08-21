@@ -6,48 +6,70 @@
 
 .. toctree::
    :hidden:
-   :caption: Main documentation
+   :caption: API reference
+   :glob:
 
-   guide
-   api
-   cite
+   api/*
+
+.. toctree::
+   :hidden:
+   :caption: Examples
+
+   examples/basics
+   examples/metrics
+   examples/convert
+   examples/community
 
 .. toctree::
    :hidden:
    :caption: Appendix
 
+   cite
    references
    genindex
 
-.. important::
+.. note::
 
    This documentation was generated on |today| for package release |release|.
 
-########
-Overview
-########
+#################
+networkx-temporal
+#################
+
+.. image:: https://img.shields.io/pypi/v/networkx-temporal?color=%234dc71f
+   :target: https://pypi.org/project/networkx-temporal/
+   :alt: PyPI version
+
+.. image:: https://readthedocs.org/projects/networkx-temporal/badge/?version=latest
+   :target: https://networkx-temporal.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+.. image:: https://static.pepy.tech/badge/networkx-temporal
+   :target: https://pepy.tech/project/networkx-temporal
+   :alt: Downloads
+
+.. image:: https://static.pepy.tech/badge/networkx-temporal/month
+   :target: https://pepy.tech/project/networkx-temporal
+   :alt: Downloads
+
+.. image:: https://img.shields.io/pypi/l/networkx-temporal
+   :target: https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md
+   :alt: License
+
 
 **NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
 i.e., temporal graph data.
 
-This package provides a new class, `TemporalGraph
-<guide.html#networkx_temporal.TemporalGraph>`_, which extends NetworkX's main `Graph
-<https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`_
-class and implements additional functions to manipulate temporal data within. Most importantly, it
-provides methods to `slice <guide.html#networkx_temporal.slice>`__ graphs into snapshots and
-convert between formats and representations.
+This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which extends NetworkX's `graph classes
+<https://networkx.org/documentation/stable/reference/classes/index.html>`_
+and implements additional functions to manipulate temporal data within. Most importantly, it
+provides methods to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and convert between formats and representations.
 
-.. note::
-
-   This package does not currently provide new methods to analyze temporal graphs, such as computing
-   temporal centrality measures, or detecting temporal communities --- although it makes it arguably
-   easier to handle these tasks (see `Get started: Community detection
-   <guide.html#community-detection>`_).
 
 Install
 =======
 
-The package is readily available from `PyPI <https://pypi.org/project/networkx-temporal/>`_:
+The package is readily available from `PyPI <https://pypi.org/project/networkx-temporal/>`__:
 
 .. code-block:: bash
 
@@ -61,20 +83,17 @@ Quick start
 
 The following is a quick example of the package in action, covering its basic functionality.
 
+
 Build and slice temporal graph
 ------------------------------
 
-Creating a
-`TemporalGraph <guide.html#networkx_temporal.TemporalGraph>`_
-object and
-`slice <guide.html#networkx_temporal.TemporalGraph.slice>`_
-it into a number of snapshots:
+Create a :class:`~networkx_temporal.TemporalGraph` object and :func:`~networkx_temporal.TemporalGraph.slice` it into a number of snapshots:
 
 .. code-block:: python
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True)
+   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -89,68 +108,100 @@ it into a number of snapshots:
    >>>
    >>> print(TG)
 
-   TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
+   TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
-The ``slice`` method by default creates a snapshot for each unique time value in the temporal graph.
-It internally stores views of the original graph data, so no data is copied unless specified otherwise.
-
-Plot temporal graph
-^^^^^^^^^^^^^^^^^^^
-
-We may visualize the resulting temporal graph using the `draw_temporal_graph <guide.html#networkx_temporal.draw.draw_temporal_graph>`_ function:
+We can also specify the number of snapshots to create using the ``bins`` parameter:
 
 .. code-block:: python
 
-   from networkx_temporal.example.draw import draw_temporal_graph
+   >>> TG.slice(attr="time", bins=2)
 
-   draw_temporal_graph(TG, figsize=(8, 2))
+   TemporalDiGraph (t=2) with 9 nodes and 8 edges
+
+Note that the total number of nodes may vary, while the total number of edges is preserved.
+
+.. hint::
+
+   The :func:`~networkx_temporal.TemporalGraph.slice` method by default creates a snapshot for each unique time value in the temporal
+   graph. It internally stores `views
+   <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+   of the original graph, so no data is copied unless specified.
+
+
+Plot snapshots
+--------------
+
+We may visualize the resulting temporal graph using the :func:`~networkx_temporal.draw` function:
+
+.. code-block:: python
+
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
 .. image:: ../figure/fig_7.png
 
-.. note::
 
-   The ``draw_temporal_graph`` function currently simply calls ``networkx``
-   `draw <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`_
-   in the backend and is meant only as an example to showcase the package's capabilities. It does
-   not scale well to large graphs, which usually require more sophisticated approaches or specialized
-   visualization tools.
+Save and load data
+------------------
 
-Convert and transform graph
----------------------------
+The :func:`~networkx_temporal.write_graph` and :func:`~networkx_temporal.read_graph` functions accept compressed temporal graphs:
 
-This package provides a set of functions to convert to different graph formats and representations:
+.. code-block:: python
 
-- `convert <guide.html#networkx_temporal.convert>`_: Convert static graph object among different packages.
-- `from_events <guide.html#networkx_temporal.from_events>`_: Create a ``TemporalGraph`` from a list of events.
-- `from_snapshots <guide.html#networkx_temporal.from_snapshots>`_: Create a ``TemporalGraph`` from a list of snapshots.
-- `from_static <guide.html#networkx_temporal.from_static>`_: Create a ``TemporalGraph`` from a static graph.
-- `from_unified <guide.html#networkx_temporal.from_unified>`_: Create a ``TemporalGraph`` from a unified graph.
-- `to_events <guide.html#networkx_temporal.TemporalGraph.to_events>`_: Transform a ``TemporalGraph`` to a list of events.
-- `to_snapshots <guide.html#networkx_temporal.TemporalGraph.to_snapshots>`_: Transform a ``TemporalGraph`` to a list of snapshots.
-- `to_static <guide.html#networkx_temporal.TemporalGraph.to_static>`_: Transform a ``TemporalGraph`` to a static graph.
-- `to_unified <guide.html#networkx_temporal.TemporalGraph.to_unified>`_: Transform a ``TemporalGraph`` to a unified graph.
+   >>> TG = tx.read_graph("temporal_graph.graphml.zip")
+   >>> tx.write_graph(TG, "temporal_graph.graphml.zip")
 
-As of now, the package supports converting static and temporal graphs to the following formats:
+Both methods support the same `extension formats
+<https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
+as in the installed NetworkX library version.
 
-- `Deep Graph Library <https://www.dgl.ai>`_
-- `graph-tool <https://graph-tool.skewed.de>`_
-- `igraph <https://igraph.org/python/>`_
-- `NetworKit <https://networkit.github.io>`_
-- `NetworkX <https://networx.org>`_
-- `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`_
-- `Teneto <https://teneto.readthedocs.io>`_
+
+Convert and transform object
+----------------------------
+
+This package allows to transform a :class:`~networkx_temporal.TemporalGraph` between different
+`graph representations <examples/convert.html#graph-representations>`__:
+
+* `Static graphs <examples/convert.html#static-graph>`__: flattened or aggregated versions of the temporal graph.
+* `Snapshot-based temporal graphs <examples/convert.html#snapshot-based-temporal-graph>`__: a list of node- or edge-level snapshots.
+* `Event-based temporal graphs <examples/convert.html#event-based-temporal-graph>`__: a sequence of edge-level events.
+* `Unified temporal graphs <examples/convert.html#unified-temporal-graph>`__: a single graph with time-stamped nodes and edges.
+
+.. code-block:: python
+
+   >>> G = tx.to_static(TG)
+   >>> STG = tx.to_snapshot(TG)
+   >>> ETG = tx.to_event(TG)
+   >>> UTG = tx.to_unified(TG)
+
+In addition, both static and temporal graphs may be converted to the following
+`graph formats <examples/convert.html#graph-formats>`__:
+
+
+- `Deep Graph Library <https://www.dgl.ai>`__
+- `graph-tool <https://graph-tool.skewed.de>`__
+- `igraph <https://igraph.org/python/>`__
+- `NetworKit <https://networkit.github.io>`__
+- `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__
+- `Teneto <https://teneto.readthedocs.io>`__
+
+.. code-block:: python
+
+   >>> tx.convert(TG.to_static(), "igraph")
+
+   <igraph.Graph at 0x7f048ef52c50>
+
 
 Links
 =====
 
-For more information on how to use the package, please refer to the following sections:
+For more information on using this package, please refer to the following sections:
 
-- `Get started <guide.html>`_ for examples and use cases covering the package's main functionalities.
+- `API reference <api/classes.html>`__ for details on the classes and functions it implements.
 
-- `API reference <guide.html>`_ for further details on its implemented classes and functions.
+- `Examples <examples/basic.html>`__ covering some of its main functionalities and common use cases.
 
 .. seealso::
 
-   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`_ for the latest updates and issues. Contributions are welcome!
+   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__ for the latest updates and issues. Contributions are welcome!
 
-If you have any questions or feedback to share, please also feel free to `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`_. |:mailbox_with_mail:|
+If you have any questions or feedback to share, please also feel free to `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|
