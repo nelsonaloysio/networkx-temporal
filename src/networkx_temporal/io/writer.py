@@ -2,11 +2,11 @@ import os
 import os.path as osp
 import zipfile
 from io import BytesIO
-from typing import Literal, Optional
+from typing import Optional
 
 import networkx as nx
 
-from ..typing import TemporalGraph
+from ..typing import TemporalGraph, Literal
 
 COMPRESSION = Literal[
     "ZIP_STORED",
