@@ -13,6 +13,7 @@ lib/
 lib64/
 *.manifest
 MANIFEST
+notebook/
 parts/
 pip-delete-this-directory.txt
 pip-log.txt
