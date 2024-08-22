@@ -106,7 +106,7 @@ def write_graph(
         func(TG[0], path, **kwargs)
         return
 
-    zipped = zipfile.ZipFile(f"{path}.zip", "w",
+    zipped = zipfile.ZipFile(path, "w",
                              compression=compression,
                              compresslevel=compresslevel,
                              allowZip64=allowZip64)
