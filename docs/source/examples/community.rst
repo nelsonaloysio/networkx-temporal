@@ -82,11 +82,11 @@ Let's plot the graphs, with node colors representing communities and intra-commu
     >>> tx.draw(
     >>>     TG,
     >>>     pos=pos,
-    >>>     figsize=(14, 4),
+    >>>     figsize=(12, 3.5),
     >>>     node_color=node_color,
     >>>     temporal_opts=temporal_opts,
     >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Ground truth")
+    >>>     suptitle="Ground truths")
 
 .. image:: ../../figure/fig-8.png
 
@@ -99,7 +99,7 @@ assortativity. Let's try and retrieve the ground truths using a simple community
 Modularity optimization
 =======================
 
-The `leidenalg <https://leidenalg.readthedocs.io>`__ package implements optimization algorithms
+The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
 for community detection that may be applied on snapshot-based temporal graphs, allowing to better
 capture their underlying structure.
 
@@ -108,7 +108,7 @@ capture their underlying structure.
 
    Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
-   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ [1]_ for a discussion.
+   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ [2]_ for a discussion.
 
 
 On the static graph
@@ -117,8 +117,8 @@ On the static graph
 Let's start by considering the network as a ''flattened'' graph, i.e., ignoring its temporal information.
 
 We can observe that depending on the initial node community assigments (e.g., with ``seed=0`` below),
-`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__
-fails to retrieve the true communities (their ground truths) in the network:
+`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
+fails to retrieve the true communities (ground truths) in the network:
 
 .. code-block:: python
 
@@ -173,7 +173,7 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
     >>> tx.draw(
     >>>     TG,
     >>>     pos=pos,
-    >>>     figsize=(14, 4),
+    >>>     figsize=(12, 3.5),
     >>>     temporal_opts=temporal_opts,
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found by modularity on snapshots")
@@ -213,7 +213,7 @@ time maintaining community indices consistent over time, as seen below:
     >>> tx.draw(
     >>>     TG,
     >>>     pos=pos,
-    >>>     figsize=(14, 4),
+    >>>     figsize=(12, 3.5),
     >>>     temporal_opts=temporal_opts,
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found by modularity on temporal graph")
@@ -229,6 +229,11 @@ its analysis, as well as help to better understand and visualize its mesoscale s
 
 .. rubric:: References
 
-.. [1] Tiago. P. Peixoto. ''Descriptive Vs. Inferential Community Detection in Networks: Pitfalls,
-   Myths and Half-Truths'' (2023). Elements in the Structure and Dynamics of Complex Networks,
-   Cambridge U.P.
+.. [1] V. A. Traag, L. Waltman, N. J. van Eck (2019). ''From Louvain to Leiden: guaranteeing
+   well-connected communities''. Scientific Reports, 9(1), 5233.
+
+.. [2] Tiago. P. Peixoto (2023). ''Descriptive Vs. Inferential Community Detection in Networks:
+   Pitfalls, Myths and Half-Truths''. Elements in the Structure and Dynamics of Complex Networks,
+   Cambridge University Press.
+
+.. [3] Mark Newman (2018). ''Networks''. Oxford University Press, 2nd ed., pp. 498--514.
