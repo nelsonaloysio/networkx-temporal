@@ -47,11 +47,10 @@ with the desired format:
    >>>
    >>> tx.convert(TG.to_static(), "igraph")
 
-   <igraph.Graph at 0x7f048ef52c50>
+   <igraph.Graph at 0x7ff6f1803d40>
 
 In the example above, the temporal graph ``TG`` is first flattened using :func:`~to_static`.
-Instead, temporal graphs will return a list of objects, one per snapshot
-post-:func:`~slice`, as shown below:
+Otherwise, the function returns a list of graph objects, as shown below:
 
 .. code-block:: python
 
@@ -59,27 +58,27 @@ post-:func:`~slice`, as shown below:
    >>>
    >>> tx.convert(TG, "igraph")
 
-   [<igraph.Graph at 0x7f048ef52450>,
-    <igraph.Graph at 0x7f048ef52950>,
-    <igraph.Graph at 0x7f048ef52a50>,
-    <igraph.Graph at 0x7f048ef52b50>]
+   [<igraph.Graph at 0x7ff6f1803e40>,
+    <igraph.Graph at 0x7ff6f181c040>,
+    <igraph.Graph at 0x7ff6f181c140>,
+    <igraph.Graph at 0x7ff6f181c240>]
 
 Support for the following output formats are implemented, here listed with their respective aliases:
 
 +------------------------------------------------------------------+------------------------------------+------------------------+
 | Format                                                           | Parameter (Package)                | Parameter (Alias)      |
 +==================================================================+====================================+========================+
-|`Deep Graph Library <https://www.dgl.ai/>`__                      | .. centered :: ``dgl``             | .. centered :: -       |
+|`Deep Graph Library <https://www.dgl.ai/>`__                      | .. centered:: ``dgl``              | .. centered:: -        |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`graph-tool <https://graph-tool.skewed.de/>`__                    | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
+|`graph-tool <https://graph-tool.skewed.de/>`__                    | .. centered:: ``graph_tool``       | .. centered:: ``gt``   |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`igraph <https://igraph.org/python/>`__                           | .. centered :: ``igraph``          | .. centered :: ``ig``  |
+|`igraph <https://igraph.org/python/>`__                           | .. centered:: ``igraph``           | .. centered:: ``ig``   |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`NetworKit <https://networkit.github.io/>`__                      | .. centered :: ``networkit``       | .. centered :: ``nk``  |
+|`NetworKit <https://networkit.github.io/>`__                      | .. centered:: ``networkit``        | .. centered:: ``nk``   |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
+|`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``torch_geometric``  | .. centered:: ``pyg``  |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
+|`Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``teneto``           | .. centered:: -        |
 +------------------------------------------------------------------+------------------------------------+------------------------+
 
 
@@ -97,7 +96,7 @@ differ from the number of temporal nodes :math:`V_T` and edges :math:`E_T`, depe
 and method used:
 
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| Method           | .. centered :: Order | .. centered :: Size | Dynamic node attributes            | Dynamic edge attributes             |
+| Method           | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
 +==================+======================+=====================+====================================+=====================================+
 | ``to_static``    | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
@@ -126,7 +125,7 @@ Builds a static or flattened graph ``G`` containing all the edges found at each 
     >>> G = TG.to_static()
     >>> G
 
-    MultiDiGraph with 6 nodes and 8 edges
+    DiGraph with 6 nodes and 8 edges
 
 .. code-block:: python
 
@@ -139,9 +138,9 @@ Builds a static or flattened graph ``G`` containing all the edges found at each 
 .. code-block:: python
 
     >>> TG = tx.from_static(G).slice(attr="time")
-    >>> print(TG)
+    >>> TG
 
-    TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
+    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
 
 Snapshot-based temporal graph
@@ -175,7 +174,7 @@ snapshot of the original temporal graph. It is the most common representation of
    >>> TG = tx.from_snapshots(STG)
    >>> TG
 
-    TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
+    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
 
 Event-based temporal graph
@@ -253,7 +252,7 @@ temporal flows.
 .. code-block:: python
 
    >>> UTG = TG.to_unified(add_couplings=True)
-   >>> print(UTG)
+   >>> UTG
 
    MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=2)' with 12 nodes and 14 edges
 

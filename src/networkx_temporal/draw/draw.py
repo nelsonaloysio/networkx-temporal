@@ -46,8 +46,8 @@ def draw(
 
     .. code-block:: python
 
-        >>> import networkx_temporal as tx
         >>> # !pip install matplotlib
+        >>> import networkx_temporal as tx
         >>>
         >>> TG = tx.TemporalGraph(directed=True, multigraph=True)
         >>>
@@ -66,6 +66,7 @@ def draw(
         >>>
         >>> fig = tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
         >>> # fig.savefig("figure.png")
+        >>>
         >>> fig.show()
 
     .. image:: ../../figure/fig-0.png
@@ -87,7 +88,7 @@ def draw(
         <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
         pages for more.
 
-    :param TG: :class:`~networkx_temporal.TemporalGraph` or NetworkX's graph object(s).
+    :param TG: :class:`~networkx_temporal.TemporalGraph` or NetworkX graph object(s).
     :param figsize: Tuple with the dimensions of the figure. Default is ``(3, 3)``.
     :param pos: A dictionary with nodes as keys and positions as values. Optional.
     :param layout: Layout algorithm to use when ``pos`` is not provided. Optional.

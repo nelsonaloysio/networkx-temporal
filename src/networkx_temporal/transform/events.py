@@ -7,8 +7,8 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
 
     :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or
         :math:`(u, v, t, \epsilon)`, where :math:`u` is the source node, :math:`v` is the target
-        node, :math:`t` is the time of interaction, and :math:`e` is either ``1`` (edge addition)
-        or ``-1`` (edge deletion).
+        node, :math:`t` is the time of interaction, and :math:`\epsiilon` is either ``1``
+        (edge addition) or ``-1`` (edge deletion).
     :param bool directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
         Default is ``False``.

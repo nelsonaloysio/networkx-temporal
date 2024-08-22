@@ -29,7 +29,7 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True)
+   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -40,9 +40,9 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
    >>> TG.add_edge("f", "a", time=3)
    >>> TG.add_edge("f", "b", time=3)
    >>>
-   >>> print(TG)
+   >>> TG
 
-   TemporalMultiDiGraph (t=1) with 6 nodes and 8 edges
+   TemporalDiGraph with 6 nodes and 8 edges
 
 Note that the resulting graph object reports a single time step ``t=1``, as it has not yet been
 `sliced <#slice-temporal-graph>`__.
@@ -87,7 +87,7 @@ which both nodes and edges are attributed with the time step in which they are o
    >>>     ("f", "b", {"time": 3}),
    >>> ])
    >>>
-   >>> print(G)
+   >>> G
 
    DiGraph with 6 nodes and 8 edges
 
@@ -102,7 +102,7 @@ Converting a static graph with edge-level temporal data to a temporal graph obje
    >>> TG = tx.from_static(G).slice(attr="time")
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-5.png
+.. image:: ../../figure/fig-0.png
 
 The resulting temporal graph has the same number of edges as the original graph, but a higher number
 of nodes. This is expected, as the same nodes appear in more than one snapshot.
@@ -110,7 +110,7 @@ of nodes. This is expected, as the same nodes appear in more than one snapshot.
 .. note::
 
    By default, :func:`~networkx_temporal.TemporalGraph.slice` considers ``attr`` as an edge-level attribute, which is usually the case for
-   temporal data. This behavior can be changed by setting ``attr_level='node'`` (see example below).
+   temporal data. This behavior can be changed by setting ``attr_level='node'``, as seen below.
 
 
 Node-level time attribute
@@ -123,7 +123,7 @@ Converting a static graph with node-level temporal data to a temporal graph obje
    >>> TG = tx.from_static(G).slice(attr="time", attr_level="node")
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-4.png
+.. image:: ../../figure/fig-1.png
 
 Note that even though the edge :math:`(a, c)` contains the attribute ``time=2``, considering
 node-level attributes resulted in it being placed at :math:`t=0` instead, as the source node
@@ -153,7 +153,7 @@ Let's use the :func:`~networkx_temporal.TemporalGraph.slice` method to split the
    >>> TG = TG.slice(attr="time")
    >>> TG
 
-   TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
+   TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
 Inspecting the resulting object's properties can be achieved with some familiar methods:
 
@@ -174,7 +174,7 @@ We may now visualize the resulting snapshots using the :func:`~networkx_temporal
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-0.png
+.. image:: ../../figure/fig-2.png
 
 Specifying number of snapshots
 ------------------------------
@@ -185,11 +185,15 @@ A new object can be created with a specific number of snapshots by setting the
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-1.png
+.. image:: ../../figure/fig-3.png
 
-Note that this usually leads to snapshots with differing numbers of nodes and edges, as expected.
+.. hint::
+
+   Set ``names=True`` to use the :func:`~networkx_temporal.TemporalGraph.names` property as subplot
+   titles, instead of their indices. By default, :func:`~networkx_temporal.TemporalGraph.slice`
+   returns the interval of the resulting temporal snapshots as their names.
 
 Considering quantiles
 ---------------------
@@ -201,9 +205,9 @@ size. To try and balance them using quantiles, pass ``qcut=True`` (see `pandas.q
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2, qcut=True)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-2.png
+.. image:: ../../figure/fig-4.png
 
 Though not perfectly balanced due to node :math:`a` appearing multiple times (in :math:`t={1,2,3}`),
 the resulting snapshots have a more even number of edges. Results are expected to vary in a
@@ -219,16 +223,18 @@ their order of appearance in the original graph (see `pandas.Series.rank
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2, rank_first=True)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2))
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-3.png
+.. image:: ../../figure/fig-5.png
 
-As the `time` attribute is here located in the edge level, each resulting snapshot has 4 edges each.
-In case of node-level times, the number of nodes in each snapshot would be more evenly distributed.
+Notice how the intervals in each snapshot title now refer to the edges: :math:`e_0` to
+:math:`e_3` and :math:`e_4` to :math:`e_7`. As the ``time`` attribute is here located at the edge
+level, the two snapshots have half of all edges each. In case of node-level times, the number of nodes
+in each snapshot would be more evenly distributed.
 
 .. note::
    In some cases, it may still not be able to split the graph into the number of snapshots specified
-   by ``bins`` (e.g., due to insufficient data). The maximum possible number is returned instead.
+   by ``bins`` (e.g., due to insufficient data), so the maximum possible number is returned instead.
 
 
 -----
@@ -240,10 +246,8 @@ Temporal graphs may be read from or written to a file using the following functi
 
 .. code-block:: python
 
-   >>> import networkx_temporal as tx
-   >>>
-   >>> TG = tx.read_graph("path/to/file.ext")
-   >>> tx.write_graph("path/to/file.ext")  # or TG.write_graph("path/to/file.ext")
+   >>> tx.write_graph(TG, "temporal_graph.graphml.zip")
+   >>> TG = tx.read_graph("temporal_graph.graphml.zip")
 
 Supported formats will be automatically detected based on the file extension.
 For details on the methods, please refer to their respective documentation:
@@ -268,13 +272,13 @@ or undirected by calling the :func:`~networkx_temporal.to_directed` or :func:`~n
 
    >>> TG.to_undirected()
 
-   TemporalGraph (t=4) with 12 nodes and 8 edges
+   TemporalGraph (t=2) with 9 nodes and 8 edges
 
 .. code-block:: python
 
    >>> TG.to_directed()
 
-   TemporalDiGraph (t=4) with 12 nodes and 16 edges
+   TemporalDiGraph (t=2) with 9 nodes and 16 edges
 
 As the methods return new objects, the original graph remains unchanged. Note that most methods
 available in the `NetworkX graphs <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
