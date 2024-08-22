@@ -241,8 +241,8 @@ def slice(
 
     # Convert categories to string intervals.
     cats = [f"{'[' if c.closed_left else '('}"
-            f"{c.left if cats is None else cats[int(c.left)]}, "
-            f"{c.right if cats is None else cats[int(c.right)]}"
+            f"{int(c.left) if cats is None else cats[int(c.left)]}, "
+            f"{int(c.right) if cats is None else cats[int(c.right)]}"
             f"{']' if c.closed_right else ')'}"
             for c in times.cat.categories]
 
