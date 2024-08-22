@@ -1,9 +1,9 @@
 from importlib import import_module
-from typing import Any, Literal, Union
+from typing import Any, Union
 
 import networkx as nx
 
-from ..typing import TemporalGraph
+from ..typing import TemporalGraph, Literal
 
 ALIAS = {
     "gt": "graph_tool",

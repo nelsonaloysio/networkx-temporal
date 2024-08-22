@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import pandas as pd
 
 from ..transform import from_snapshots
-from ..typing import TemporalGraph
+from ..typing import TemporalGraph, Literal
 
 
 def slice(

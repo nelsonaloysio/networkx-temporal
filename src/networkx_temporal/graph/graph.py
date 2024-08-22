@@ -225,18 +225,19 @@ class TemporalGraph():
 
         :getter: Returns temporal graph name.
         :setter: Sets temporal graph name.
-        :rtype: str | None
+        :rtype: str
         """
-        return self.__dict__.get("_name", None)
+        return self.__dict__.get("_name", "")
 
     @name.setter
-    def name(self, name: str) -> None:
+    def name(self, name: Any) -> None:
         """
         The `name` property of the temporal graph.
 
         :param name: Name to give to temporal graph object.
+            If ``None``, resets name to an empty string.
         """
-        self._name = str(name)
+        self.__dict__.pop("_name", None) if name is None else self.__setattr__("_name", name)
 
     @property
     def names(self) -> list:
@@ -245,33 +246,34 @@ class TemporalGraph():
 
         :getter: Returns names of temporal graph snapshots.
         :setter: Sets names of temporal graph snapshots.
-        :rtype: str | None
+        :rtype: list
         """
-        return self.__dict__.get("_names", [None for _ in range(len(self))])
+        return self.__dict__.get("_names", ["" for _ in range(len(self))])
 
     @names.setter
-    def names(self, names: Union[list, tuple]) -> None:
+    def names(self, names: Optional[Union[list, tuple]]) -> None:
         """
         The `name` property of each snapshot in the temporal graph.
 
         :param names: Names to give to temporal graph snapshots.
+            If ``None``, resets names to empty strings.
         """
-        assert type(names) in (list, tuple),\
+        assert names is None or type(names) in (list, tuple),\
             f"Argument 'names' must be a list or tuple, received: {type(names)}."
 
-        assert len(names) == len(self),\
+        assert names is None or len(names) == len(self),\
             f"Length of names ({len(names)}) differs from number of snapshots ({len(self)})."
 
-        assert all(type(n) in (str, int) and type(n) == type(names[0]) for n in names),\
+        assert names is None or all(type(n) in (str, int) and type(n) == type(names[0]) for n in names),\
             "All elements in names must be either strings or integers."
 
-        assert len(names) == len(set(names)),\
+        assert names is None or len(names) == len(set(names)),\
             "All elements in names must be unique."
 
         # NOTE: Does not work if graphs are views, as setting one view will set all objects.
         # list(setattr(self[t], "name", names[t]) for t in range(len(self)))
 
-        self._names = list(names)
+        self.__dict__.pop("_names", None) if names is None else self.__setattr__("_names", names)
 
     def append(self, G: Optional[nx.Graph] = None) -> None:
         """
