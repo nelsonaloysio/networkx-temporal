@@ -1,7 +1,6 @@
 from typing import Optional, Union
 
 import networkx as nx
-
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -23,12 +22,13 @@ def draw(
     figsize: tuple = (3, 3),
     pos: Optional[dict] = None,
     layout: Optional[str] = "random",
-    nrows: Optional[int] = 1,
+    nrows: int = 1,
     ncols: Optional[int] = None,
-    names: Optional[bool] = None,
+    names: Optional[Union[list, bool]] = None,
     suptitle: Optional[str] = None,
-    temporal_opts: Union[list, dict] = None,
-    layout_opts: Union[list, dict] = None,
+    plot_opts: Optional[dict] = None,
+    temporal_opts: Optional[Union[list, dict]] = None,
+    layout_opts: Optional[Union[list, dict]] = None,
     **draw_opts
 ) -> Figure:
     """
@@ -46,10 +46,10 @@ def draw(
 
     .. code-block:: python
 
-        >>> # !pip install matplotlib
+        >>> #!pip install 'networkx-temporal[draw]'
         >>> import networkx_temporal as tx
         >>>
-        >>> TG = tx.TemporalGraph(directed=True, multigraph=True)
+        >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
         >>>
         >>> TG.add_edges_from([
         >>>     ("a", "b", {"time": 0}),
@@ -102,9 +102,12 @@ def draw(
 
         * If ``True``, show the graph names as title.
 
-        * If ``False``, does not show the graph names.
+        * If ``False``, does not show titles.
+
+        * If a ``list``, shows the values in it as titles.
 
     :param suptitle: Centered suptitle of the figure. Optional.
+    :param plot_opts: Additional options for the figure. Optional.
     :param temporal_opts: List or dictionary with drawing options for snapshots. Optional.
     :param layout_opts: List or dictionary with layout options for each graph. Optional.
     :param draw_opts: Additional drawing options for all graphs. Optional.
@@ -112,7 +115,9 @@ def draw(
     layout = getattr(nx, f"{layout.replace('_layout', '')}_layout", None)
 
     if plt is None:
-        raise ModuleNotFoundError("This function requires 'matplotlib' to be installed.")
+        raise ModuleNotFoundError(
+            f"Package 'matplotlib' is not installed. Please install it and try again."
+        )
 
     assert pos is None or type(pos) == dict,\
         "Argument `pos` must be a dictionary or None."
@@ -148,20 +153,17 @@ def draw(
     if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         TG = [TG]  # Allows a single graph to be passed as input.
 
-    if layout_opts is None:
-        layout_opts = {}
-    elif type(layout_opts) == list:
-        layout_opts = {t: {} for t in range(len(TG))}
+    if type(layout_opts) == list:
+        layout_opts = {t: layout_opts[t] for t in range(len(TG))}
 
-    if temporal_opts is None:
-        temporal_opts = {}
-    elif type(temporal_opts) == list:
-        temporal_opts = {t: {} for t in range(len(TG))}
+    if type(temporal_opts) == list:
+        temporal_opts = {t: temporal_opts[t] for t in range(len(TG))}
 
     fig, ax = plt.subplots(nrows=nrows,
                            ncols=ncols or len(TG) or 1,
                            figsize=figsize,
-                           constrained_layout=True)
+                           constrained_layout=True,
+                           **(plot_opts or {}))
 
     i, j = 0, 0
     for t in range(len(TG)):
@@ -169,21 +171,26 @@ def draw(
 
         nx.draw(TG[t],
                 ax=ax_,
-                pos=pos or layout(TG[t], **layout_opts.get(t, {})),
-                **{**DRAW_OPTS, **draw_opts, **temporal_opts.get(t, {})})
+                pos=pos or layout(TG[t], **(layout_opts or {}).get(t, {})),
+                **{**DRAW_OPTS, **draw_opts, **(temporal_opts or {}).get(t, {})})
 
-        if names is not False:
-            name = (TG.names[t] or TG[t].name) if names is True else None
-            ax_.set_title("" if len(TG) == 1 else name or f"$t$ = {t}")
+        if names is False:
+            title = None
+        elif names is None:
+            title = f"$t$ = {t}" if len(TG) > 1 else None
+        elif names is True:
+            title = TG.names[t] if hasattr(TG, "names") else TG[t].name
+        elif type(names) == list:
+            title = names[t]
+
+        ax_.set_title(title)
 
         j += 1
         if ncols and j % ncols == 0:
             j = 0
             i += 1
 
-    if suptitle:
-        plt.suptitle(suptitle)
-
+    plt.suptitle(suptitle)
     plt.close()
 
     return fig
