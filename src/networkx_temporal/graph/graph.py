@@ -16,10 +16,12 @@ from ..metrics.temporal import (
     temporal_out_degree,
     temporal_size,
 )
-from ..transform import (to_events,
-                         to_snapshots,
-                         to_static,
-                         to_unified)
+from ..transform import (
+    to_events,
+    to_snapshots,
+    to_static,
+    to_unified,
+)
 
 
 class TemporalGraph():
@@ -44,14 +46,14 @@ class TemporalGraph():
 
        >>> import networkx_temporal as tx
        >>>
-       >>> TG = tx.TemporalGraph(directed=True, multigraph=True, t=2)
+       >>> TG = tx.TemporalGraph(directed=True, multigraph=False, t=2)
        >>>
        >>> TG[0].add_edge("a", "b")
        >>> TG[1].add_edge("c", "b")
        >>>
        >>> print(TG)
 
-       TemporalMultiDiGraph (t=2) with 4 nodes and 2 edges
+       TemporalDiGraph (t=2) with 4 nodes and 2 edges
 
     .. hint::
 
@@ -149,7 +151,7 @@ class TemporalGraph():
         if type(t) == int:
             return self.data[t]
 
-        TG = TemporalGraph(directed=self.directed, multigraph=self.multigraph)
+        TG = TemporalGraph(directed=self.is_directed(), multigraph=self.is_multigraph())
         TG.data = self.data[t]
         return TG
 
@@ -164,8 +166,8 @@ class TemporalGraph():
     def __repr__(self) -> str:
         """ Returns string representation of the class. """
         return f"Temporal"\
-               f"{'Multi' if self.multigraph else ''}"\
-               f"{'Di' if self.directed else ''}"\
+               f"{'Multi' if self.is_multigraph() else ''}"\
+               f"{'Di' if self.is_directed() else ''}"\
                f"Graph {f'(t={len(self)}) ' if len(self) > 1 else ''}"\
                f"with {sum(self.order())} nodes and {sum(self.size())} edges"
 
@@ -179,7 +181,7 @@ class TemporalGraph():
         return self.__dict__.get("_data", None)
 
     @data.setter
-    def data(self, data: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph, list, dict]) -> None:
+    def data(self, data: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph, list, dict]):
         """
         The ``data`` property of the temporal graph.
 
@@ -190,38 +192,19 @@ class TemporalGraph():
         assert type(data) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph, list, dict),\
             f"Argument 'data' must be a NetworkX graph, list or dictionary, received: {type(data)}."
 
+        names = list(data.keys()) if type(data) == dict else None
         data = data if type(data) == list else list(data.values()) if type(data) == dict else [data]
 
         assert all(type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) for G in data),\
-                "All elements in data must be valid NetworkX graphs."
+            "All elements in data must be valid NetworkX graphs."
 
         self._data = data
-
-        if type(data) == dict:
-            self.names = list(data.keys())
-
-    @property
-    def directed(self) -> bool:
-        """
-        The `directed` property of the temporal graph.
-
-        :meta private:
-        """
-        return self[0].is_directed()
-
-    @property
-    def multigraph(self) -> bool:
-        """
-        The `multigraph` property of the temporal graph.
-
-        :meta private:
-        """
-        return self[0].is_multigraph()
+        self.names = names
 
     @property
     def name(self) -> str:
         """
-        The `name` property of the temporal graph.
+        The ``name`` property of the temporal graph.
 
         :getter: Returns temporal graph name.
         :setter: Sets temporal graph name.
@@ -230,9 +213,9 @@ class TemporalGraph():
         return self.__dict__.get("_name", "")
 
     @name.setter
-    def name(self, name: Any) -> None:
+    def name(self, name: Any):
         """
-        The `name` property of the temporal graph.
+        The ``name`` property of the temporal graph.
 
         :param name: Name to give to temporal graph object.
             If ``None``, resets name to an empty string.
@@ -242,7 +225,7 @@ class TemporalGraph():
     @property
     def names(self) -> list:
         """
-        The `name` property of each snapshot in the temporal graph.
+        The ``name`` property of each snapshot in the temporal graph.
 
         :getter: Returns names of temporal graph snapshots.
         :setter: Sets names of temporal graph snapshots.
@@ -251,9 +234,9 @@ class TemporalGraph():
         return self.__dict__.get("_names", ["" for _ in range(len(self))])
 
     @names.setter
-    def names(self, names: Optional[Union[list, tuple]]) -> None:
+    def names(self, names: Optional[Union[list, tuple]]):
         """
-        The `name` property of each snapshot in the temporal graph.
+        The ``name`` property of each snapshot in the temporal graph.
 
         :param names: Names to give to temporal graph snapshots.
             If ``None``, resets names to empty strings.
@@ -277,7 +260,7 @@ class TemporalGraph():
 
     def append(self, G: Optional[nx.Graph] = None) -> None:
         """
-        Appends a new snapshot to the temporal graph at last position.
+        Appends a new snapshot to the temporal graph.
 
         :param G: NetworkX graph to append. Optional.
         """
@@ -295,13 +278,13 @@ class TemporalGraph():
 
     def insert(self, t: int, G: Optional[nx.Graph] = None) -> None:
         """
-        Inserts a new snapshot at a given index.
+        Inserts a new snapshot to the temporal graph at a given index.
 
         :param t: Index of snapshot to insert.
         :param G: NetworkX graph to insert. Optional.
         """
         if G is None:
-            G = getattr(nx, f"{'Multi' if self.multigraph else ''}{'Di' if self.directed else ''}Graph")()
+            G = getattr(nx, f"{'Multi' if self.is_multigraph() else ''}{'Di' if self.is_directed() else ''}Graph")()
 
         assert type(t) == int,\
             f"Argument 't' must be an integer, received: {type(t)}."
@@ -325,7 +308,7 @@ class TemporalGraph():
 
         :param node: Node in the temporal graph.
         :param interval: Range to consider. Optional. Defaults to all snapshots.
-            Accepts either a ``range`` or a tuple of integers.
+            Accepts either a ``range`` or a ``tuple`` of integers.
         """
         assert interval is None or type(interval) in (range, tuple),\
             "Argument `interval` must be a range or tuple of integers."
@@ -339,12 +322,20 @@ class TemporalGraph():
         return [i for i in (interval or range(len(self))) if self[i].has_node(node)]
 
     def is_directed(self) -> bool:
-        """ Returns directed property of temporal graph. """
-        return self.directed
+        """
+        Returns directed property of temporal graph.
+
+        :meta private:
+        """
+        return self[0].is_directed()
 
     def is_multigraph(self) -> bool:
-        """ Returns multigraph property of temporal graph. """
-        return self.multigraph
+        """
+        Returns multigraph property of temporal graph.
+
+        :meta private:
+        """
+        return self[0].is_multigraph()
 
     def pop(self, t: Optional[int] = None) -> nx.Graph:
         """
@@ -355,7 +346,7 @@ class TemporalGraph():
         self.__getitem__(t or -1)
         return self.data.pop(t or -1)
 
-    def to_directed(self, as_view: bool = False):
+    def to_directed(self, as_view: bool = False) -> TemporalGraph:
         """
         Returns directed version of temporal graph.
 
@@ -374,7 +365,7 @@ class TemporalGraph():
 
         return self
 
-    def to_undirected(self, as_view: bool = False):
+    def to_undirected(self, as_view: bool = False) -> TemporalGraph:
         """
         Returns undirected version of temporal graph.
 
@@ -393,12 +384,21 @@ class TemporalGraph():
 
         return self
 
-    def total_nodes(self) -> int:
-        """ Returns total number of nodes in the temporal graph, considering duplicates. """
+    def total_order(self) -> int:
+        """
+        Returns number of total nodes.
+
+        Matches the sum of :func:`~networkx_temporal.TemporalGraph.order`.
+        """
         return sum(self.order())
 
-    def total_edges(self) -> int:
-        """ Returns total number of edges in the temporal graph. Same as ``temporal_size``."""
+    def total_size(self) -> int:
+        """
+        Returns number of total edges (interactions).
+
+        Matches both the sum of :func:`~networkx_temporal.TemporalGraph.size` and
+        the length of :func:`~networkx_temporal.TemporalGraph.temporal_edges`.
+        """
         return sum(self.size())
 
     def __wrapper(self, method: str) -> Callable:
