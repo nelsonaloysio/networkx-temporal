@@ -30,20 +30,28 @@ def temporal_neighbors(self, node: Any) -> dict:
 
 
 def temporal_nodes(self) -> list:
-    """ Returns all nodes in all snapshots. """
+    """ Returns list of nodes in all snapshots. """
     return reduce(or_, self.nodes(data=False))
 
 
 def temporal_edges(self) -> list:
-    """ Returns all edges in all snapshots. """
+    """ Returns list of edges (interactions) in all snapshots. """
     return list(e for E in self.edges() for e in E)
 
 
 def temporal_order(self) -> int:
-    """ Returns total number of nodes (without duplicates) in the temporal graph. """
+    """
+    Returns number of temporal nodes.
+
+    Matches the length of :func:`~networkx_temporal.TemporalGraph.temporal_nodes`.
+    """
     return len(self.temporal_nodes())
 
 
 def temporal_size(self) -> int:
-    """ Returns total number of edges in the temporal graph. Same as ``total_edges``."""
-    return sum(self.size())
+    """
+    Returns number of temporal edges (interactions).
+
+    Matches the length of :func:`~networkx_temporal.TemporalGraph.temporal_edges`.
+    """
+    return len(self.temporal_edges())
