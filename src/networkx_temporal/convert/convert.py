@@ -5,7 +5,8 @@ import networkx as nx
 
 from ..typing import TemporalGraph, Literal
 
-ALIAS = {
+ALIASES = {
+    "dn": "dynetx",
     "gt": "graph_tool",
     "ig": "igraph",
     "nk": "networkit",
@@ -14,6 +15,7 @@ ALIAS = {
 
 FORMATS = Literal[
     "dgl",
+    "dynetx",
     "graph_tool",
     "igraph",
     "networkit",
@@ -31,13 +33,15 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
     +------------------------------------------------------------------+------------------------------------+------------------------+
     | Format                                                           | Parameter (Package)                | Parameter (Alias)      |
     +==================================================================+====================================+========================+
-    |`Deep Graph Library <https://www.dgl.ai/>`__                      | .. centered :: ``dgl``             | .. centered :: -       |
+    |`Deep Graph Library <https://www.dgl.ai>`__                       | .. centered :: ``dgl``             | .. centered :: -       |
     +------------------------------------------------------------------+------------------------------------+------------------------+
-    |`graph-tool <https://graph-tool.skewed.de/>`__                    | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
+    |`DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered :: ``dynetx``          | .. centered :: ``dn``  |
     +------------------------------------------------------------------+------------------------------------+------------------------+
-    |`igraph <https://igraph.org/python/>`__                           | .. centered :: ``igraph``          | .. centered :: ``ig``  |
+    |`graph-tool <https://graph-tool.skewed.de>`__                     | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
     +------------------------------------------------------------------+------------------------------------+------------------------+
-    |`NetworKit <https://networkit.github.io/>`__                      | .. centered :: ``networkit``       | .. centered :: ``nk``  |
+    |`igraph <https://igraph.org/python>`__                            | .. centered :: ``igraph``          | .. centered :: ``ig``  |
+    +------------------------------------------------------------------+------------------------------------+------------------------+
+    |`NetworKit <https://networkit.github.io>`__                       | .. centered :: ``networkit``       | .. centered :: ``nk``  |
     +------------------------------------------------------------------+------------------------------------+------------------------+
     |`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
     +------------------------------------------------------------------+------------------------------------+------------------------+
@@ -56,16 +60,18 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
 
     :return: Converted graph object.
     """
-    pkg = ALIAS.get(to, to)
-    func = "nx2%s" % {v: k for k, v in ALIAS.items()}.get(pkg, pkg)
+    pkg = ALIASES.get(to, to)
+    func = {v: k for k, v in ALIASES.items()}.get(pkg, pkg)
 
     assert pkg in FORMATS.__args__,\
-        f"Argument `to` must be among packages {FORMATS.__args__} or aliases {list(ALIAS)}."
+        f"Argument `to` must be among {list(FORMATS.__args__)} or aliases {list(ALIASES)}."
 
     try:
-        func = import_module(f".{func}", package=__package__).__dict__[func]
-    except ImportError as e:
-        raise e
+        func = import_module(f".{pkg}", package=__package__).__dict__["nx2%s" % func]
+    except Exception as e:
+        raise RuntimeError(
+            f"Error converting graph to '{pkg}' object."
+        ) from e
 
     if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         return func(TG, *args, **kwargs)
