@@ -33,7 +33,7 @@ def write_graph(
 
     If the object contains more than one snapshot --- such as after calling
     :func:`~networkx_temporal.TemporalGraph.slice` --- this function writes a single ZIP archive,
-    in which each file within refers to a snapshot. Files are named ``{name}_{t}.{format}``,
+    in which each file refers to a snapshot. Files within are named ``{name}_{t}.{format}``,
     where ``t`` is the snapshot index and ``format`` is the file extension.
 
     .. seealso::

@@ -37,7 +37,7 @@ def slice(
 
        >>> import networkx_temporal as tx
        >>>
-       >>> TG = tx.TemporalGraph(directed=True, multigraph=True)
+       >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
        >>>
        >>> TG.add_edge("a", "b", time=0)
        >>> TG.add_edge("c", "b", time=1)
@@ -46,7 +46,7 @@ def slice(
        >>>
        >>> print(TG)
 
-       TemporalMultiDiGraph (t=2) with 4 nodes and 2 edges
+       TemporalDiGraph (t=2) with 4 nodes and 2 edges
 
     Calling this method again on the same object, now with ``bins=1``, will :func:`~networkx_temporal.TemporalGraph.flatten` the graph:
 

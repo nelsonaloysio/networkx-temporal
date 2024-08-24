@@ -21,8 +21,10 @@ Python package to build and manipulate temporal graphs using [NetworkX](https://
 Package is available to install on [PyPI](https://pypi.org/project/networkx-temporal/):
 
 ```bash
-$ pip install networkx-temporal
+$ pip install 'networkx-temporal[draw]'
 ```
+
+> The `[draw]` extra includes `matplotlib`, required to plot graphs as in the example below.
 
 ## Quick example
 
@@ -34,7 +36,7 @@ For detailed information on using the package, please refer to its [official doc
 >>> import networkx_temporal as tx
 >>>
 >>> # Build temporal graph.
->>> TG = tx.TemporalGraph(directed=True)
+>>> TG = tx.TemporalGraph(directed=True, multigraph=False)
 >>> TG.add_edge("a", "b", time=0)
 >>> TG.add_edge("c", "b", time=1)
 >>> TG.add_edge("d", "c", time=2)

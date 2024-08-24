@@ -1,10 +1,4 @@
-.. hint::
-
-    This guide is also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
+.. include:: ../include/notebook.rst
 
 
 ################
@@ -51,7 +45,7 @@ Note that the resulting graph object reports a single time step ``t=1``, as it h
 
    Multigraphs are particularly useful to represent temporal graphs, as it allows to store multiple
    interactions between the same nodes at different time steps within a single graph object. This
-   behavior can be changed by setting ``multigraph=False`` when creating the :class:`~networkx_temporal.TemporalGraph` object.
+   behavior can be set by passing ``multigraph=True`` when creating the :class:`~networkx_temporal.TemporalGraph` object.
 
 
 From a static graph
@@ -250,7 +244,7 @@ Temporal graphs may be read from or written to a file using the following functi
    >>> TG = tx.read_graph("temporal_graph.graphml.zip")
 
 Supported formats will be automatically detected based on the file extension.
-For details on the methods, please refer to their respective documentation:
+For details on both, please refer to their respective documentations:
 :func:`~networkx_temporal.read_graph` and :func:`~networkx_temporal.write_graph`.
 
 .. seealso::
@@ -266,7 +260,8 @@ Edge direction
 ==============
 
 Similar to static NetworkX graphs, edges in a temporal graph can be easily transformed into directed
-or undirected by calling the :func:`~networkx_temporal.to_directed` or :func:`~networkx_temporal.to_undirected` methods, respectively:
+or undirected by calling the :func:`~networkx_temporal.to_directed` or
+:func:`~networkx_temporal.to_undirected` methods, respectively:
 
 .. code-block:: python
 
@@ -281,5 +276,6 @@ or undirected by calling the :func:`~networkx_temporal.to_directed` or :func:`~n
    TemporalDiGraph (t=2) with 9 nodes and 16 edges
 
 As the methods return new objects, the original graph remains unchanged. Note that most methods
-available in the `NetworkX graphs <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
+available in the `NetworkX graphs
+<https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
 can be called directly from the :class:`~networkx_temporal.TemporalGraph` object as well.

@@ -1,10 +1,4 @@
-.. hint::
-
-    This guide is also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
+.. include:: ../include/notebook.rst
 
 
 ###################
@@ -12,7 +6,7 @@ Community detection
 ###################
 
 Community detection is a fundamental task in network analysis. This simple example demonstrates how
-a network's temporal dynamics can benefit the detection of its mesoscale structures.
+a network's temporal dynamics can overall benefit the detection of its mesoscale structures.
 
 .. note::
 
@@ -181,8 +175,8 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
 .. image:: ../../figure/fig-10.png
 
 This is mostly due to modularity optimization expecting an assortative community structure, while
-our network grows more disassortative over time. Not only the results of later snapshots are here
-suboptimal, it is also particularly hard to understand the network's mesoscale temporal dynamics.
+the network grew more disassortative over time. Not only the results of later snapshots are here
+suboptimal, but the changing community indices also increases the complexity of their analysis.
 
 
 On the temporal graph
@@ -220,10 +214,13 @@ time maintaining community indices consistent over time, as seen below:
 
 .. image:: ../../figure/fig-11.png
 
-This method seems particularly useful to track communities over time, as it allows to maintain the
-same community indices across snapshots, potentially contributing to the study of their dynamics.
-Although very simple, this example showcases how considering a network's temporal information can benefit
-its analysis, as well as help to better understand and visualize its mesoscale structures.
+As observed, considering the network's temporal information allowed the algorithm to correctly
+retrieve the ground truths in this particular example, as well as to maintain the same community
+indices across snapshots, which helps in the study of the network's mesoscale temporal dynamics.
+
+Although very simple, this example showcases how considering a network's temporal information can
+benefit its analysis, as well as help to better understand and visualize its mesoscale structures,
+for which this package provides a flexible framework to work with, especially in a topological level.
 
 -----
 
