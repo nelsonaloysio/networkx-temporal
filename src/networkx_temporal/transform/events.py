@@ -6,8 +6,8 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
     Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of events.
 
     :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or
-        :math:`(u, v, t, \epsilon)`, where :math:`u` is the source node, :math:`v` is the target
-        node, :math:`t` is the time of interaction, and :math:`\epsiilon` is either ``1``
+        :math:`(u, v, t, \\varepsilon)`, where :math:`u` is the source node, :math:`v` is the target
+        node, :math:`t` is the time of interaction, and :math:`\\varepsiilon` is either ``1``
         (edge addition) or ``-1`` (edge deletion).
     :param bool directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
@@ -54,7 +54,7 @@ def to_events(self, stream: bool = True) -> list:
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;
 
-    - **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is
+    - **4-tuples** (:math:`u, v, t, \\varepsilon`), where an additional element :math:`\\varepsilon` is
       either a positive (``1``) or negative (``-1``) unity representing edge addition and deletion
       events, respectively.
 

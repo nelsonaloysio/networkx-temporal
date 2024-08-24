@@ -1,11 +1,4 @@
-.. hint::
-
-    This guide is also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
-
+.. include:: ../include/notebook.rst
 
 ##############
 Common metrics
@@ -46,7 +39,7 @@ return a list of degree views per snapshot:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True)
+   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -98,8 +91,15 @@ The ``neighbors`` method returns a list of neighbors for each node in each snaps
 
    >>> TG.neighbors("c")
 
-   [[], ['b'], ['d', 'a'], []]
+   [[], ['b'], [], []]
 
+Converting the graph to undirected, we also obtain nodes that have node :math:`c` as their neighbor:
+
+.. code-block:: python
+
+   >>> TG.to_undirected().temporal_neighbors("c")
+
+   [[], ['b'], ['a', 'd'], []]
 
 
 -----
@@ -135,7 +135,7 @@ Temporal order and size
 -----------------------
 
 The :func:`~networkx_temporal.TemporalGraph.temporal_order` and :func:`~networkx_temporal.TemporalGraph.temporal_size` functions
-return the total unique nodes and edges:
+return the number of unique nodes and edges:
 
 .. code-block:: python
 
@@ -143,7 +143,7 @@ return the total unique nodes and edges:
    >>> print("Temporal edges:", TG.temporal_size())
 
    Temporal nodes: 6
-   Temporal edges: 16
+   Temporal edges: 8
 
 .. note::
 
@@ -153,18 +153,18 @@ return the total unique nodes and edges:
    the sets of all (**unique**) nodes and edges across all snapshots.
 
 
-Total number of nodes and edges
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Total order and size
+^^^^^^^^^^^^^^^^^^^^
 
-Obtaining the actual number of nodes and edges across all snapshots, **with** duplicates:
+Obtaining the sum of the numbers of nodes and edges (interactions) across all snapshots, with duplicates:
 
 .. code-block:: python
 
-   >>> print("Total nodes:", TG.total_nodes())  # TG.total_nodes() != TG.temporal_order()
-   >>> print("Total edges:", TG.total_edges())  # TG.total_edges() == TG.temporal_size()
+   >>> print("Total nodes:", TG.total_order())  # TG.total_order() != TG.temporal_order()
+   >>> print("Total edges:", TG.total_size())   # TG.total_size()  == TG.temporal_size()
 
    Total nodes: 12
-   Total edges: 16
+   Total edges: 8
 
 .. note::
 
@@ -181,5 +181,13 @@ The :func:`~networkx_temporal.TemporalGraph.temporal_neighbors` method returns a
 .. code-block:: python
 
    >>> TG.temporal_neighbors("c")
+
+   {'b'}
+
+Converting the graph to undirected, we also obtain nodes that have node :math:`c` as their neighbor:
+
+.. code-block:: python
+
+   >>> TG.to_undirected().temporal_neighbors("c")
 
    {'a', 'b', 'd'}

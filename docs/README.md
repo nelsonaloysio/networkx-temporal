@@ -9,7 +9,7 @@ pip install sphinx sphinx-autodoc-typehints sphinx_rtd_theme sphinxemoji
 Optionally install the package in development mode from source with:
 
 ```bash
-pip install -e .
+pip install -e '.[docs]'
 ```
 
 Afterwards, generate the documentation files with:

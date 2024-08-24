@@ -1,10 +1,4 @@
-.. hint::
-
-    This guide is also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
+.. include:: ../include/notebook.rst
 
 
 #####################
@@ -68,17 +62,19 @@ Support for the following output formats are implemented, here listed with their
 +------------------------------------------------------------------+------------------------------------+------------------------+
 | Format                                                           | Parameter (Package)                | Parameter (Alias)      |
 +==================================================================+====================================+========================+
-|`Deep Graph Library <https://www.dgl.ai/>`__                      | .. centered:: ``dgl``              | .. centered:: -        |
+|`Deep Graph Library <https://www.dgl.ai>`__                       | .. centered :: ``dgl``             | .. centered :: -       |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`graph-tool <https://graph-tool.skewed.de/>`__                    | .. centered:: ``graph_tool``       | .. centered:: ``gt``   |
+|`DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered :: ``dynetx``          | .. centered :: ``dn``  |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`igraph <https://igraph.org/python/>`__                           | .. centered:: ``igraph``           | .. centered:: ``ig``   |
+|`graph-tool <https://graph-tool.skewed.de>`__                     | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`NetworKit <https://networkit.github.io/>`__                      | .. centered:: ``networkit``        | .. centered:: ``nk``   |
+|`igraph <https://igraph.org/python>`__                            | .. centered :: ``igraph``          | .. centered :: ``ig``  |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``torch_geometric``  | .. centered:: ``pyg``  |
+|`NetworKit <https://networkit.github.io>`__                       | .. centered :: ``networkit``       | .. centered :: ``nk``  |
 +------------------------------------------------------------------+------------------------------------+------------------------+
-|`Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``teneto``           | .. centered:: -        |
+|`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
++------------------------------------------------------------------+------------------------------------+------------------------+
+|`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
 +------------------------------------------------------------------+------------------------------------+------------------------+
 
 
@@ -98,14 +94,19 @@ and method used:
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
 | Method           | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
 +==================+======================+=====================+====================================+=====================================+
-| ``to_static``    | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
+| |to_static|      | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| ``to_snapshots`` | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
+| |to_snapshots|   | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| ``to_events``    | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:x:|                 |
+| |to_events|      | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:x:|                 |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| ``to_unified``   | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
+| |to_unified|     | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
+
+.. |to_static| replace:: :func:`~networkx_temporal.TemporalGraph.to_static`
+.. |to_snapshots| replace:: :func:`~networkx_temporal.TemporalGraph.to_snapshots`
+.. |to_events| replace:: :func:`~networkx_temporal.TemporalGraph.to_events`
+.. |to_unified| replace:: :func:`~networkx_temporal.TemporalGraph.to_unified`
 
 
 Static graph
@@ -184,7 +185,7 @@ An event-based temporal graph ``ETG`` is a sequence of 3- or 4-tuple edge-based 
 
 * **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
 
-* **4-tuples** (:math:`u, v, t, \epsilon`), where an additional element :math:`\epsilon` is either a
+* **4-tuples** (:math:`u, v, t, \\varepsilon`), where an additional element :math:`\\varepsilon` is either a
   positive (``1``) or negative (``-1``) unity representing edge addition and deletion events, respectively.
 
 Depending on the temporal graph data, one of these may allow a more compact representation than the

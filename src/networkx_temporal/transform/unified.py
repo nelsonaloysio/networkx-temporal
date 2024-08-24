@@ -116,6 +116,7 @@ def to_unified(
     UTG.name = f"{f'{self.name}' if self.name else 'UTG'} "\
                 f"(t={len(self)}, proxy_nodes={len(UTG)-order}, edge_couplings={size-order})"
 
+    # Convert graph object to desired format.
     if to:
         return convert(UTG, to)
 

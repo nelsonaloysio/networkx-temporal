@@ -60,22 +60,28 @@ networkx-temporal
 **NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
 i.e., temporal graph data.
 
-This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which extends NetworkX's `graph classes
-<https://networkx.org/documentation/stable/reference/classes/index.html>`_
+This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which extends
+NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
 and implements additional functions to manipulate temporal data within. Most importantly, it
-provides methods to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and convert between formats and representations.
+provides ways to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and
+:func:`~networkx_temporal.convert` between formats and representations.
 
 
 Install
 =======
 
-The package is readily available from `PyPI <https://pypi.org/project/networkx-temporal/>`__:
+The package supports **Python 3.7+** and is readily available from `PyPI
+<https://pypi.org/project/networkx-temporal/>`__:
 
 .. code-block:: bash
 
    $ pip install networkx-temporal
 
-It supports **Python 3.7+** and has been tested on Linux, Windows, and macOS.
+Optionally, support for plotting graphs may be additionally installed with:
+
+.. code-block:: bash
+
+   $ pip install 'networkx-temporal[draw]'   # Includes matplotlib.
 
 
 Quick start
@@ -87,7 +93,8 @@ The following is a quick example of the package in action, covering its basic fu
 Build and slice temporal graph
 ------------------------------
 
-Create a :class:`~networkx_temporal.TemporalGraph` object and :func:`~networkx_temporal.TemporalGraph.slice` it into a number of snapshots:
+Create a :class:`~networkx_temporal.TemporalGraph` object and
+:func:`~networkx_temporal.TemporalGraph.slice` it into a number of snapshots:
 
 .. code-block:: python
 
@@ -110,7 +117,8 @@ Create a :class:`~networkx_temporal.TemporalGraph` object and :func:`~networkx_t
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
-The number of snapshots to create may be specified with the ``bins`` parameter:
+The ``attr`` parameter optionally defines the attribute name to use for slicing the temporal graph,
+while the number of snapshots to be created may likewise be specified with the ``bins`` parameter:
 
 .. code-block:: python
 
@@ -122,8 +130,8 @@ Note that the total number of nodes may vary, while the total number of edges is
 
 .. hint::
 
-   The :func:`~networkx_temporal.TemporalGraph.slice` method by default creates a snapshot for each unique time value in the temporal
-   graph. It internally stores `views
+   The :func:`~networkx_temporal.TemporalGraph.slice` method by default creates a snapshot for
+   unique time value in the temporal graph. It internally stores `views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
    of the original graph, so no data is copied unless specified.
 
@@ -135,7 +143,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))   # Requires matplotlib.
 
 .. image:: ../figure/fig-0.png
 
@@ -151,38 +159,39 @@ functions accept compressed temporal graphs:
    >>> TG = tx.read_graph("temporal_graph.graphml.zip")
    >>> tx.write_graph(TG, "temporal_graph.graphml.zip")
 
-Both methods support the same `extension formats
+Both functions support the same `extension formats
 <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
 as in the installed NetworkX library version.
 
 
-Convert and transform object
+Convert and transform graphs
 ----------------------------
 
 This package allows to transform a :class:`~networkx_temporal.TemporalGraph` between different
 `graph representations <examples/convert.html#graph-representations>`__:
 
 * `Static graphs <examples/convert.html#static-graph>`__:
-  flattened or aggregated versions of the temporal graph.
+  flattened or aggregated version of the temporal graph.
 * `Snapshot-based temporal graphs <examples/convert.html#snapshot-based-temporal-graph>`__:
   a list of node- or edge-level snapshots.
 * `Event-based temporal graphs <examples/convert.html#event-based-temporal-graph>`__:
-  a sequence of edge-level events.
+  a sequence of edge-level events (interactions).
 * `Unified temporal graphs <examples/convert.html#unified-temporal-graph>`__:
   a single graph with time-stamped nodes and edges.
 
 .. code-block:: python
 
-   >>> G = tx.to_static(TG)
-   >>> STG = tx.to_snapshot(TG)
-   >>> ETG = tx.to_event(TG)
-   >>> UTG = tx.to_unified(TG)
+   >>> G = TG.to_static()       # TG = tx.from_static(G)
+   >>> STG = TG.to_snapshot()   # TG = tx.from_snapshot(STG)
+   >>> ETG = TG.to_events()     # TG = tx.from_events(ETG)
+   >>> UTG = TG.to_unified()    # TG = tx.from_unified(UTG)
 
 In addition, both static and temporal graphs may be converted to the following
 `graph formats <examples/convert.html#graph-formats>`__:
 
 
 - `Deep Graph Library <https://www.dgl.ai>`__
+- `DyNetX <https://dynetx.readthedocs.io>`__
 - `graph-tool <https://graph-tool.skewed.de>`__
 - `igraph <https://igraph.org/python/>`__
 - `NetworKit <https://networkit.github.io>`__
@@ -191,7 +200,7 @@ In addition, both static and temporal graphs may be converted to the following
 
 .. code-block:: python
 
-   >>> tx.convert(TG.to_static(), "igraph")
+   >>> tx.convert(G, "igraph")
 
    <igraph.Graph at 0x7f048ef52c50>
 
