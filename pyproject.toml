@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "networkx-temporal"
+version = "1.0b17"
+description = "Python package to build and manipulate dynamic NetworkX graphs."
+requires-python = ">=3.7"
+readme = {file = "README.md", content-type = "text/markdown"}
+keywords = ["Network", "Graph", "Dynamic Graph", "Temporal Network"]
+authors = [
+    {name = "Nelson Aloysio Reis de Almeida Passos", email = "nelson.reis@phd.unipi.it"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "networkx >=2.1",
+    "pandas >=1.1.0",
+]
+
+[project.urls]
+Homepage = "https://pypi.org/p/networkx-temporal/"
+Documentation = "https://networkx-temporal.readthedocs.io"
+Repository = "https://github.com/nelsonaloysio/networkx-temporal"
+Issues = "https://github.com/nelsonaloysio/networkx-temporal/issues"
+Changelog = "https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+docs = [
+    "sphinx-autodoc-typehints >=1.23.0",
+    "sphinx-rtd-theme >=2.0.0",
+    "sphinxemoji >=0.2.0",
+]
+draw = [
+    "matplotlib",
+]
+ipynb = [
+    "ipykernel",
+    "leidenalg",
+    "matplotlib",
+    "python-igraph",
+]
+test = [
+    "dgl",
+    "dynetx",
+    # "graph-tool",  # conda install -c conda-forge graph-tool
+    "leidenalg",
+    "matplotlib",
+    "networkit",
+    "python-igraph",
+    "teneto",
+    "torch_geometric",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["networkx_temporal*"]
+exclude = ["networkx_temporal.tests*"]
