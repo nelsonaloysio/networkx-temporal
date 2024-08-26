@@ -55,3 +55,22 @@ def temporal_size(self) -> int:
     Matches the length of :func:`~networkx_temporal.TemporalGraph.temporal_edges`.
     """
     return len(self.temporal_edges())
+
+
+def total_order(self) -> int:
+    """
+    Returns number of total nodes.
+
+    Matches the sum of :func:`~networkx_temporal.TemporalGraph.order`.
+    """
+    return sum(self.order())
+
+
+def total_size(self) -> int:
+    """
+    Returns number of total edges (interactions).
+
+    Matches both the sum of :func:`~networkx_temporal.TemporalGraph.size` and
+    the length of :func:`~networkx_temporal.TemporalGraph.temporal_edges`.
+    """
+    return sum(self.size())
