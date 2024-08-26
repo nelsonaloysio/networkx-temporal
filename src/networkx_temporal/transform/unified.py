@@ -113,8 +113,10 @@ def to_unified(
         )
 
     # Avoid using last snapshot's name for the unified graph.
-    UTG.name = f"{f'{self.name}' if self.name else 'UTG'} "\
-                f"(t={len(self)}, proxy_nodes={len(UTG)-order}, edge_couplings={size-order})"
+    UTG.name = f"{f'{self.name}' if self.name else 'UTG'} ("\
+               f"t={len(self)}, "\
+               f"proxy_nodes={len(UTG)-order}, "\
+               f"edge_couplings={True if add_couplings else False})"
 
     # Convert graph object to desired format.
     if to:
