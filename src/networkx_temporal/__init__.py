@@ -1,13 +1,14 @@
 from .__version__ import __version__
 from .convert import convert
 from .draw import draw
+from .methods import is_temporal_graph
 from .graph import (
-    empty_graph,
     TemporalBase,
     TemporalGraph,
     TemporalDiGraph,
     TemporalMultiGraph,
     TemporalMultiDiGraph,
+    temporal_graph,
 )
 from .io import (
     read_graph,
@@ -26,7 +27,8 @@ __all__ = (
     "TemporalMultiDiGraph",
     "convert",
     "draw",
-    "empty_graph",
+    "is_temporal_graph",
+    "temporal_graph",
     "from_events",
     "from_snapshots",
     "from_static",

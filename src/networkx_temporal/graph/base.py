@@ -38,19 +38,9 @@ class TemporalBase(metaclass=ABCMeta):
     """
     Base class for temporal graphs.
 
-    This class is not meant to be instantiated directly, but rather inherited by
+    This class is not meant to be instantiated directly, but rather inherited by the classes
     :class:`~networkx_temporal.TemporalGraph`, :class:`~networkx_temporal.TemporalDiGraph`,
     :class:`~networkx_temporal.TemporalMultiGraph`, and :class:`~networkx_temporal.TemporalMultiDiGraph`.
-
-    :param int t: Number of temporal graphs to initialize. Optional. Default is ``1``.
-    :param directed: If ``True``, returns a
-        `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.
-        Defaults to ``False``.
-    :param multigraph: If ``True``, returns a
-        `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__.
-        Defaults to ``False``.
-    :param object create_using: NetworkX graph object to use as template. Optional.
-        Does not allow ``directed`` and ``multigraph`` parameters when set.
     """
     slice = slice
 
@@ -111,8 +101,8 @@ class TemporalBase(metaclass=ABCMeta):
         if type(t) == int:
             return self.data[t]
 
-        from . import TemporalGraph
-        TG = TemporalGraph(directed=self.is_directed(), multigraph=self.is_multigraph())
+        from . import temporal_graph
+        TG = temporal_graph(directed=self.is_directed(), multigraph=self.is_multigraph())
         TG.data = self.data[t]
         return TG
 
@@ -234,7 +224,7 @@ class TemporalBase(metaclass=ABCMeta):
 
         .. important::
 
-            A flattened graph does not preserve dynamic node attributes.
+            A flattened or static graph does not preserve dynamic node attributes.
         """
         return self.slice(bins=1)
 

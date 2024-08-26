@@ -19,7 +19,11 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     if log_level is not None:
         log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
 
-    TG = tx.TemporalGraph(directed=True, multigraph=True)
+    TG = tx.temporal_graph(directed=True, multigraph=True)
+    assert TG.is_directed() == True
+    assert TG.is_multigraph() == True
+    assert tx.is_temporal_graph(TG)
+    assert type(TG) == tx.TemporalMultiDiGraph
 
     TG.add_edges_from([
         ("a", "b", {"time": 0}),
