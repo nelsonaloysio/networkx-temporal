@@ -7,7 +7,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
 
     :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or
         :math:`(u, v, t, \\varepsilon)`, where :math:`u` is the source node, :math:`v` is the target
-        node, :math:`t` is the time of interaction, and :math:`\\varepsiilon` is either ``1``
+        node, :math:`t` is the time of interaction, and :math:`\\varepsilon` is either ``1``
         (edge addition) or ``-1`` (edge deletion).
     :param bool directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
@@ -26,8 +26,8 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
 
     t = 1 + max(events, key=lambda x: x[2])[2]
 
-    from ..graph import TemporalGraph
-    TG = TemporalGraph(directed=directed, multigraph=multigraph, t=t)
+    from ..graph import temporal_graph
+    TG = temporal_graph(directed=directed, multigraph=multigraph, t=t)
 
     if len(events[0]) == 3:
         list(TG[t].add_edge(u, v) for u, v, t in events)

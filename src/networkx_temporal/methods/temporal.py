@@ -5,6 +5,16 @@ from typing import Any
 from .utils import reduce_sum
 
 
+def is_temporal_graph(obj) -> bool:
+    """
+    Returns whether an object is a temporal graph.
+
+    :param obj: Object to be tested.
+    """
+    from ..graph import TemporalBase
+    return issubclass(type(obj), TemporalBase)
+
+
 def temporal_degree(self, *args, **kwargs) -> dict:
     """ Returns degree of a node in all snapshots. """
     return reduce(reduce_sum, self.degree(*args, **kwargs))

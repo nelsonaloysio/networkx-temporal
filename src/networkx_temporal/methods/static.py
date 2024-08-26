@@ -52,8 +52,8 @@ def to_directed(self, as_view: bool = True) -> TemporalGraph:
         self.data = [G.to_directed(as_view=as_view) for G in self]
         return self
 
-    from ..graph import TemporalGraph
-    TG = TemporalGraph(directed=True, multigraph=self.is_multigraph())
+    from ..graph import temporal_graph
+    TG = temporal_graph(directed=True, multigraph=self.is_multigraph())
     TG.data = [G.to_directed() for G in self]
     return TG
 
@@ -74,7 +74,7 @@ def to_undirected(self, as_view: bool = True) -> TemporalGraph:
         self.data = [G.to_undirected(as_view=as_view) for G in self]
         return self
 
-    from ..graph import TemporalGraph
-    TG = TemporalGraph(directed=False, multigraph=self.is_multigraph())
+    from ..graph import temporal_graph
+    TG = temporal_graph(directed=False, multigraph=self.is_multigraph())
     TG.data = [G.to_undirected() for G in self]
     return TG

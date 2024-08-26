@@ -58,7 +58,8 @@ def draw(
 
         >>> import networkx_temporal as tx
         >>>
-        >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+        >>> TG = tx.TemporalDiGraph()
+        >>> # TG = tx.temporal_graph(directed=True, multigraph=False)
         >>>
         >>> TG.add_edges_from([
         >>>     ("a", "b", {"time": 0}),

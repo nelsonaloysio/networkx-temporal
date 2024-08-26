@@ -1,4 +1,5 @@
 from .temporal import (
+    is_temporal_graph,
     temporal_degree,
     temporal_edges,
     temporal_in_degree,

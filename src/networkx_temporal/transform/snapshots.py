@@ -34,8 +34,8 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     assert all(multigraph == graphs[T[t]].is_multigraph() for t in T),\
         "Mixed graphs and multigraphs are not supported."
 
-    from ..graph import TemporalGraph
-    TG = TemporalGraph(directed=directed, multigraph=multigraph)
+    from ..graph import temporal_graph
+    TG = temporal_graph(directed=directed, multigraph=multigraph)
     TG.data = graphs
     return TG
 
