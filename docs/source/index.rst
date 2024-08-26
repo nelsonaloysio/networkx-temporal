@@ -94,14 +94,14 @@ The following is a quick example of the package in action, covering its basic fu
 Build and slice temporal graph
 ------------------------------
 
-Create a :class:`~networkx_temporal.TemporalGraph` object and
+Create a directed :class:`~networkx_temporal.TemporalGraph` object and
 :func:`~networkx_temporal.TemporalGraph.slice` it into a number of snapshots:
 
 .. code-block:: python
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -129,12 +129,12 @@ while the number of snapshots to be created may likewise be specified with the `
 
 Note that the total number of nodes may vary, while the total number of edges is preserved.
 
-.. hint::
+.. note::
 
    The :func:`~networkx_temporal.TemporalGraph.slice` method by default creates a snapshot for
    unique time value in the temporal graph. It internally stores `views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-   of the original graph, so no data is copied unless specified.
+   of the original graph, so no data is copied unless otherwise specified.
 
 
 Plot snapshots

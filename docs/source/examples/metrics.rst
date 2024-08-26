@@ -1,4 +1,4 @@
-.. include:: ../include/notebook.rst
+.. include:: notebook.rst
 
 ##############
 Common metrics
@@ -28,7 +28,7 @@ for each snapshot:
    >>> import networkx as nx
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -75,7 +75,7 @@ return the results per snapshot:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)

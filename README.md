@@ -35,8 +35,8 @@ For detailed information on using the package, please refer to its [official doc
 ```python
 >>> import networkx_temporal as tx
 >>>
->>> # Build temporal graph.
->>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+>>> # Build directed temporal graph.
+>>> TG = tx.TemporalDiGraph()
 >>> TG.add_edge("a", "b", time=0)
 >>> TG.add_edge("c", "b", time=1)
 >>> TG.add_edge("d", "c", time=2)
