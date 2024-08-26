@@ -1,4 +1,4 @@
-.. include:: ../include/notebook.rst
+.. include:: notebook.rst
 
 
 #####################
@@ -27,7 +27,7 @@ with the desired format:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)

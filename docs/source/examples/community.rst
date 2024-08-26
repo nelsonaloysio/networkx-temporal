@@ -1,4 +1,4 @@
-.. include:: ../include/notebook.rst
+.. include:: notebook.rst
 
 
 ###################

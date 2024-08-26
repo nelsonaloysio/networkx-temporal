@@ -1,4 +1,4 @@
-.. include:: ../include/notebook.rst
+.. include:: notebook.rst
 
 
 ################
@@ -14,7 +14,7 @@ Build temporal graph
 
 The main class of the package is the
 :class:`~networkx_temporal.TemporalGraph`
-object, which extends `NetworkX's graphs
+object, which extends `NetworkX graphs
 <https://networkx.org/documentation/stable/reference/classes/index.html>`__
 to handle temporal data.
 Let's start by creating a simple directed graph using ``time`` as attribute key:
@@ -23,7 +23,7 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
