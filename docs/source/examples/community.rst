@@ -82,7 +82,7 @@ Let's plot the graphs, with node colors representing communities and intra-commu
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Ground truths")
 
-.. image:: ../../figure/fig-8.png
+.. image:: ../../figure/fig-9.png
 
 We see the graphs are generated with the same community structure, but continuously decreasing
 assortativity. Let's try and retrieve the ground truths using a simple community detection algorithm.
@@ -135,9 +135,9 @@ fails to retrieve the true communities (ground truths) in the network:
     >>>     node_color=node_color,
     >>>     edge_color=edge_color,
     >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found by modularity on static graph")
+    >>>     suptitle="Communities found on static graph")
 
-.. image:: ../../figure/fig-9.png
+.. image:: ../../figure/fig-10.png
 
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
@@ -170,11 +170,11 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
     >>>     figsize=(12, 3.5),
     >>>     temporal_opts=temporal_opts,
     >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found by modularity on snapshots")
+    >>>     suptitle="Communities found on snapshots")
 
-.. image:: ../../figure/fig-10.png
+.. image:: ../../figure/fig-11.png
 
-This is mostly due to modularity optimization expecting an assortative community structure, while
+This is partly due to modularity optimization expecting an assortative community structure, while
 the network grew more disassortative over time. Not only the results of later snapshots are here
 suboptimal, but the changing community indices also increases the complexity of their analysis.
 
@@ -210,9 +210,9 @@ time maintaining community indices consistent over time, as seen below:
     >>>     figsize=(12, 3.5),
     >>>     temporal_opts=temporal_opts,
     >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found by modularity on temporal graph")
+    >>>     suptitle="Communities found on temporal graph")
 
-.. image:: ../../figure/fig-11.png
+.. image:: ../../figure/fig-12.png
 
 As observed, considering the network's temporal information allowed the algorithm to correctly
 retrieve the ground truths in this particular example, as well as to maintain the same community

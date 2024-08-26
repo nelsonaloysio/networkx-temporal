@@ -7,9 +7,8 @@ Convert and transform
 
 The package provides a set of functions to convert to different graph formats and representations.
 In this context, ''converting'' refers to changing the underlying graph object type, e.g.
-`igraph <https://igraph.org>`__.
-while ''transforming'' refers to changing the graph representation, e.g.,
-`event-based temporal graphs <#event-based-temporal-graph>`__.
+`igraph <https://igraph.org>`__, while ''transforming'' refers to changing the graph
+representation, e.g., `event-based temporal graphs <#event-based-temporal-graph>`__.
 
 .. note::
 
@@ -39,17 +38,18 @@ with the desired format:
    >>> TG.add_edge("f", "a", time=3)
    >>> TG.add_edge("f", "b", time=3)
    >>>
+   >>> TG = TG.slice(attr="time")
+   >>>
    >>> tx.convert(TG.to_static(), "igraph")
 
    <igraph.Graph at 0x7ff6f1803d40>
 
-In the example above, the temporal graph ``TG`` is first flattened using :func:`~to_static`.
-Otherwise, the function returns a list of graph objects, as shown below:
+In the example above, the temporal graph :const:`TG` was first transformed into a `static graph
+<#static-graph>`__, which is not required. Otherwise, the function returns a list of graph
+objects, one per snapshot, as shown below:
 
 .. code-block:: python
 
-   >>> TG = TG.slice(attr="time")
-   >>>
    >>> tx.convert(TG, "igraph")
 
    [<igraph.Graph at 0x7ff6f1803e40>,
@@ -92,39 +92,60 @@ differ from the number of temporal nodes :math:`V_T` and edges :math:`E_T`, depe
 and method used:
 
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| Method           | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
+| Representation   | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
 +==================+======================+=====================+====================================+=====================================+
-| |to_static|      | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
+| |to_static|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_snapshots|   | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
+| |to_snapshots|_  | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_events|      | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:x:|                 |
+| |to_events|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:x:|                 |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_unified|     | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
+| |to_unified|_    | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
 
-.. |to_static| replace:: :func:`~networkx_temporal.TemporalGraph.to_static`
-.. |to_snapshots| replace:: :func:`~networkx_temporal.TemporalGraph.to_snapshots`
-.. |to_events| replace:: :func:`~networkx_temporal.TemporalGraph.to_events`
-.. |to_unified| replace:: :func:`~networkx_temporal.TemporalGraph.to_unified`
+.. .. |to_static| replace:: :func:`~networkx_temporal.TemporalGraph.to_static`
+.. .. |to_snapshots| replace:: :func:`~networkx_temporal.TemporalGraph.to_snapshots`
+.. .. |to_events| replace:: :func:`~networkx_temporal.TemporalGraph.to_events`
+.. .. |to_unified| replace:: :func:`~networkx_temporal.TemporalGraph.to_unified`
+
+.. |to_static| replace:: Static
+.. _to_static: #static-graph
+
+.. |to_snapshots| replace:: Snapshots
+.. _to_snapshots: #snapshot-based-temporal-graph
+
+.. |to_events| replace:: Events
+.. _to_events: #event-based-temporal-graph
+
+.. |to_unified| replace:: Unified
+.. _to_unified: #unified-temporal-graph
 
 
 Static graph
 ------------
 
-Builds a static or flattened graph ``G`` containing all the edges found at each time step.
+A static graph :const:`G` is a single graph object containing all the nodes and edges found in the
+temporal graph. It is the simplest representation of a network and is the most common type of graph.
 
 .. important::
 
-   Dynamic node attributes in a temporal graph are not preserved in a static graph.
+   Dynamic node attributes are not preserved when transforming a temporal to a static graph.
+
+.. seealso::
+
+   The `Basic operations: Import static graphs <basics.html#import-static-graphs>`__ section for
+   more static graph conversion examples.
 
 
-.. rubric:: TemporalGraph → G
+:const:`TG` → :const:`G`
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a temporal graph into a static graph with the :func:`~networkx_temporal.TemporalGraph.to_static` method:
 
 .. code-block:: python
 
     >>> G = TG.to_static()
-    >>> G
+    >>> print(G)
 
     DiGraph with 6 nodes and 8 edges
 
@@ -132,31 +153,41 @@ Builds a static or flattened graph ``G`` containing all the edges found at each 
 
    >>> tx.draw(G, layout="kamada_kawai", suptitle="Static Graph")
 
-.. image:: ../../figure/fig-6.png
+.. image:: ../../figure/fig-7.png
 
-.. rubric:: G → TemporalGraph
+
+:const:`G` → :const:`TG`
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a static graph into a temporal graph with the :func:`~networkx_temporal.from_static` function:
 
 .. code-block:: python
 
-    >>> TG = tx.from_static(G).slice(attr="time")
+    >>> TG = tx.from_static(G)
+    >>> TG = TG.slice(attr="time")
     >>> TG
 
-    TemporalDiGraph (t=4) with 12 nodes and 8 edges
+    TemporalDiGraph (t=1) with 6 nodes and 8 edges
 
 
 Snapshot-based temporal graph
 -----------------------------
 
-A snapshot-based temporal graph ``STG`` is a sequence of graphs where each element represents a
+A snapshot-based temporal graph :const:`STG` is a sequence of graphs where each element represents a
 snapshot of the original temporal graph. It is the most common representation of temporal graphs.
 
 .. note::
 
-   Like the :func:`~networkx_temporal.TemporalGraph.slice` method, this function internally returns
+   Like the :func:`~networkx_temporal.TemporalGraph.slice` method,
+   :func:`~networkx_temporal.TemporalGraph.to_snapshots` internally returns
    views of the original graph data, so no data is copied unless specified otherwise, i.e., by
    passing ``as_view=False`` to the function.
 
-.. rubric:: TemporalGraph → STG
+
+:const:`TG` → :const:`STG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a temporal graph into a snapshot-based temporal graph with :func:`~networkx_temporal.TemporalGraph.to_snapshots`:
 
 .. code-block:: python
 
@@ -168,39 +199,47 @@ snapshot of the original temporal graph. It is the most common representation of
     <networkx.classes.graph.Graph at 0x7fd912906d50>,
     <networkx.classes.graph.Graph at 0x7fd91290d350>]
 
-.. rubric:: STG → TemporalGraph
+
+:const:`STG` → :const:`TG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a snapshot-based temporal graph into a temporal graph with :func:`~networkx_temporal.from_snapshots`:
 
 .. code-block:: python
 
    >>> TG = tx.from_snapshots(STG)
    >>> TG
 
-    TemporalDiGraph (t=4) with 12 nodes and 8 edges
+   TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
 
 Event-based temporal graph
 --------------------------
 
-An event-based temporal graph ``ETG`` is a sequence of 3- or 4-tuple edge-based events.
+An event-based temporal graph :const:`ETG` is a sequence of 3- or 4-tuple edge-based events.
 
 * **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time attribute;
 
-* **4-tuples** (:math:`u, v, t, \\varepsilon`), where an additional element :math:`\\varepsilon` is either a
+* **4-tuples** (:math:`u, v, t, \varepsilon`), where an additional element :math:`\varepsilon` is either a
   positive (``1``) or negative (``-1``) unity representing edge addition and deletion events, respectively.
 
 Depending on the temporal graph data, one of these may allow a more compact representation than the
-other. The default is to return a 3-tuple sequence (also known as a *stream graph*).
+other. The default is to return a 3-tuple sequence (also known as a **stream graph**).
 
 .. important::
 
    Event-based temporal graphs do not currently store node- or edge-level attribute data.
    Moreover, as sequences of events are edge-based, node isolates are not preserved.
 
-.. rubric:: TemporalGraph → ETG
+
+:const:`TG` → :const:`ETG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a temporal graph into event-based temporal graphs with :func:`~networkx_temporal.TemporalGraph.to_events`:
 
 .. code-block:: python
 
-   >>> ETG = TG.to_events()  # stream=True (default)
+   >>> ETG = TG.to_events()
    >>> ETG
 
     [('a', 'b', 0),
@@ -231,11 +270,16 @@ other. The default is to return a 3-tuple sequence (also known as a *stream grap
     ('d', 'c', 3, -1),
     ('d', 'e', 3, -1)]
 
-.. rubric:: ETG → TemporalGraph
+
+:const:`ETG` → :const:`TG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming an event-based temporal graph into a temporal graph with :func:`~networkx_temporal.from_events`:
 
 .. code-block:: python
 
-   >>> tx.from_events(ETG, directed=True, multigraph=True)
+   >>> TG = tx.from_events(ETG, directed=True, multigraph=True)
+   >>> TG
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
@@ -243,36 +287,60 @@ other. The default is to return a 3-tuple sequence (also known as a *stream grap
 Unified temporal graph
 ----------------------
 
-A unified temporal graph ``UTG`` is a single graph object that contains the original temporal data,
-plus ''proxy'' nodes (*from each snapshot*) and edge ''couplings'' (*linking sequential temporal
-nodes*). Its usefulness is restricted to certain types of analysis and visualization, e.g., based on
+A unified temporal graph :const:`UTG` is a single graph object that contains the original temporal data,
+plus ''proxy'' nodes (from each snapshot) and edge ''couplings'' (linking sequential temporal
+nodes). Its usefulness is restricted to certain types of analysis and visualization, e.g., based on
 temporal flows.
 
-.. rubric:: TemporalGraph → UTG
+
+:const:`TG` → :const:`UTG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a temporal graph into a unified temporal graph with :func:`~networkx_temporal.TemporalGraph.to_unified`:
 
 .. code-block:: python
 
    >>> UTG = TG.to_unified(add_couplings=True)
-   >>> UTG
+   >>> print(UTG)
 
-   MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=2)' with 12 nodes and 14 edges
+   MultiDiGraph named 'UTG (t=4, proxy_nodes=6, edge_couplings=6)' with 12 nodes and 14 edges
+
+Let's draw the unified temporal graph to visualize the proxy nodes and edge couplings (in blue):
 
 .. code-block:: python
 
+   >>> c0, c1 = "#cccccc", "#3987bd"
+   >>>
    >>> nodes = sorted(TG.temporal_nodes())
    >>>
-   >>> pos = {node: (nodes.index(node.rsplit("_")[0]), -int(node.rsplit("_")[1]))
-   >>>        for node in UTG.nodes()}
+   >>> pos = {n: (nodes.index(n.rsplit("_")[0]), -int(n.rsplit("_")[1]))
+   >>>        for n in UTG.nodes()}
+   >>>
+   >>> labels = {n: f"{n.split('_')[0]}$_{n.split('_')[1]}$"
+   >>>           for n in UTG.nodes()}
+   >>>
+   >>> node_color = [c1 if int(n.split("_")[1]) != TG.index_node(n.split("_")[0])[0] else c0
+   >>>               for n in UTG.nodes()]
+   >>>
+   >>> edge_color = [c1 if u.split("_")[0] == v.split("_")[0] else c0
+   >>>               for u, v in UTG.edges()]
    >>>
    >>> tx.draw(UTG,
-               pos=pos,
-               figsize=(4, 4),
-               connectionstyle="arc3,rad=0.25",
-               suptitle="Unified Temporal Graph")
+   >>>       pos=pos,
+   >>>       figsize=(4, 4),
+   >>>       labels=labels,
+   >>>       node_color=node_color,
+   >>>       edge_color=edge_color,
+   >>>       connectionstyle="arc3,rad=0.25",
+   >>>       suptitle="Unified Temporal Graph")
 
-.. image:: ../../figure/fig-7.png
+.. image:: ../../figure/fig-8.png
 
-.. rubric:: UTG → TemporalGraph
+
+:const:`UTG` → :const:`TG`
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transforming a unified temporal graph into a temporal graph with :func:`~networkx_temporal.from_unified`:
 
 .. code-block:: python
 

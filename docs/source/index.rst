@@ -24,13 +24,14 @@
    :hidden:
    :caption: Appendix
 
-   cite
-   references
    genindex
+   references
+   cite
 
 .. note::
 
    This documentation was generated on |today| for package release |release|.
+
 
 #################
 networkx-temporal
@@ -57,10 +58,10 @@ networkx-temporal
    :alt: License
 
 
-**NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic networks,
-i.e., temporal graph data.
+**NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic graphs,
+i.e., temporal network data.
 
-This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which extends
+This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which inherits
 NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
 and implements additional functions to manipulate temporal data within. Most importantly, it
 provides ways to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and
@@ -156,8 +157,8 @@ functions accept compressed temporal graphs:
 
 .. code-block:: python
 
-   >>> TG = tx.read_graph("temporal_graph.graphml.zip")
-   >>> tx.write_graph(TG, "temporal_graph.graphml.zip")
+   >>> TG = tx.read_graph("temporal-graph.graphml.zip")
+   >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
 
 Both functions support the same `extension formats
 <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
@@ -216,8 +217,8 @@ For more information on using this package, please refer to the following sectio
 
 .. seealso::
 
-   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__ for
-   the latest updates and issues. Contributions are welcome!
+   The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__
+   for the latest updates and issues. Contributions are welcome!
 
 If you have any questions or feedback to share, please also feel free to
 `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|
