@@ -8,6 +8,7 @@ List of classes available in the :mod:`networkx_temporal` module.
 
 .. autoclass:: TemporalGraph
     :members:
+    :inherited-members: Graph
 
 .. autoclass:: TemporalDiGraph
     :members:
@@ -17,3 +18,5 @@ List of classes available in the :mod:`networkx_temporal` module.
 
 .. autoclass:: TemporalMultiDiGraph
     :members:
+
+.. .. autoclass:: TemporalBase

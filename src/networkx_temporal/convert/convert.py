@@ -48,7 +48,7 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
     |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
     +------------------------------------------------------------------+------------------------------------+------------------------+
 
-    .. important::
+    .. note::
 
        To reduce package dependencies and avoid unnecessary imports, the required library is
        imported on function call based on the ``to`` parameter and must be separately installed.

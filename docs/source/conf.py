@@ -47,7 +47,7 @@ html_theme_options = {
     "collapse_navigation": False,
     "includehidden": True,
     "logo_only": True,
-    "navigation_depth": 4,
+    "navigation_depth": 3,
     "prev_next_buttons_location": "bottom",
     'sticky_navigation': False,
     "style_external_links": False,

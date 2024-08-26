@@ -4,12 +4,13 @@
 Common metrics
 ##############
 
-This section showcases some common metrics available for temporal graphs and its snapshots, that is,
-the individual (static) graphs that compose a :class:`~networkx_temporal.TemporalGraph` object after calling :func:`~networkx_temporal.TemporalGraph.slice`.
+Both static and temporal graph metrics can be calculated from a
+:class:`~networkx_temporal.TemporalGraph` object. This section showcases a few common examples
+using some of NetworkX's built-in functions and algorithms.
 
 .. note::
 
-   Contributions are welcome! If you would like to see a specific metric for temporal graphs
+   Contributions are welcome! If you would like to see a specific algorithm for temporal graphs
    implemented, please feel free to submit a pull request on the package's `GitHub repository
    <https://github.com/nelsonaloysio/networkx-temporal>`__.
 
@@ -18,22 +19,57 @@ Static graph metrics
 ====================
 
 The functions and algorithms implemented by NetworkX can be applied directly on the temporal graph
-snapshots, either by iterating over them or by calling the `corresponding methods
-<https://networkx.org/documentation/stable/reference/classes/graph.html#methods>`__ directly.
+by iterating over snapshots. For instance, to calculate the `Katz centrality
+<https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.katz_centrality.html>`__
+for each snapshot:
 
-Such methods are executed on each graph snapshot when called and return a list of results --- unless
-in case of specific functions that have been overriden, maintaining their use, such as :func:`~networkx_temporal.is_directed`.
+.. code-block:: python
 
+   >>> import networkx as nx
+   >>> import networkx_temporal as tx
+   >>>
+   >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
+   >>>
+   >>> TG.add_edge("a", "b", time=0)
+   >>> TG.add_edge("c", "b", time=1)
+   >>> TG.add_edge("d", "c", time=2)
+   >>> TG.add_edge("d", "e", time=2)
+   >>> TG.add_edge("a", "c", time=2)
+   >>> TG.add_edge("f", "e", time=3)
+   >>> TG.add_edge("f", "a", time=3)
+   >>> TG.add_edge("f", "b", time=3)
+   >>>
+   >>> TG = TG.slice(attr="time")
+   >>>
+   >>> for t, G in enumerate(TG):
+   >>>     katz = nx.katz_centrality(G)
+   >>>     katz = {node: round(value, 3) for node, value in katz.items()}
+   >>>     print(f"t={t}: {katz}")
+
+   # t=0: {'a': 0.673, 'b': 0.74}
+   # t=1: {'c': 0.673, 'b': 0.74}
+   # t=2: {'a': 0.464, 'c': 0.556, 'd': 0.464, 'e': 0.51}
+   # t=3: {'a': 0.511, 'b': 0.511, 'e': 0.511, 'f': 0.465}
+
+In addition, any NetworkX `Graph methods
+<https://networkx.org/documentation/stable/reference/classes/graph.html#methods>`__
+can be called directly from the temporal graph as well. Doing so will automatically apply it to each
+snapshot separately, as seen in the examples below.
+
+.. seealso::
+
+   The `Algorithms section <https://networkx.org/documentation/stable/reference/algorithms/index.html>`__
+   of the NetworkX documentation for a list of available functions.
 
 
 Degree centrality
 -----------------
 
-Methods such as
+Static graph methods such as
 `degree <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.degree.html>`__,
 `in_degree <https://networkx.org/documentation/stable/reference/classes/generated/networkx.DiGraph.in_degree.html>`__, and
 `out_degree <https://networkx.org/documentation/stable/reference/classes/generated/networkx.DiGraph.out_degree.html>`__
-return a list of degree views per snapshot:
+return the results per snapshot:
 
 .. code-block:: python
 
@@ -59,7 +95,7 @@ return a list of degree views per snapshot:
     DiMultiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
     DiMultiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
 
-Alternatively, we may obtain the degree of a specific node in a given snapshot, e.g., node :math:`a_0`:
+Alternatively, we may also obtain the degree of a specific node in a given snapshot, e.g., node :math:`a_0`:
 
 .. code-block:: python
 
@@ -85,7 +121,8 @@ Similarly, to obtain the total number of nodes and edges in each snapshot:
 Node neighborhoods
 ------------------
 
-The ``neighbors`` method returns a list of neighbors for each node in each snapshot:
+The `neighbors <https://networkx.org/documentation/stable/reference/classes/generated/networkx.Graph.neighbors.html>`__
+method returns a list of neighbors for each node in each snapshot:
 
 .. code-block:: python
 
@@ -97,7 +134,7 @@ Converting the graph to undirected, we also obtain nodes that have node :math:`c
 
 .. code-block:: python
 
-   >>> TG.to_undirected().temporal_neighbors("c")
+   >>> TG.to_undirected().neighbors("c")
 
    [[], ['b'], ['a', 'd'], []]
 
@@ -108,19 +145,19 @@ Temporal graph metrics
 ======================
 
 Only a few methods that consider all snapshots are currently available from :class:`~networkx_temporal.TemporalGraph` objects.
-They mostly serve as wrappers of the available functions in NetworkX, for convenience purposes.
+They mostly serve as wrappers of methods implemented by NetworkX, for convenience purposes.
 
 
 Temporal degree centrality
 --------------------------
 
-Meanwhile, :func:`~networkx_temporal.TemporalGraph.temporal_degree` returns a dictionary containing node degrees across all time steps:
+The :func:`~networkx_temporal.TemporalGraph.temporal_degree` method returns a dictionary containing node degrees across all time steps:
 
 .. code-block:: python
 
    >>> TG.temporal_degree()
 
-   {'e': 4, 'b': 6, 'f': 6, 'a': 6, 'd': 4, 'c': 6}
+   {'a': 3, 'f': 3, 'e': 2, 'd': 2, 'c': 3, 'b': 3}
 
 Alternatively, to obtain the degree of a specific node considering all snapshots, e.g., node :math:`a`:
 
@@ -128,14 +165,14 @@ Alternatively, to obtain the degree of a specific node considering all snapshots
 
    >>> TG.temporal_degree("a")
 
-   6
+   3
 
 
 Temporal order and size
 -----------------------
 
-The :func:`~networkx_temporal.TemporalGraph.temporal_order` and :func:`~networkx_temporal.TemporalGraph.temporal_size` functions
-return the number of unique nodes and edges:
+The :func:`~networkx_temporal.TemporalGraph.temporal_order` and
+:func:`~networkx_temporal.TemporalGraph.temporal_size` functions return the total unique nodes and edges:
 
 .. code-block:: python
 
@@ -150,13 +187,12 @@ return the number of unique nodes and edges:
    The temporal order and size of a temporal graph match the length of
    :func:`~networkx_temporal.TemporalGraph.temporal_nodes` and
    :func:`~networkx_temporal.TemporalGraph.temporal_edges`, i.e.,
-   the sets of all (**unique**) nodes and edges across all snapshots.
+   the sets of all (**unique**) nodes and edges considering all snapshots.
 
 
-Total order and size
-^^^^^^^^^^^^^^^^^^^^
-
-Obtaining the sum of the numbers of nodes and edges (interactions) across all snapshots, with duplicates:
+Alternatively,
+:func:`~networkx_temporal.TemporalGraph.total_order` and
+:func:`~networkx_temporal.TemporalGraph.total_size` return the sum of nodes and edges per snapshot:
 
 .. code-block:: python
 
@@ -168,9 +204,9 @@ Obtaining the sum of the numbers of nodes and edges (interactions) across all sn
 
 .. note::
 
-   The temporal order and size of a temporal graph match the sum of
+   The total order and size of a temporal graph match the sum of lenghts of
    :func:`nodes` and :func:`edges`, i.e.,
-   the lists of all (**non-unique**) nodes and edges across all snapshots.
+   the lists of all (**non-unique**) nodes and edges considering each snapshot separately.
 
 
 Temporal node neighborhoods

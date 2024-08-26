@@ -14,7 +14,7 @@ This package interacts with or is built on top of the following libraries:
 - `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`_ [8]_
 - `Teneto <https://teneto.readthedocs.io>`_ [9]_
 
-For more information on a specific package, please refer to their respective documentation.
+For more information on specific packages, please refer to their respective documentation.
 
 -----
 
