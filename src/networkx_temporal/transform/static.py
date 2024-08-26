@@ -52,7 +52,7 @@ def to_static(
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Optional.
     """
-    assert attr not in next(iter(self[0].edges(data=True)))[-1],\
+    assert attr is None or sum(self.size()) == 0 or attr not in next(iter(self[0].edges(data=True)))[-1],\
         f"Edge attribute '{attr}' already exists in graph."
 
     if len(self) == 1:
