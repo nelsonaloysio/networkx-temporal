@@ -25,6 +25,7 @@ def draw(
     nrows: int = 1,
     ncols: Optional[int] = None,
     names: Optional[Union[list, bool]] = None,
+    edge_labels: Optional[bool] = False,
     suptitle: Optional[str] = None,
     plot_opts: Optional[dict] = None,
     temporal_opts: Optional[Union[list, dict]] = None,
@@ -42,11 +43,19 @@ def draw(
     <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__.
     The figure may be further customized by setting ``draw_opts``, ``temporal_opts``, and ``layout_opts``.
 
+    .. important::
+
+        This function simply calls `NetworkX's draw
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
+        in the backend and returns a `matplotlib Figure
+        <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__ with
+        temporal graph snapshots as subplots. It does not scale well to large graphs, which usually
+        require more sophisticated approaches or specialized visualization tools.
+
     .. rubric:: Example
 
     .. code-block:: python
 
-        >>> #!pip install 'networkx-temporal[draw]'
         >>> import networkx_temporal as tx
         >>>
         >>> TG = tx.TemporalGraph(directed=True, multigraph=False)
@@ -71,22 +80,16 @@ def draw(
 
     .. image:: ../../figure/fig-0.png
 
-    .. important::
-
-        This function simply calls `NetworkX's draw
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
-        in the backend and returns a `matplotlib Figure
-        <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__ with
-        temporal graph snapshots as subplots. It does not scale well to large graphs, which usually
-        require more sophisticated approaches or specialized visualization tools.
-
     .. seealso::
 
-        The `Examples: Slice temporal graph
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/basics.html#slice-temporal-graph>`__
-        and `Examples: Community detection
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
-        pages for more.
+        - The `drawing documentation
+          <https://networkx.org/documentation/stable/reference/drawing.html>`__ from NetworkX
+          for more information on plotting graphs.
+        - The `Examples: Slice temporal graph
+          <https://networkx-temporal.readthedocs.io/en/latest/examples/basics.html#slice-temporal-graph>`__
+          and `Examples: Community detection
+          <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
+          pages from the documentation for more snippets using this function to draw temporal graphs.
 
     :param TG: :class:`~networkx_temporal.TemporalGraph` or NetworkX graph object(s).
     :param figsize: Tuple with the dimensions of the figure. Default is ``(3, 3)``.
@@ -168,11 +171,20 @@ def draw(
     i, j = 0, 0
     for t in range(len(TG)):
         ax_ = ax if len(TG) == 1 else ax[t] if nrows == 1 else ax[i, j]
+        pos_ = pos or layout(TG[t], **(layout_opts or {}).get(t, {}))
+        opts_ = {**DRAW_OPTS, **draw_opts, **(temporal_opts or {}).get(t, {})}
 
-        nx.draw(TG[t],
-                ax=ax_,
-                pos=pos or layout(TG[t], **(layout_opts or {}).get(t, {})),
-                **{**DRAW_OPTS, **draw_opts, **(temporal_opts or {}).get(t, {})})
+        nx.draw(TG[t], ax=ax_, pos=pos_, **opts_)
+
+        if edge_labels:
+            edge_labels_ = {(u, v, k): x for u, v, k, x in TG[t].edges(data=edge_labels, keys=True)}\
+                           if TG[t].is_multigraph() else\
+                           {(u, v): x for u, v, x in TG[t].edges(data=edge_labels)}
+
+            nx.draw_networkx_edge_labels(TG[t],
+                                         pos=pos_,
+                                         edge_labels=edge_labels_,
+                                         font_color=opts_.get("edge_color"))
 
         if names is False:
             title = None
