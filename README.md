@@ -24,7 +24,7 @@ Package is available to install on [PyPI](https://pypi.org/project/networkx-temp
 $ pip install 'networkx-temporal[draw]'
 ```
 
-> The `[draw]` extra includes `matplotlib`, required to plot graphs as in the example below.
+> The `[draw]` extra includes additional libraries required to plot graphs with NetworkX.
 
 ## Quick example
 

@@ -3,17 +3,6 @@ from typing import Any
 from ..typing import TemporalGraph
 
 
-def neighbors(self, node: Any) -> list:
-    """
-    Returns neighbors of a node considering each snapshot.
-
-    :param node: Node in the temporal graph.
-
-    :meta private:
-    """
-    return list(list(G.neighbors(node)) if G.has_node(node) else [] for G in self)
-
-
 def is_directed(self, on_each: bool = False) -> bool:
     """
     Returns ``True`` if the graph is directed, ``False`` otherwise.
@@ -34,6 +23,17 @@ def is_multigraph(self, on_each: bool = False) -> bool:
     :param bool on_each: If ``True``, checks all snapshots for the graph type.
     """
     return [G.is_multigraph() for G in self] if on_each else self[0].is_multigraph()
+
+
+def neighbors(self, node: Any) -> list:
+    """
+    Returns neighbors of a node for each snapshot.
+
+    :param node: Node in the temporal graph.
+
+    :meta private:
+    """
+    return list(list(G.neighbors(node)) if G.has_node(node) else [] for G in self)
 
 
 def to_directed(self, as_view: bool = True) -> TemporalGraph:

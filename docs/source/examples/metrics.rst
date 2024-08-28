@@ -90,10 +90,10 @@ return the results per snapshot:
    >>>
    >>> TG.degree()
 
-   [DiMultiDegreeView({'b': 1, 'a': 1}),
-    DiMultiDegreeView({'b': 1, 'c': 1}),
-    DiMultiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
-    DiMultiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
+   [DiDegreeView({'b': 1, 'a': 1}),
+    DiDegreeView({'c': 1, 'b': 1}),
+    DiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
+    DiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
 
 Alternatively, we may also obtain the degree of a specific node in a given snapshot, e.g., node :math:`a_0`:
 
