@@ -51,6 +51,12 @@ def to_unified(
     A unified temporal graph is a single graph that contains all the nodes and edges of its
     snapshots, plus ''proxy'' nodes and edge ''couplings'' connecting sequential temporal nodes.
 
+    .. seealso::
+
+        The `Examples → Convert and transform → Unified temporal graph
+        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#tg-utg>`__
+        page for an example.
+
     :param str to: Package name or alias to convert the graph object
         (see :func:`~networkx_temporal.convert`). Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.

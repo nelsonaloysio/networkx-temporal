@@ -7,27 +7,29 @@ from .base import TemporalBase
 
 class TemporalGraph(TemporalBase, nx.Graph):
     """
-    Creates a temporal undirected graph.
+    Creates a temporal undirected graph. Does not allow multiple edges among node pairs.
 
     It inherits a static NetworkX `Graph
     <https://networkx.org/documentation/stable/reference/classes/graph.html>`__
-    and includes all methods implemented by it, such as ``add_node``, ``add_edge``,
-    ``neighbors``, ``remove_node``, ``remove_edge``, ``subgraph``, ``to_directed``, and
-    ``to_undirected``, as well as additional methods for handling temporal graphs and
-    snapshots.
+    and includes all methods available from it, such as :func:`add_node`, :func:`add_edge`,
+    :func:`neighbors`, :func:`subgraph`, :func:`to_directed`, and :func:`to_undirected`,
+    as well as additional methods implemented for handling temporal graphs and snapshots.
 
     This is equivalent to calling :func:`~networkx_temporal.temporal_graph` with ``directed=False``
     and ``multigraph=False``.
 
-
     .. seealso::
 
-       * The `official NetworkX documentation
+       - The `Examples → Basic operations
+         <https://networkx-temporal.readthedocs.io/en/latest/examples/basics.html#build-temporal-graph>`__
+         page for examples on building a temporal graph.
+       - The `official NetworkX documentation
          <https://networkx.org/documentation/stable/reference/classes/index.html>`__
-         for a list of methods available for each graph type.
-       * The `Examples: Basic operations
-         <https://networkx-temporal.readthedocs.io/en/latest/examples.html>`__
-         page for more examples on building a temporal graph.
+         for a list of methods inherited by this class.
+       - The :class:`~networkx_temporal.TemporalDiGraph`,
+         :class:`~networkx_temporal.TemporalMultiGraph`,
+         and :class:`~networkx_temporal.TemporalMultiDiGraph` classes for other temporal graph types
+         with directed and/or multiple edges among node pairs.
 
     .. rubric:: Example
 
@@ -49,10 +51,10 @@ class TemporalGraph(TemporalBase, nx.Graph):
 
     .. hint::
 
-       Setting ``t`` greater than ``1`` will create a list of NetworkX graph objects, each
+       Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
        representing a snapshot in time. Unless dynamic node attributes are required, it is
        recommended to use the :func:`~networkx_temporal.TemporalGraph.slice` method instead,
-       in order to create less resource-demanding graph `views
+       allowing to create less resource-demanding graph `views
        <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
        on the fly.
 
