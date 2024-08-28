@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
 from typing import Any, Callable, Optional, Union
+from warnings import warn
 
 import networkx as nx
 
@@ -72,12 +73,8 @@ class TemporalBase(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, t: Optional[int] = None, directed: bool = None, multigraph: bool = None):
         graph = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")
-
-        for method in dir(graph):
-            if method not in TemporalBase.__dict__ and not method.startswith("_"):
-                self.method = wrap(self, method)
-
         self.data = [graph() for _ in range(t or 1)]
+        wrapper_networkx(self, graph)
 
     def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
         """ Returns snapshot from a given interval. """
@@ -112,7 +109,7 @@ class TemporalBase(metaclass=ABCMeta):
         """ Returns number of slices in the temporal graph. """
         return len(self.data)
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """ Returns string representation of the class. """
         return f"Temporal"\
                f"{'Multi' if self.is_multigraph() else ''}"\
@@ -307,9 +304,9 @@ class TemporalBase(metaclass=ABCMeta):
         return self.data.pop(t or -1)
 
 
-def wrap(self, method: str) -> Callable:
+def decorator_networkx(cls, method: str) -> Callable:
     """
-    Decorator for wrapping static graph methods.
+    Decorator for static NetworkX graph methods.
 
     Returns a list of values returned by calling the method on each snapshot in the temporal graph.
     If all returned values are `None` or a boolean, returns a single element instead of a list.
@@ -317,7 +314,7 @@ def wrap(self, method: str) -> Callable:
     :meta private:
     """
     def func(*args, **kwargs):
-        returns = list(G.__getattribute__(method)(*args, **kwargs) for G in self)
+        returns = list(G.__getattribute__(method)(*args, **kwargs) for G in cls)
         if all(r is None for r in returns):
             return None
         if all(r is True for r in returns):
@@ -326,3 +323,15 @@ def wrap(self, method: str) -> Callable:
             return False
         return returns
     return func
+
+
+def wrapper_networkx(cls, graph: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]) -> None:
+    """
+    Wrapper for decorating static NetworkX graph methods.
+    """
+    for method in dir(graph):
+        if method not in dir(TemporalBase) and not method.startswith("__"):
+            try:
+                cls.__setattr__(method, decorator_networkx(cls, method))
+            except AttributeError:  # networkx<2.8.1
+                warn("NetworkX version <2.8.1 detected, inherited methods will be undocumented.")
