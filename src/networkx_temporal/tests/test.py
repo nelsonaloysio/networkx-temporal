@@ -7,7 +7,6 @@ from os import remove
 from typing import Optional
 
 import networkx_temporal as tx
-from networkx_gdf import read_gdf, write_gdf
 from networkx_temporal.convert import FORMATS
 from networkx_temporal.typing import Literal
 
@@ -49,7 +48,7 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     assert TG.temporal_size() == TG.total_size() == 9
     assert TG.temporal_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
     assert TG.temporal_degree("a") == 4
-    assert TG.temporal_neighbors("c") == set("b")
+    assert TG.temporal_neighbors("c") == ["b"]
     assert TG.to_undirected().is_directed() == False
     assert TG.to_directed().is_directed() == True
 
