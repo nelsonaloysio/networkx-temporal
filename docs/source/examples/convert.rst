@@ -127,13 +127,13 @@ Static graph
 A static graph :const:`G` is a single graph object containing all the nodes and edges found in the
 temporal graph. It is the simplest representation of a network and is the most common type of graph.
 
-.. important::
+.. attention::
 
    Dynamic node attributes are not preserved when transforming a temporal to a static graph.
 
 .. seealso::
 
-   The `Basic operations: Import static graphs <basics.html#import-static-graphs>`__ section for
+   The `Basic operations → Import static graphs <basics.html#import-static-graphs>`__ page for
    more static graph conversion examples.
 
 

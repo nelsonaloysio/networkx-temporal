@@ -222,9 +222,12 @@ class TemporalBase(metaclass=ABCMeta):
         Returns flattened version of temporal graph.
         Same as :func:`~networkx_temporal.TemporalGraph.slice` with ``bins=1``.
 
-        .. important::
+        This method differs from :func:`~networkx_temporal.TemporalGraph.to_static` in that it
+        returns a temporal graph with a single snapshot, rather than a static graph.
 
-            A flattened or static graph does not preserve dynamic node attributes.
+        .. attention::
+
+           As each node in a flattened graph is unique, dynamic node attributes are not preserved.
         """
         return self.slice(bins=1)
 

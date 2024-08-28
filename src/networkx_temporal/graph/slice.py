@@ -24,9 +24,19 @@ def slice(
     """
     Slices temporal graph into snapshots, returning a new temporal graph object.
 
-    No data is lost when using this method, as it includes all nodes and edges from the original
-    graph. Note that the returned object may return duplicate nodes, if they are connected to
-    other nodes in multiple snapshots; and edges, if ``duplicates`` is not set to ``'raise'``.
+    All node interactions are preserved when using this method. Note that the returned object may
+    contain duplicate nodes over time, if they interact with others in multiple snapshots.
+
+    Note that a :class:`~networkx_temporal.TemporalMultiGraph` or
+    :class:`~networkx_temporal.TemporalMultiDiGraph` object is required to store multiple edges
+    among node pairs, allowing multiple interactions between the same source and target.
+
+    .. hint::
+
+        By default, `views
+        <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+        of the original graph are returned to avoid memory overhead. If the resulting
+        snapshots need to be modified, set ``as_view=False`` to return copies instead.
 
     .. rubric:: Example
 
@@ -36,40 +46,33 @@ def slice(
 
        >>> import networkx_temporal as tx
        >>>
-       >>> TG = tx.TemporalDiGraph()
-       >>> # TG = tx.temporal_graph(directed=True, multigraph=False)
+       >>> TG = tx.TemporalGraph()
+       >>> # TG = tx.temporal_graph(directed=False, multigraph=False)
        >>>
        >>> TG.add_edge("a", "b", time=0)
        >>> TG.add_edge("c", "b", time=1)
        >>>
        >>> TG = TG.slice(attr="time")
-       >>>
-       >>> print(TG)
+       >>> TG
 
-       TemporalDiGraph (t=2) with 4 nodes and 2 edges
+       TemporalGraph (t=2) with 4 nodes and 2 edges
 
-    Calling this method again on the same object, now with ``bins=1``, will :func:`~networkx_temporal.TemporalGraph.flatten` the graph:
+    Calling this method again on the same object, now with ``bins=1``, will
+    :func:`~networkx_temporal.TemporalGraph.flatten` the graph:
 
     .. code-block:: python
 
        >>> TG = TG.slice(bins=1)
-       >>>
-       >>> print(TG)
+       >>> TG
 
-       TemporalMultiDiGraph (t=1) with 3 nodes and 2 edges
-
-    .. hint::
-
-        By default, `views <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-        of the original graph are returned to avoid memory overhead. If the resulting
-        snapshots need to be modified, set ``as_view=False`` to return copies instead.
+       TemporalGraph (t=1) with 3 nodes and 2 edges
 
     .. seealso::
 
         The
-        `Examples: Slice temporal graph
+        `Examples → Basic Operations → Slice temporal graph
         <https://networkx-temporal.readthedocs.io/en/latest/examples/basics.html#slice-temporal-graph>`__
-        page for more examples using this function.
+        page for more examples.
 
     :param bins: Number of snapshots (*slices*) to return.
         If unset, corresponds to the number of unique attribute values defined by ``attr``.

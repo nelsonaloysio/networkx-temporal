@@ -319,7 +319,7 @@ Note that both methods return new objects when called, so the original graph rem
 
 .. seealso::
 
-   - The `Appendix: Index <../genindex.html>`__  page for a list of the implemented classes, methods,
+   - The `Appendix → Index <../genindex.html>`__  page for a list of the implemented classes, methods,
      and functions.
 
    - The `NetworkX documentation

@@ -26,9 +26,9 @@ def to_static(
     multigraph: Optional[bool] = None,
 ) -> nx.Graph:
     """
-    Returns a static (flattened) graph.
+    Returns a static NetworkX graph object.
 
-    A static graph is a single graph that contains all the nodes and edges of
+    A static graph is a single object that contains all the nodes and edges of
     the temporal graph. If ``directed`` and ``multigraph`` are unset, the
     returned graph type will be the same as the temporal graph. The time of
     the event can be stored as an edge attribute if `attr` is specified.
@@ -39,8 +39,8 @@ def to_static(
 
     .. seealso::
 
-        The :func:`~networkx_temporal.to_unified` method allows to preserve dynamic node attributes
-        in a single graph.
+        The :func:`~networkx_temporal.to_unified` method for a static representation
+        allowing dynamic node attributes.
 
     :param str to: Package name or alias to convert the graph object
         (see :func:`~networkx_temporal.convert`). Optional.
