@@ -5,7 +5,7 @@ import networkx as nx
 from .base import TemporalBase
 
 
-class TemporalGraph(TemporalBase, nx.Graph):
+class TemporalGraph(TemporalBase, nx.Graph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal undirected graph. Does not allow multiple edges among node pairs.
 

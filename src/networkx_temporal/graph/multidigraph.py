@@ -5,7 +5,7 @@ import networkx as nx
 from .base import TemporalBase
 
 
-class TemporalMultiDiGraph(TemporalBase, nx.MultiDiGraph):
+class TemporalMultiDiGraph(TemporalBase, nx.MultiDiGraph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal directed multigraph. Allows multiple edges among the same pair of nodes.
 
