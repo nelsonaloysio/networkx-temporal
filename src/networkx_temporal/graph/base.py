@@ -72,14 +72,12 @@ class TemporalBase(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, t: Optional[int] = None, directed: bool = None, multigraph: bool = None):
         graph = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")
-        self.data = [graph() for _ in range(t or 1)]
 
-        list(
-            self.__setattr__(method, wrap(self, method))
-            for method in dir(graph)
-            if method not in TemporalBase.__dict__
-            and not method.startswith("_")
-        )
+        for method in dir(graph):
+            if method not in TemporalBase.__dict__ and not method.startswith("_"):
+                self.method = wrap(self, method)
+
+        self.data = [graph() for _ in range(t or 1)]
 
     def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
         """ Returns snapshot from a given interval. """
