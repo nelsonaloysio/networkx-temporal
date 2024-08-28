@@ -53,7 +53,7 @@ def slice(
        >>> TG.add_edge("c", "b", time=1)
        >>>
        >>> TG = TG.slice(attr="time")
-       >>> TG
+       >>> print(TG)
 
        TemporalGraph (t=2) with 4 nodes and 2 edges
 
@@ -63,7 +63,7 @@ def slice(
     .. code-block:: python
 
        >>> TG = TG.slice(bins=1)
-       >>> TG
+       >>> print(TG)
 
        TemporalGraph (t=1) with 3 nodes and 2 edges
 

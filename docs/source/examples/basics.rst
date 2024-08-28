@@ -34,7 +34,7 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
    >>> TG.add_edge("f", "a", time=3)
    >>> TG.add_edge("f", "b", time=3)
    >>>
-   >>> TG
+   >>> print(TG)
 
    TemporalDiGraph (t=1) with 6 nodes and 8 edges
 
@@ -57,7 +57,7 @@ created into a number of snapshots:
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time")
-   >>> TG
+   >>> print(TG)
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
@@ -198,7 +198,7 @@ using the :func:`~networkx_temporal.from_static` function:
 .. code-block:: python
 
    >>> TG = tx.from_static(G)
-   >>> TG
+   >>> print(TG)
 
    TemporalDiGraph (t=1) with 6 nodes and 8 edges
 
@@ -307,13 +307,13 @@ For example, the familiar methods below transform its edges into directed or und
 
    >>> TG.to_undirected()
 
-   TemporalGraph (t=1) with 6 nodes and 8 edges
+   <networkx_temporal.graph.graph.TemporalGraph at 0x7f13dcde4dd0>
 
 .. code-block:: python
 
    >>> TG.to_directed()
 
-   TemporalDiGraph (t=1) with 6 nodes and 16 edges
+   <networkx_temporal.graph.digraph.TemporalDiGraph at 0x7f13dcdccdd0>
 
 Note that both methods return new objects when called, so the original graph remains unchanged.
 

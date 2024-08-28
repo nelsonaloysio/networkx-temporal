@@ -41,6 +41,7 @@ docs = [
 ]
 draw = [
     "matplotlib",
+    "scipy",
 ]
 ipynb = [
     "ipykernel",

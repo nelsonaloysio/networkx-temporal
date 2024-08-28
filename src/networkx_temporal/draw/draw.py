@@ -36,7 +36,7 @@ def draw(
     """
     Wrapper method around `NetworkX's draw
     <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
-    function. Requires `matplotlib <https://pypi.org/project/matplotlib/>`__.
+    function.
 
     Returns a `matplotlib Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__
     with temporal graph snapshots as subplots. Node positions can be provided as a dictionary or
@@ -44,6 +44,12 @@ def draw(
     <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__.
     Further customization is possible by setting ``fig_opts``, ``layout_opts``, ``temporal_opts``,
     and ``kwargs``.
+
+    Requires additional libraries to be installed, available as the ``draw`` extra:
+
+    .. code-block:: bash
+
+        $ pip install 'networkx-temporal[draw]'
 
     .. important::
 
@@ -94,11 +100,13 @@ def draw(
           <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
           pages for more examples using this function to plot simple temporal graphs.
 
-    :param TG: :class:`~networkx_temporal.TemporalGraph` or NetworkX graph object(s).
-    :param pos: A dictionary with nodes as keys and positions as values. Optional.
-    :param layout: Layout algorithm to use when ``pos`` is not provided. Optional.
-        Default is ``'random'`` (`random layout
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.random_layout.html>`__).
+    :param TG: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static graph, or
+        a list of static graphs from NetworkX as input.
+    :param pos: Dictionary with nodes as keys and positions as values. Optional.
+    :param layout: The `graph layout algorithm
+        <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
+        to calculate node positions with, when ``pos`` is not provided. Optional.
+        Default is ``'random'``.
     :param names: Whether to show the graph names as titles. Default is ``None``.
 
         * If ``None``, shows the snapshot index as title.

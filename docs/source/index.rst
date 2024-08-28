@@ -82,7 +82,7 @@ Optionally, support for plotting graphs may be additionally installed with:
 
 .. code-block:: bash
 
-   $ pip install 'networkx-temporal[draw]'   # Includes matplotlib.
+   $ pip install 'networkx-temporal[draw]'
 
 
 Quick start
@@ -144,7 +144,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))   # Requires matplotlib.
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
 .. image:: ../figure/fig-0.png
 

@@ -165,7 +165,7 @@ Transforming a static graph into a temporal graph with the :func:`~networkx_temp
 
     >>> TG = tx.from_static(G)
     >>> TG = TG.slice(attr="time")
-    >>> TG
+    >>> print(TG)
 
     TemporalDiGraph (t=1) with 6 nodes and 8 edges
 
@@ -208,7 +208,7 @@ Transforming a snapshot-based temporal graph into a temporal graph with :func:`~
 .. code-block:: python
 
    >>> TG = tx.from_snapshots(STG)
-   >>> TG
+   >>> print(TG)
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
@@ -279,7 +279,7 @@ Transforming an event-based temporal graph into a temporal graph with :func:`~ne
 .. code-block:: python
 
    >>> TG = tx.from_events(ETG, directed=True, multigraph=True)
-   >>> TG
+   >>> print(TG)
 
    TemporalDiGraph (t=4) with 12 nodes and 8 edges
 
@@ -344,6 +344,7 @@ Transforming a unified temporal graph into a temporal graph with :func:`~network
 
 .. code-block:: python
 
-   >>> tx.from_unified(UTG)
+   >>> TG = tx.from_unified(UTG)
+   >>> print(TG)
 
    TemporalMultiDiGraph (t=4) with 12 nodes and 8 edges
