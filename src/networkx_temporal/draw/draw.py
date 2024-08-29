@@ -8,7 +8,11 @@ except ImportError:
 
 from ..typing import TemporalGraph, Figure
 
-DEFAULT = {
+FIG_OPTS = {
+    "constrained_layout": True,
+}
+
+DRAW_OPTS = {
     "arrows": True,
     "edge_color": "#00000050",
     "node_color": "#aaa",
@@ -27,7 +31,7 @@ def draw(
     nrows: int = 1,
     ncols: Optional[int] = None,
     borders: Optional[bool] = False,
-    suptitle: Optional[str] = None,
+    suptitle: Optional[Union[str, bool]] = None,
     fig_opts: Optional[dict] = None,
     layout_opts: Optional[Union[list, dict]] = None,
     temporal_opts: Optional[Union[list, dict]] = None,
@@ -38,14 +42,14 @@ def draw(
     <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
     function.
 
-    Returns a `matplotlib Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__
+    Returns a `Matplotlib Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__
     with temporal graph snapshots as subplots. Node positions can be provided as a dictionary or
     computed using one of `NetworkX's layout algorithms
     <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__.
     Further customization is possible by setting ``fig_opts``, ``layout_opts``, ``temporal_opts``,
     and ``kwargs``.
 
-    Requires additional libraries to be installed, available as the ``draw`` extra:
+    Requires additional libraries to be installed, available from the ``draw`` extra:
 
     .. code-block:: bash
 
@@ -62,32 +66,49 @@ def draw(
 
     .. rubric:: Example
 
+    Create a temporal directed graph and plot its snapshots using the `Kamada-Kawai
+    <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.kamada_kawai_layout.html>`__
+    algorithm:
+
     .. code-block:: python
 
-        >>> import networkx_temporal as tx
-        >>>
-        >>> TG = tx.TemporalDiGraph()
-        >>> # TG = tx.temporal_graph(directed=True, multigraph=False)
-        >>>
-        >>> TG.add_edges_from([
-        >>>     ("a", "b", {"time": 0}),
-        >>>     ("c", "b", {"time": 1}),
-        >>>     ("d", "c", {"time": 2}),
-        >>>     ("d", "e", {"time": 2}),
-        >>>     ("a", "c", {"time": 2}),
-        >>>     ("f", "e", {"time": 3}),
-        >>>     ("f", "a", {"time": 3}),
-        >>>     ("f", "b", {"time": 3}),
-        >>> ])
-        >>>
-        >>> TG = TG.slice(attr="time")
-        >>>
-        >>> fig = tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
-        >>> # fig.savefig("figure.png")
-        >>>
-        >>> fig.show()
+       >>> import networkx_temporal as tx
+       >>>
+       >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
+       >>>
+       >>> TG.add_edges_from([
+       >>>     ("a", "b", {"time": 0}),
+       >>>     ("c", "b", {"time": 1}),
+       >>>     ("d", "c", {"time": 2}),
+       >>>     ("d", "e", {"time": 2}),
+       >>>     ("a", "c", {"time": 2}),
+       >>>     ("f", "e", {"time": 3}),
+       >>>     ("f", "a", {"time": 3}),
+       >>>     ("f", "b", {"time": 3}),
+       >>>     ("c", "a", {"time": 4}),
+       >>>     ("f", "c", {"time": 5}),
+       >>>     ("a", "f", {"time": 5}),
+       >>>     ("f", "c", {"time": 5}),
+       >>> ])
+       >>>
+       >>> TG = TG.slice(attr="time")
+       >>>
+       >>> fig = tx.draw(TG,
+       >>>               layout="kamada_kawai",
+       >>>               figsize=(6, 4),
+       >>>               nrows=2,
+       >>>               ncols=3,
+       >>>               borders=True,
+       >>>               suptitle=True)
+       >>>
+       >>> # Save figure to file.
+       >>> # fig.savefig("figure.png")
+       >>>
+       >>> fig
 
-    .. image:: ../../figure/fig-0.png
+    .. image:: ../../figure/example/fig-draw.png
+
+    |
 
     .. seealso::
 
@@ -102,12 +123,14 @@ def draw(
 
     :param object graph: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static
         graph, or a list of static graphs from NetworkX as input.
-    :param pos: Dictionary with nodes as keys and positions as values. Optional.
+    :param pos: Dictionary with nodes as keys and positions as values, e.g.,
+        ``{'node': (0.19813, 0.74631), ...}``. Optional.
     :param layout: The `graph layout algorithm
         <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
         to calculate node positions with, when ``pos`` is not provided. Optional.
         Default is ``'random'``.
-    :param names: Whether to show the graph names as titles. Default is ``None``.
+    :param names: Whether to show the graph :attr:`~networkx_temporal.TemporalGraph.names` property
+        as titles. Default is ``None``.
 
         * If ``None``, shows the snapshot index as title.
 
@@ -122,12 +145,22 @@ def draw(
     :param nrows: Number of rows in the figure. Default is ``1``.
     :param ncols: Number of columns in the figure. Default is ``None``.
     :param borders: Draw borders around subplots. Default is ``False``.
-    :param suptitle: Centered suptitle of the figure. Optional.
-    :param fig_opts: Additional figure options. Optional.
-    :param layout_opts: Additional layout options. Accepts a single dictionary or a list of
-        dictionaries, one per snapshot. Optional.
-    :param temporal_opts: Additional drawing options for snapshots. Accepts a dictionary or
-        a list of dictionaries, in which each element or key corresponds to a snapshot. Optional.
+    :param suptitle: Centered suptitle of the figure. If ``True``, uses the temporal graph
+        :attr:`~networkx_temporal.TemporalGraph.name` property or its string representation. Optional.
+    :param fig_opts: Additional `subplots
+       <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html>`__ options. Optional.
+    :param layout_opts: Additional layout algorithm options. Optional.
+
+       * If a ``list``, consider each element as options for a snapshot.
+
+       * If a ``dict``, consider it as options for all snapshots.
+
+    :param temporal_opts: Additional drawing options per snapshot. Optional.
+
+       * If a ``list``, consider each element as options for a snapshot.
+
+       * If a ``dict``, keys are snapshot indices and values are options.
+
     :param kwargs: Additional drawing options for all graphs. Optional.
     """
     layout = getattr(nx, f"{layout.replace('_layout', '')}_layout", None)
@@ -148,8 +181,8 @@ def draw(
         f"{[f for f in dir(nx) if f.endswith('_layout')]}"
     assert figsize is None or type(figsize) == tuple,\
         "Argument `figsize` must be a tuple or None."
-    assert suptitle is None or type(suptitle) == str,\
-        "Argument `suptitle` must be a string or None."
+    assert suptitle is None or type(suptitle) in (str, bool),\
+        "Argument `suptitle` must be a string or a boolean."
     assert layout_opts is None or type(layout_opts) in (list, dict),\
         "Argument `layout_opts` must be a dictionary or a list."
     assert type(layout_opts) != list or len(layout_opts) == len(graph),\
@@ -162,22 +195,26 @@ def draw(
     if type(graph) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         graph = [graph]  # Allows a single graph to be passed as input.
 
+    if not nrows:
+        nrows = len(graph) if ncols == 1 else 1
+    if not ncols:
+        ncols = len(graph) if nrows == 1 else 1
+
     if type(layout_opts) == list:
         layout_opts = {t: layout_opts[t] for t in range(len(graph))}
     if type(temporal_opts) == list:
         temporal_opts = {t: temporal_opts[t] for t in range(len(graph))}
 
     fig, ax = plt.subplots(nrows=nrows,
-                           ncols=ncols or len(graph) or 1,
+                           ncols=ncols,
                            figsize=figsize,
-                           constrained_layout=True,
-                           **(fig_opts or {}))
+                           **{**FIG_OPTS, **(fig_opts or {})})
 
     i, j = 0, 0
     for t in range(len(graph)):
-        ax_ = ax if len(graph) == 1 else ax[t] if nrows == 1 else ax[i, j]
+        ax_ = ax if len(graph) == 1 else ax[t] if nrows == 1 or ncols == 1 else ax[i, j]
         pos_ = pos or layout(graph[t], **((layout_opts or {}).get(t, layout_opts) or {}))
-        opts_ = {**DEFAULT, **kwargs, **((temporal_opts or {}).get(t, temporal_opts) or {})}
+        opts_ = {**DRAW_OPTS, **kwargs, **((temporal_opts or {}).get(t, temporal_opts) or {})}
 
         draw = getattr(nx, "draw_networkx" if borders else "draw")
         draw(graph[t], ax=ax_, pos=pos_, **opts_)
@@ -208,7 +245,10 @@ def draw(
             j = 0
             i += 1
 
-    plt.suptitle(suptitle)
+    if suptitle:
+        suptitle = graph.name or str(graph).replace("t=", "$t$=") if suptitle is True else suptitle
+        plt.suptitle(suptitle)
+
     plt.close()
 
     return fig
