@@ -5,6 +5,12 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
     """
     Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of events.
 
+    .. seealso::
+
+        The `Convert and transform → Graph representations
+        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#graph-representations>`__
+        page for details and examples.
+
     :param list events: List of events, where each event is a tuple :math:`(u, v, t)` or
         :math:`(u, v, t, \\varepsilon)`, where :math:`u` is the source node, :math:`v` is the target
         node, :math:`t` is the time of interaction, and :math:`\\varepsilon` is either ``1``
@@ -47,7 +53,7 @@ def from_events(events: list, directed: bool = False, multigraph: bool = True) -
     return TG
 
 
-def to_events(self, stream: bool = True) -> list:
+def to_events(TG, stream: bool = True) -> list:
     """
     Returns a sequence of 3-tuples or 4-tuples representing events.
 
@@ -66,19 +72,19 @@ def to_events(self, stream: bool = True) -> list:
     :param bool stream: If ``False``, returns events as 4-tuples. Default is ``True``.
     """
     if stream:
-        return [(e[0], e[1], t) for t, G in enumerate(self) for e in G.edges()]
+        return [(e[0], e[1], t) for t, G in enumerate(TG) for e in G.edges()]
 
     events = []
-    for t in range(len(self)):
+    for t in range(len(TG)):
         if t == 0:
-            for edge in self[0].edges():
+            for edge in TG[0].edges():
                 events.append((*edge, t, 1))
         else:
-            for edge in self[t].edges():
-                if not self[t-1].has_edge(*edge):
+            for edge in TG[t].edges():
+                if not TG[t-1].has_edge(*edge):
                     events.append((*edge, t, 1))
-            for edge in self[t-1].edges():
-                if not self[t].has_edge(*edge):
+            for edge in TG[t-1].edges():
+                if not TG[t].has_edge(*edge):
                     events.append((*edge, t, -1))
 
     return events

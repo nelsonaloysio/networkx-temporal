@@ -24,6 +24,16 @@ def read_graph(
     where ``t`` is the snapshot index and ``ext`` is the extension format.
     See :func:`~networkx_temporal.write_graph` for more information.
 
+    .. rubric:: Example
+
+    Reading a temporal graph from a compressed ZIP file:
+
+    .. code-block:: python
+
+        >>> import networkx_temporal as tx
+        >>>
+        >>> TG = tx.read_graph("temporal-graph.graphml.zip")
+
     .. seealso::
 
         The `read and write documentation

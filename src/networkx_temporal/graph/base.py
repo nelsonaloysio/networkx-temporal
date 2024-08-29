@@ -7,31 +7,25 @@ from warnings import warn
 import networkx as nx
 
 from .slice import slice
-from ..methods.static import (
-    is_directed,
-    is_multigraph,
-    neighbors,
-    to_directed,
-    to_undirected,
-)
-from ..methods.temporal import (
-    temporal_degree,
-    temporal_edges,
-    temporal_in_degree,
-    temporal_neighbors,
-    temporal_nodes,
-    temporal_order,
-    temporal_out_degree,
-    temporal_size,
-    total_order,
-    total_size,
-)
-from ..transform import (
-    to_events,
-    to_snapshots,
-    to_static,
-    to_unified,
-)
+from ..methods.static import (is_directed,
+                              is_multigraph,
+                              neighbors,
+                              to_directed,
+                              to_undirected)
+from ..methods.temporal import (temporal_degree,
+                                temporal_in_degree,
+                                temporal_out_degree,
+                                temporal_neighbors,
+                                temporal_nodes,
+                                temporal_edges,
+                                temporal_order,
+                                temporal_size,
+                                total_order,
+                                total_size)
+from ..transform import (to_events,
+                         to_snapshots,
+                         to_static,
+                         to_unified)
 from ..typing import TemporalGraph
 
 
@@ -44,6 +38,16 @@ class TemporalBase(metaclass=ABCMeta):
     :class:`~networkx_temporal.TemporalMultiGraph`, and :class:`~networkx_temporal.TemporalMultiDiGraph`.
     """
     slice = slice
+    temporal_degree = temporal_degree
+    temporal_in_degree = temporal_in_degree
+    temporal_out_degree = temporal_out_degree
+    temporal_neighbors = temporal_neighbors
+    temporal_nodes = temporal_nodes
+    temporal_edges = temporal_edges
+    temporal_order = temporal_order
+    temporal_size = temporal_size
+    total_order = total_order
+    total_size = total_size
 
     # Static methods; override NetworkX methods.
     neighbors = neighbors
@@ -51,18 +55,6 @@ class TemporalBase(metaclass=ABCMeta):
     is_multigraph = is_multigraph
     to_directed = to_directed
     to_undirected = to_undirected
-
-    # Temporal methods.
-    temporal_degree = temporal_degree
-    temporal_edges = temporal_edges
-    temporal_in_degree = temporal_in_degree
-    temporal_neighbors = temporal_neighbors
-    temporal_nodes = temporal_nodes
-    temporal_order = temporal_order
-    temporal_out_degree = temporal_out_degree
-    temporal_size = temporal_size
-    total_order = total_order
-    total_size = total_size
 
     # Transform methods.
     to_events = to_events
@@ -215,10 +207,10 @@ class TemporalBase(metaclass=ABCMeta):
     def flatten(self) -> TemporalGraph:
         """
         Returns flattened version of temporal graph.
-        Same as :func:`~networkx_temporal.TemporalGraph.slice` with ``bins=1``.
+        Equivalent to :func:`~networkx_temporal.TemporalGraph.slice` with ``bins=1``.
 
         This method differs from :func:`~networkx_temporal.TemporalGraph.to_static` in that it
-        returns a temporal graph with a single snapshot, rather than a static graph.
+        returns a temporal graph object with a single snapshot, rather than a static graph object.
 
         .. attention::
 

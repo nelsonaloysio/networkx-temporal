@@ -19,6 +19,19 @@ def temporal_graph(
     :class:`~networkx_temporal.TemporalMultiGraph`, or :class:`~networkx_temporal.TemporalMultiDiGraph`
     object, depending on the choice of parameters.
 
+    .. rubric:: Example
+
+    Creating a temporal directed multigraph:
+
+    .. code-block:: python
+
+        >>> import networkx_temporal as tx
+        >>>
+        >>> TG = tx.temporal_graph(directed=True, multigraph=True)
+        >>> print(TG)
+
+        TemporalMultiDiGraph (t=1) with 0 nodes and 0 edges
+
     :param int t: Number of temporal graphs to initialize. Optional. Default is ``1``.
     :param directed: If ``True``, inherits a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.

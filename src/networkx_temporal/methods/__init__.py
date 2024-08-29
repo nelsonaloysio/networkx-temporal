@@ -1,11 +1,7 @@
-from .temporal import (
-    is_temporal_graph,
-    temporal_degree,
-    temporal_edges,
-    temporal_in_degree,
-    temporal_neighbors,
-    temporal_nodes,
-    temporal_order,
-    temporal_out_degree,
-    temporal_size,
+from .static import (
+    is_directed,
+    is_multigraph,
+    neighbors,
+    to_directed,
+    to_undirected,
 )

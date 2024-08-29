@@ -15,6 +15,12 @@ def from_unified(UTG: nx.Graph) -> TemporalGraph:
     temporal nodes in the format ``{name}_{t}``, where ``name`` is the original label
     and ``t`` is a non-negative integer.
 
+    .. seealso::
+
+        The `Convert and transform → Graph representations
+        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#graph-representations>`__
+        page for details and examples.
+
     :param UTG: Unified temporal graph.
 
     :rtype: TemporalGraph
@@ -39,7 +45,7 @@ def from_unified(UTG: nx.Graph) -> TemporalGraph:
 
 
 def to_unified(
-    self,
+    TG,
     to: Optional[FORMATS] = None,
     add_couplings: bool = True,
     node_index: Optional[list] = None,
@@ -72,8 +78,8 @@ def to_unified(
 
         - **dictionary**: ``{"a": "a_0", "b": "b_0", "c": "c_2"}``
     """
-    T = range(len(self))
-    order, size = self.temporal_order(), self.temporal_size()
+    T = range(len(TG))
+    order, size = TG.temporal_order(), TG.temporal_size()
 
     assert relabel_nodes is None or type(relabel_nodes) in (dict, list),\
         f"Argument 'relabel_nodes' must be a dict or list, received: {type(relabel_nodes)}."
@@ -85,7 +91,7 @@ def to_unified(
     # relabeling nodes to include temporal index.
     UTG = nx.compose_all([
         nx.relabel_nodes(
-            self[t],
+            TG[t],
             {
                 v:
                     relabel_nodes[t].get(v, f"{v}_{t}")
@@ -93,7 +99,7 @@ def to_unified(
                     relabel_nodes.get(v, f"{v}_{t}")
                     if type(relabel_nodes) == dict else
                     f"{v}_{t}"
-                for v in self[t].nodes()
+                for v in TG[t].nodes()
             }
         )
         for t in T
@@ -102,7 +108,7 @@ def to_unified(
     # Add inter-slice couplings among temporal nodes.
     if add_couplings:
         for i in range(len(T)-1):
-            for node in self[T[i]].nodes():
+            for node in TG[T[i]].nodes():
                 if UTG.has_node(f"{node}_{T[i]}"):
                     for j in range(i+1, len(T)):
                         if UTG.has_node(f"{node}_{T[j]}"):
@@ -119,8 +125,8 @@ def to_unified(
         )
 
     # Avoid using last snapshot's name for the unified graph.
-    UTG.name = f"{f'{self.name}' if self.name else 'UTG'} ("\
-               f"t={len(self)}, "\
+    UTG.name = f"{f'{TG.name}' if TG.name else 'UTG'} ("\
+               f"t={len(TG)}, "\
                f"proxy_nodes={len(UTG)-order}, "\
                f"edge_couplings={True if add_couplings else False})"
 
