@@ -41,11 +41,11 @@ Let's start by creating a simple directed graph using ``time`` as attribute key:
 Note that the resulting graph object reports a single time step ``t=1``, as it has not yet been
 `sliced <#slice-temporal-graph>`__.
 
-.. note::
+.. hint::
 
-   Multigraphs are particularly useful to represent temporal graphs, as it allows to store multiple
-   interactions between the same nodes at different time steps within a single graph object. This
-   behavior can be set by passing ``multigraph=True`` when creating the :class:`~networkx_temporal.TemporalGraph` object.
+   To allow multiple interactions between the same nodes over time, create a
+   :class:`~networkx_temporal.TemporalMultiGraph` or :class:`~networkx_temporal.TemporalMultDiGraph`
+   object instead. Otherwise, only a single edge is allowed among pairs.
 
 
 Slice temporal graph
@@ -87,9 +87,9 @@ unique attribute value passed to it.
 
 .. hint::
 
-   Setting ``names=True`` will use the :attr:`~networkx_temporal.TemporalGraph.names` property as
-   subplot titles, instead of their indices. By default, :func:`~networkx_temporal.TemporalGraph.slice`
-   returns the interval of the resulting temporal snapshots as their names.
+   By default, :func:`~networkx_temporal.TemporalGraph.slice` returns the interval of the resulting
+   temporal snapshots as their :attr:`~networkx_temporal.TemporalGraph.names` property. Setting
+   ``names=True`` will use these instead of indices as subplot titles, as seen below.
 
 
 Number of snapshots
@@ -324,4 +324,4 @@ Note that both methods return new objects when called, so the original graph rem
 
    - The `NetworkX documentation
      <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-     for a list of inherited methods found in a :class:`~networkx_temporal.TemporalGraph`.
+     for a list of graph methods inherited by a :class:`~networkx_temporal.TemporalGraph`.

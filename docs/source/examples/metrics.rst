@@ -73,21 +73,6 @@ return the results per snapshot:
 
 .. code-block:: python
 
-   >>> import networkx_temporal as tx
-   >>>
-   >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
-   >>>
-   >>> TG.add_edge("a", "b", time=0)
-   >>> TG.add_edge("c", "b", time=1)
-   >>> TG.add_edge("d", "c", time=2)
-   >>> TG.add_edge("d", "e", time=2)
-   >>> TG.add_edge("a", "c", time=2)
-   >>> TG.add_edge("f", "e", time=3)
-   >>> TG.add_edge("f", "a", time=3)
-   >>> TG.add_edge("f", "b", time=3)
-   >>>
-   >>> TG = TG.slice(attr="time")
-   >>>
    >>> TG.degree()
 
    [DiDegreeView({'b': 1, 'a': 1}),
