@@ -61,9 +61,9 @@ networkx-temporal
 **NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic graphs,
 i.e., temporal network data.
 
-This package provides a new class, :class:`~networkx_temporal.TemporalGraph`, which inherits
+This package provides new :class:`~networkx_temporal.TemporalGraph` classes, which inherit
 NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
-and implements additional functions to manipulate temporal data within. Most importantly, it
+and implement additional functions to manipulate temporal data within. Most importantly, it
 provides ways to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and
 :func:`~networkx_temporal.convert` between formats and representations.
 
