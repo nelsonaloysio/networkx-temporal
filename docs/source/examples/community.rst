@@ -82,7 +82,7 @@ Let's plot the graphs, with node colors representing communities and intra-commu
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Ground truths")
 
-.. image:: ../../figure/fig-9.png
+.. image:: ../../figure/example/fig-9.png
 
 We see the graphs are generated with the same community structure, but continuously decreasing
 assortativity. Let's try and retrieve the ground truths using a simple community detection algorithm.
@@ -108,7 +108,7 @@ capture their underlying structure.
 On the static graph
 -------------------
 
-Let's start by considering the network as a ''flattened'' graph, i.e., ignoring its temporal information.
+Let's start by considering the network as a single static graph, i.e., ignoring its temporal information.
 
 We can observe that depending on the initial node community assigments (e.g., with ``seed=0`` below),
 `modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
@@ -137,7 +137,7 @@ fails to retrieve the true communities (ground truths) in the network:
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found on static graph")
 
-.. image:: ../../figure/fig-10.png
+.. image:: ../../figure/example/fig-10.png
 
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
@@ -172,7 +172,7 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found on snapshots")
 
-.. image:: ../../figure/fig-11.png
+.. image:: ../../figure/example/fig-11.png
 
 This is partly due to modularity optimization expecting an assortative community structure, while
 the network grew more disassortative over time. Not only the results of later snapshots are here
@@ -212,7 +212,7 @@ time maintaining community indices consistent over time, as seen below:
     >>>     connectionstyle="arc3,rad=0.1",
     >>>     suptitle="Communities found on temporal graph")
 
-.. image:: ../../figure/fig-12.png
+.. image:: ../../figure/example/fig-12.png
 
 As observed, considering the network's temporal information allowed the algorithm to correctly
 retrieve the ground truths in this particular example, as well as to maintain the same community

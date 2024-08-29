@@ -80,7 +80,7 @@ We may also visualize the resulting snapshots using the :func:`~networkx_tempora
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-0.png
+.. image:: ../../figure/example/fig-0.png
 
 Note that :func:`~networkx_temporal.TemporalGraph.slice` by default returns a snapshot for each
 unique attribute value passed to it.
@@ -103,7 +103,7 @@ A new object can be created with a specific number of snapshots by setting the
    >>> TG = TG.slice(attr="time", bins=2)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-1.png
+.. image:: ../../figure/example/fig-1.png
 
 .. note::
 
@@ -125,7 +125,7 @@ size. To try and balance them using quantiles, pass ``qcut=True`` (see `pandas.q
    >>> TG = TG.slice(attr="time", bins=2, qcut=True)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-2.png
+.. image:: ../../figure/example/fig-2.png
 
 Though not perfectly balanced due to node :math:`a` originally appearing multiple times (in
 :math:`t=\{0,2,3\}`), the resulting snapshots have more comparable order and size, with edges still
@@ -147,7 +147,7 @@ or one of its attributes by their order of appearance in the data (see `pandas.S
    >>> TG = TG.slice(bins=2, rank_first=True)
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
 
-.. image:: ../../figure/fig-3.png
+.. image:: ../../figure/example/fig-3.png
 
 Notice how each snapshot title now refer to edge intervals: :math:`e_0` to :math:`e_3`
 :math:`(0, 4]` and :math:`e_4` to :math:`e_7` :math:`(4, 8]`. In this case, the graph was split
@@ -207,9 +207,9 @@ Drawing it with edge labels allows to visualize the edge-level temporal informat
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", edge_labels="time", suptitle="Temporal Graph (t=1)")
+   >>> tx.draw(TG, layout="kamada_kawai", edge_labels="time", suptitle="Temporal Graph")
 
-.. image:: ../../figure/fig-4.png
+.. image:: ../../figure/example/fig-4.png
 
 However, note that in the example above, both the nodes and edges are attributed with a ``time`` key.
 Let's see how this affects the resulting temporal graph when slicing it into snapshots next.
@@ -230,7 +230,7 @@ Converting a static graph considering edge-level temporal data in to a temporal 
    >>> TG_ = TG.slice(attr="time")
    >>> tx.draw(TG_, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-5.png
+.. image:: ../../figure/example/fig-5.png
 
 The resulting temporal graph has the same number of edges as the original graph, but a higher number
 of nodes. This is expected, as the same nodes appear in more than one snapshot.
@@ -252,7 +252,7 @@ Converting a static graph considering node-level temporal data to a temporal gra
    >>> TG_ = TG.slice(attr="time", level="node")
    >>> tx.draw(TG_, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../../figure/fig-6.png
+.. image:: ../../figure/example/fig-6.png
 
 Note that now, even though the edge :math:`(a, c)` contains the attribute ``time=2``, considering
 node-level attributes resulted in it being placed at the snapshot :math:`t=0` instead, as node

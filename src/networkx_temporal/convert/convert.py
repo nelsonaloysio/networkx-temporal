@@ -50,8 +50,11 @@ def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **k
 
     .. rubric:: Example
 
-    Converting the `Karate Club <https://networkx.org/documentation/stable/auto_examples/graph/plot_karate_club.html>`__
-    graph dataset from NetworkX into a PyTorch Geometric object:
+    Convert the `Karate Club
+    <https://networkx.org/documentation/stable/auto_examples/graph/plot_karate_club.html>`__
+    graph dataset from NetworkX into a PyTorch Geometric `Data
+    <https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.Data.html>`__
+    object:
 
     .. code-block:: python
 
@@ -59,13 +62,12 @@ def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **k
         >>> import networkx_temporal as tx
         >>>
         >>> G = nx.karate_club_graph()
-        >>> print(G)
-        >>>
         >>> data = tx.convert(G, "pyg")
-        >>> data
+        >>>
+        >>> print(G)
+        >>> print(data)
 
         Graph named "Zachary's Karate Club" with 34 nodes and 78 edges
-
         Data(edge_index=[2, 156], club=[34], weight=[156], name='Zachary's Karate Club', num_nodes=34)
 
     .. note::

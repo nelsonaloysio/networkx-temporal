@@ -153,7 +153,7 @@ Transforming a temporal graph into a static graph with the :func:`~networkx_temp
 
    >>> tx.draw(G, layout="kamada_kawai", suptitle="Static Graph")
 
-.. image:: ../../figure/fig-7.png
+.. image:: ../../figure/example/fig-7.png
 
 
 :const:`G` → :const:`TG`
@@ -334,7 +334,7 @@ Let's draw the unified temporal graph to visualize the proxy nodes and edge coup
    >>>       connectionstyle="arc3,rad=0.25",
    >>>       suptitle="Unified Temporal Graph")
 
-.. image:: ../../figure/fig-8.png
+.. image:: ../../figure/example/fig-8.png
 
 
 :const:`UTG` → :const:`TG`

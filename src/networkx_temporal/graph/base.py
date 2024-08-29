@@ -206,24 +206,27 @@ class TemporalBase(metaclass=ABCMeta):
 
     def flatten(self) -> TemporalGraph:
         """
-        Returns flattened version of temporal graph.
+        Returns ''flattened'' version of temporal graph.
         Equivalent to :func:`~networkx_temporal.TemporalGraph.slice` with ``bins=1``.
 
-        This method differs from :func:`~networkx_temporal.TemporalGraph.to_static` in that it
-        returns a temporal graph object with a single snapshot, rather than a static graph object.
+        This method differs from :func:`~networkx_temporal.TemporalGraph.to_static` only in the
+        sense that it returns a :class:`~networkx_temporal.TemporalGraph` object with a single
+        snapshot, rather than a static NetworkX graph object.
 
         .. attention::
 
            As each node in a flattened graph is unique, dynamic node attributes are not preserved.
+
+        :rtype: TemporalGraph
         """
         return self.slice(bins=1)
 
-    def insert(self, t: int, G: Optional[nx.Graph] = None) -> None:
+    def insert(self, index: int, G: Optional[nx.Graph] = None) -> None:
         """
         Inserts a new snapshot to the temporal graph at a given index.
 
-        :param t: Index of snapshot to insert.
-        :param G: NetworkX graph to insert. Optional.
+        :param index: Insert graph object before index.
+        :param G: NetworkX graph object to insert. Optional.
         """
         directed = self.is_directed()
         multigraph = self.is_multigraph()
@@ -231,8 +234,8 @@ class TemporalBase(metaclass=ABCMeta):
         if G is None:
             G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
 
-        assert type(t) == int,\
-            f"Argument `t` must be an integer, received: {type(t)}."
+        assert type(index) == int,\
+            f"Argument `index` must be an integer, received: {type(index)}."
 
         assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
             f"Argument `G` must be a valid NetworkX graph, received: {type(G)}."
@@ -245,7 +248,7 @@ class TemporalBase(metaclass=ABCMeta):
             f"Received a {'multi' if G.is_multigraph() else ''}graph, "\
             f"but temporal graph is {'' if multigraph else 'not '}a multigraph."
 
-        self.data.insert(t, G)
+        self.data.insert(index, G)
 
     def index_edge(self, edge: tuple, interval: Optional[range] = None) -> list:
         """
@@ -286,14 +289,16 @@ class TemporalBase(metaclass=ABCMeta):
 
         return [i for i in (interval or range(len(self))) if self[i].has_node(node)]
 
-    def pop(self, t: Optional[int] = None) -> nx.Graph:
+    def pop(self, index: Optional[int] = None) -> nx.Graph:
         """
-        Removes and returns the snapshot at a given time step.
+        Removes and returns graph snapshot at index.
 
-        :param t: Index of snapshot to pop. Default: last snapshot.
+        Raises an ``IndexError`` if graph is empty or index is out of range.
+
+        :param t: Index of snapshot. Default: last snapshot.
         """
-        self.__getitem__(t or -1)
-        return self.data.pop(t or -1)
+        self.__getitem__(index or -1)
+        return self.data.pop(index or -1)
 
 
 def decorator_networkx(cls, method: str) -> Callable:
