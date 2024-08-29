@@ -24,7 +24,7 @@ FORMATS = Literal[
 ]
 
 
-def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) -> Any:
+def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **kwargs) -> Any:
     """
     Returns converted graph object.
 
@@ -48,12 +48,33 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
     |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
     +------------------------------------------------------------------+------------------------------------+------------------------+
 
+    .. rubric:: Example
+
+    Converting the `Karate Club <https://networkx.org/documentation/stable/auto_examples/graph/plot_karate_club.html>`__
+    graph dataset from NetworkX into a PyTorch Geometric object:
+
+    .. code-block:: python
+
+        >>> import networkx as nx
+        >>> import networkx_temporal as tx
+        >>>
+        >>> G = nx.karate_club_graph()
+        >>> print(G)
+        >>>
+        >>> data = tx.convert(G, "pyg")
+        >>> data
+
+        Graph named "Zachary's Karate Club" with 34 nodes and 78 edges
+
+        Data(edge_index=[2, 156], club=[34], weight=[156], name='Zachary's Karate Club', num_nodes=34)
+
     .. note::
 
        To reduce package dependencies and avoid unnecessary imports, the required library is
        imported on function call based on the ``to`` parameter and must be separately installed.
 
-    :param TG: Temporal or static graph object.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static
+        graph, or a list of static graphs from NetworkX as input.
     :param str to: Package name or alias to convert the graph object.
     :param args: Additional positional arguments for the conversion function.
     :param kwargs: Additional keyword arguments for the conversion function.
@@ -73,7 +94,7 @@ def convert(TG: Union[nx.Graph, TemporalGraph], to: FORMATS, *args, **kwargs) ->
             f"Error converting graph to '{pkg}' object."
         ) from e
 
-    if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
-        return func(TG, *args, **kwargs)
+    if type(graph) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
+        return func(graph, *args, **kwargs)
 
-    return [func(G, *args, **kwargs) for G in TG]
+    return [func(G, *args, **kwargs) for G in graph]

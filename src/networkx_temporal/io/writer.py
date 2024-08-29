@@ -39,6 +39,17 @@ def write_graph(
     in which each file refers to a snapshot. Files within are named ``{name}_{t}.{ext}``,
     where ``t`` is the snapshot index and ``ext`` is the extension format.
 
+    .. rubric:: Example
+
+    Writing a temporal graph to a compressed ZIP file:
+
+    .. code-block:: python
+
+        >>> import networkx_temporal as tx
+        >>>
+        >>> TG = tx.TemporalGraph()
+        >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
+
     .. seealso::
 
         The `read and write documentation

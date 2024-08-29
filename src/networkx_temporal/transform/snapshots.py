@@ -10,6 +10,12 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     """
     Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of snapshots.
 
+    .. seealso::
+
+        The `Convert and transform → Graph representations
+        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#graph-representations>`__
+        page for details and examples.
+
     :param graphs: List or dictionary of NetworkX graphs.
 
     :rtype: TemporalGraph
@@ -40,7 +46,7 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     return TG
 
 
-def to_snapshots(self, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
+def to_snapshots(TG, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
     """
     Returns a list of snapshots, each representing the state
     of the network at a given interval.
@@ -56,7 +62,7 @@ def to_snapshots(self, to: Optional[FORMATS] = None, as_view: bool = True) -> li
         Default is ``True``.
     """
     if not as_view and to is not None:
-        return [G.copy() for G in self.data]
+        return [G.copy() for G in TG.data]
     if to is not None:
-        return [convert(G, to) for G in self.data]
-    return self.data
+        return [convert(G, to) for G in TG.data]
+    return TG.data

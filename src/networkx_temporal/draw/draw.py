@@ -18,7 +18,7 @@ DEFAULT = {
 
 
 def draw(
-    TG: Union[TemporalGraph, nx.Graph, list],
+    graph: Union[TemporalGraph, nx.Graph, list],
     pos: Optional[dict] = None,
     layout: Optional[str] = "random",
     names: Optional[Union[list, bool]] = None,
@@ -100,8 +100,8 @@ def draw(
           <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
           pages for more examples using this function to plot simple temporal graphs.
 
-    :param TG: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static graph, or
-        a list of static graphs from NetworkX as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static
+        graph, or a list of static graphs from NetworkX as input.
     :param pos: Dictionary with nodes as keys and positions as values. Optional.
     :param layout: The `graph layout algorithm
         <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
@@ -152,42 +152,42 @@ def draw(
         "Argument `suptitle` must be a string or None."
     assert layout_opts is None or type(layout_opts) in (list, dict),\
         "Argument `layout_opts` must be a dictionary or a list."
-    assert type(layout_opts) != list or len(layout_opts) == len(TG),\
-        "Argument `layout_opts` must have the same length as `TG`."
+    assert type(layout_opts) != list or len(layout_opts) == len(graph),\
+        "Argument `layout_opts` must have the same length as `graph`."
     assert temporal_opts is None or type(temporal_opts) in (list, dict),\
         "Argument `temporal_opts` must be a dictionary or a list."
-    assert type(temporal_opts) != list or len(temporal_opts) == len(TG),\
-        "Argument `temporal_opts` must have the same length as `TG`."
+    assert type(temporal_opts) != list or len(temporal_opts) == len(graph),\
+        "Argument `temporal_opts` must have the same length as `graph`."
 
-    if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
-        TG = [TG]  # Allows a single graph to be passed as input.
+    if type(graph) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
+        graph = [graph]  # Allows a single graph to be passed as input.
 
     if type(layout_opts) == list:
-        layout_opts = {t: layout_opts[t] for t in range(len(TG))}
+        layout_opts = {t: layout_opts[t] for t in range(len(graph))}
     if type(temporal_opts) == list:
-        temporal_opts = {t: temporal_opts[t] for t in range(len(TG))}
+        temporal_opts = {t: temporal_opts[t] for t in range(len(graph))}
 
     fig, ax = plt.subplots(nrows=nrows,
-                           ncols=ncols or len(TG) or 1,
+                           ncols=ncols or len(graph) or 1,
                            figsize=figsize,
                            constrained_layout=True,
                            **(fig_opts or {}))
 
     i, j = 0, 0
-    for t in range(len(TG)):
-        ax_ = ax if len(TG) == 1 else ax[t] if nrows == 1 else ax[i, j]
-        pos_ = pos or layout(TG[t], **((layout_opts or {}).get(t, layout_opts) or {}))
+    for t in range(len(graph)):
+        ax_ = ax if len(graph) == 1 else ax[t] if nrows == 1 else ax[i, j]
+        pos_ = pos or layout(graph[t], **((layout_opts or {}).get(t, layout_opts) or {}))
         opts_ = {**DEFAULT, **kwargs, **((temporal_opts or {}).get(t, temporal_opts) or {})}
 
         draw = getattr(nx, "draw_networkx" if borders else "draw")
-        draw(TG[t], ax=ax_, pos=pos_, **opts_)
+        draw(graph[t], ax=ax_, pos=pos_, **opts_)
 
         if edge_labels:
-            edge_labels_ = {(u, v, k): x for u, v, k, x in TG[t].edges(data=edge_labels, keys=True)}\
-                           if TG[t].is_multigraph() else\
-                           {(u, v): x for u, v, x in TG[t].edges(data=edge_labels)}
+            edge_labels_ = {(u, v, k): x for u, v, k, x in graph[t].edges(data=edge_labels, keys=True)}\
+                           if graph[t].is_multigraph() else\
+                           {(u, v): x for u, v, x in graph[t].edges(data=edge_labels)}
 
-            nx.draw_networkx_edge_labels(TG[t],
+            nx.draw_networkx_edge_labels(graph[t],
                                          pos=pos_,
                                          edge_labels=edge_labels_,
                                          font_color=opts_.get("edge_color"))
@@ -195,9 +195,9 @@ def draw(
         if names is False:
             title = None
         elif names is None:
-            title = f"$t$ = {t}" if len(TG) > 1 else None
+            title = f"$t$ = {t}" if len(graph) > 1 else None
         elif names is True:
-            title = TG.names[t] if hasattr(TG, "names") else TG[t].name
+            title = graph.names[t] if hasattr(graph, "names") else graph[t].name
         elif type(names) == list:
             title = names[t]
 
