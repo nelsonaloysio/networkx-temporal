@@ -12,7 +12,8 @@ def temporal_graph(
     create_using: Optional[Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]] = None,
 ) -> TemporalGraph:
     """
-    Returns an empty temporal graph with the desired properties.
+    Returns a temporal graph with the desired properties. Similar to NetworkX's
+    :func:`~networkx.generators.classic.empty_graph`.
 
     This is a factory method for temporal graphs. It returns a
     :class:`~networkx_temporal.TemporalGraph`, :class:`~networkx_temporal.TemporalDiGraph`,
@@ -21,7 +22,7 @@ def temporal_graph(
 
     .. rubric:: Example
 
-    Creating a temporal directed multigraph:
+    Creating an empty temporal directed multigraph with a single snapshot:
 
     .. code-block:: python
 

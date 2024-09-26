@@ -4,8 +4,8 @@ ___
 
 [![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
 [![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/en/latest)
-[![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal)
-[![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal)
+[![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
+[![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.

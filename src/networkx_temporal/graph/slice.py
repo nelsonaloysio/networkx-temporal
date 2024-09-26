@@ -27,10 +27,6 @@ def slice(
     All node interactions are preserved when using this method. Note that the returned object may
     contain duplicate nodes over time, if they interact with others in multiple snapshots.
 
-    Note that a :class:`~networkx_temporal.TemporalMultiGraph` or
-    :class:`~networkx_temporal.TemporalMultiDiGraph` object is required to store multiple edges
-    among node pairs, allowing multiple interactions between the same source and target.
-
     .. hint::
 
         By default, `views
@@ -57,7 +53,7 @@ def slice(
 
        TemporalGraph (t=2) with 4 nodes and 2 edges
 
-    Calling this method again on the same object, now with ``bins=1``, will
+    Calling this method from the returned object, now with ``bins=1``, will
     :func:`~networkx_temporal.TemporalGraph.flatten` the graph:
 
     .. code-block:: python
@@ -66,6 +62,10 @@ def slice(
        >>> print(TG)
 
        TemporalGraph (t=1) with 3 nodes and 2 edges
+
+    Note that a :class:`~networkx_temporal.TemporalMultiGraph` or
+    :class:`~networkx_temporal.TemporalMultiDiGraph` object is required to store multiple edges
+    among pairs and allow many interactions between the same nodes.
 
     .. seealso::
 
@@ -83,7 +83,7 @@ def slice(
     :param str level: Whether to consider node- or edge-level data for slicing. Required if ``attr``
         is a string. Defaults to ``'edge'`` if unset. Choices:
 
-        - ``'edge'``: Edge-level temporal slice.
+        - ``'edge'``: Edge-level temporal slice. This is the default.
 
         - ``'node'``: Node-level temporal slice. Alias for ``'source'``.
 
@@ -108,7 +108,7 @@ def slice(
         <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
         of the original graph. Default is ``True``.
     :param fillna: Value to fill null values in attribute data.
-    :param apply_func: Function to apply to temporal attribute values.
+    :param Callable apply_func: Function to apply to temporal attribute values.
 
     :rtype: TemporalGraph
     """

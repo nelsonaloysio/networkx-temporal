@@ -9,5 +9,5 @@
 ### Removed
 -->
 
-## \[1.0\] - 2024-MM-DD
-- First release (WIP).
+## \[1.0\] - 2024-09-26
+- First release.

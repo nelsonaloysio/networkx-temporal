@@ -83,13 +83,14 @@ Support for the following output formats are implemented, here listed with their
 Graph representations
 =====================
 
-Once a temporal graph is instantiated, the following methods allow returning static graphs,
-snapshots events or unified representations.  Due to the way the underlying data is represented,
-some of these objects (i.e., those with unique nodes) do not allow dynamic node attributes.
+Once instantiated, :class:`~networkx_temporal.TemporalGraph` objects may be transformed into
+different representations, depending on the analysis or visualization requirements. Due to the
+nature of temporal graphs, some representations may not preserve all the data, such as dynamic node
+or edge attributes.
 
-Observe that the total number of nodes :math:`V` and edges :math:`E` of the returned object might
-differ from the number of temporal nodes :math:`V_T` and edges :math:`E_T`, depending on the data
-and method used:
+Observe that the total number of returned nodes :math:`V` and edges :math:`E`
+after transformation might differ from the number of temporal nodes :math:`V_T` and
+edges :math:`E_T`, depending on the data and method used:
 
 +------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
 | Representation   | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
@@ -111,7 +112,7 @@ and method used:
 .. |to_static| replace:: Static
 .. _to_static: #static-graph
 
-.. |to_snapshots| replace:: Snapshots
+.. |to_snapshots| replace:: Snapshots\*
 .. _to_snapshots: #snapshot-based-temporal-graph
 
 .. |to_events| replace:: Events
@@ -119,6 +120,9 @@ and method used:
 
 .. |to_unified| replace:: Unified
 .. _to_unified: #unified-temporal-graph
+
+(\*) Default underlying data structure for temporal graphs with multiple snapshots on
+:func:`~networkx_temporal.TemporalGraph.slice`.
 
 
 Static graph

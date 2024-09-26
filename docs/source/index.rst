@@ -46,11 +46,11 @@ networkx-temporal
    :alt: Documentation Status
 
 .. image:: https://static.pepy.tech/badge/networkx-temporal
-   :target: https://pepy.tech/project/networkx-temporal
+   :target: https://pepy.tech/project/networkx-temporal?versions=*
    :alt: Downloads
 
 .. image:: https://static.pepy.tech/badge/networkx-temporal/month
-   :target: https://pepy.tech/project/networkx-temporal
+   :target: https://pepy.tech/project/networkx-temporal?versions=*
    :alt: Downloads
 
 .. image:: https://img.shields.io/pypi/l/networkx-temporal
