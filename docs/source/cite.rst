@@ -7,7 +7,7 @@ For the time being, if you use it in your research, we kindly ask you to cite
 it by referencing the project's page instead:
 
    Reis de Almeida Passos, N. A., Carlini, E., Trani, S. (2024).
-   ''The NetworkX-Temporal Python library: build and manipulate dynamic graphs''.
+   ''NetworkX-Temporal: building and manipulating dynamic graphs''.
    URL: <*http://pypi.org/p/networkx-temporal*>.
 
 .. include:: bib/networkxtemporal2024.rst

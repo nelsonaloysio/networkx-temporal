@@ -34,7 +34,7 @@
 
 
 #################
-networkx-temporal
+NetworkX-Temporal
 #################
 
 .. image:: https://badge.fury.io/py/networkx-temporal.svg
