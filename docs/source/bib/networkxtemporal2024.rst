@@ -1,8 +1,10 @@
 .. code-block:: tex
 
-   @misc{networkxtemporal2024,
-       title  = {The NetworkX-Temporal Python library: build and manipulate dynamic graphs},
-       author = {Nelson Aloysio Reis de Almeida Passos and Emanuele Carlini and Salvatore Trani},
-       url    = {http://pypi.org/p/networkx-temporal},
-       year   = {2024}
-   }
+   @misc{pubmedtemporal2024,
+        title     = {NetworkX-Temporal: Building, manipulating, and analyzing dynamic graph structures},
+        author    = {Nelson Aloysio Reis de Almeida Passos and Emanuele Carlini and Salvatore Trani},
+        year      = {2024},
+        url       = {https://doi.org/10.5281/zenodo.13956069},
+        doi       = {10.5281/zenodo.13956069},
+        published = {Zenodo}
+    }

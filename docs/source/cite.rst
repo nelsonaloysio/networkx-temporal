@@ -3,12 +3,13 @@ Cite
 ####
 
 At present, we do not have a published article about **NetworkX-Temporal**.
-For the time being, if you use it in your research, we kindly ask you to cite
-it by referencing the project's page instead:
+For the time being, if you use it in your research, we kindly ask you to
+consider citing it by referencing the software itself:
 
-   Reis de Almeida Passos, N. A., Carlini, E., Trani, S. (2024).
-   ''The NetworkX-Temporal Python library: build and manipulate dynamic graphs''.
-   URL: <*http://pypi.org/p/networkx-temporal*>.
+   Passos, Nelson A. R. A., Carlini, E., Trani, S. (2024).
+   ''NetworkX-Temporal: Building, manipulating, and analyzing dynamic graph structures''.
+   Zenodo. DOI:
+   `10.5281/zenodo.13956069 <https://doi.org/10.5281/zenodo.13956069>`_.
 
 .. include:: bib/networkxtemporal2024.rst
 
