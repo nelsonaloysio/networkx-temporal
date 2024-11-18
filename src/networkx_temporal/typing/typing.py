@@ -1,3 +1,5 @@
+from typing import TypeAlias, Union
+
 try:
     from typing import Literal
 except ImportError: # Python < 3.8
@@ -8,17 +10,25 @@ except ImportError: # Python < 3.8
         def __getitem__(self, parameters):
             return _GenericAlias(self, parameters)
     Literal = _LiteralForm("Literal", doc="typing_extensions.Literal")
+Literal.__doc__ = "Type hint for ``typing.Literal`` with Python 3.7 support."
 
+import networkx as nx
 
-try:
-    from matplotlib.pyplot import Figure
-except ModuleNotFoundError:
-    class Figure:
-        ...
+class _FigureType:
+    def __repr__(self):
+        return "matplotlib.figure.Figure"
+_FigureType = _FigureType()
 
+class _TemporalGraphType:
+    def __repr__(self):
+        return "networkx_temporal.TemporalGraph"
+_TemporalGraphType = _TemporalGraphType()
 
-class TemporalGraph:
-    ...
+Figure: TypeAlias = _FigureType
+Figure.__doc__ = "Type hint for ``matplotlib.figure.Figure`` objects."
 
+StaticGraph: TypeAlias = Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+StaticGraph.__doc__ = "Union type hint for any ``networkx`` graph objects."
 
-TemporalDiGraph = TemporalMultiGraph = TemporalMultiDiGraph = TemporalGraph
+TemporalGraph: TypeAlias = _TemporalGraphType
+TemporalGraph.__doc__ = "Type hint for any ``networkx_temporal`` graph objects."
