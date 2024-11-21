@@ -1,5 +1,4 @@
-.. include:: notebook.rst
-
+.. include:: ../include-examples.rst
 
 ###################
 Community detection
@@ -25,62 +24,62 @@ together over time:
 
 .. code-block:: python
 
-    >>> snapshots = 4   # Temporal graphs to generate.
-    >>> clusters = 5    # Number of clusters/communities.
-    >>> order = 5       # Nodes in each cluster.
-    >>> intra = .9      # High initial probability of intra-community edges.
-    >>> inter = .1      # Low initial probability of inter-community edges.
-    >>> change = .125   # Change in intra- and inter-community edges over time.
-    >>>
-    >>> # Get probability matrix for each snapshot.
-    >>> probs = [[[
-    >>>     (intra if i == j else inter) + (t * change * (-1 if i == j else 1))
-    >>>     for j in range(clusters)]
-    >>>     for i in range(clusters)]
-    >>>     for t in range(snapshots)]
-    >>>
-    >>> # Create graphs from probabilities.
-    >>> graphs = {}
-    >>> for t in range(snapshots):
-    >>>     graphs[t] = nx.stochastic_block_model(clusters*[order], probs[t], seed=10)
-    >>>     graphs[t].name = t
-    >>>
-    >>> # Create temporal graph from snapshots.
-    >>> TG = tx.from_snapshots(graphs)
+   >>> snapshots = 4   # Temporal graphs to generate.
+   >>> clusters = 5    # Number of clusters/communities.
+   >>> order = 5       # Nodes in each cluster.
+   >>> intra = .9      # High initial probability of within-community edges.
+   >>> inter = .1      # Low initial probability of inter-community edges.
+   >>> change = .125   # Change in within- and inter-community edges over time.
+   >>>
+   >>> # Get probability matrix for each snapshot.
+   >>> probs = [[[
+   >>>     (intra if i == j else inter) + (t * change * (-1 if i == j else 1))
+   >>>     for j in range(clusters)]
+   >>>     for i in range(clusters)]
+   >>>     for t in range(snapshots)]
+   >>>
+   >>> # Create graphs from probabilities.
+   >>> graphs = {}
+   >>> for t in range(snapshots):
+   >>>     graphs[t] = nx.stochastic_block_model(clusters*[order], probs[t], seed=10)
+   >>>     graphs[t].name = t
+   >>>
+   >>> # Create temporal graph from snapshots.
+   >>> TG = tx.from_snapshots(graphs)
 
-Let's plot the graphs, with node colors representing communities and intra-community edges:
+Let's plot the graphs, with node colors representing communities and within-community edges:
 
 .. code-block:: python
 
-    >>> import matplotlib.pyplot as plt
-    >>>
-    >>> def get_edge_color(edges: list, node_color: dict):
-    >>>     return [node_color[u]
-    >>>             if node_color[u] == node_color[v]
-    >>>             else "#00000035"
-    >>>             for u, v in edges]
-    >>>
-    >>> c = plt.cm.tab10.colors
-    >>>
-    >>> # Node positions.
-    >>> pos = nx.circular_layout(TG.to_static())
-    >>>
-    >>> # Community ground truths.
-    >>> node_color = [c[i // clusters] for i in range(TG.temporal_order())]
-    >>>
-    >>> # Colorize intra-community edges.
-    >>> temporal_opts = {t: {"edge_color": get_edge_color(TG[t].edges(), node_color)}
-    >>>                  for t in range(len(TG))}
-    >>>
-    >>> # Plot snapshots with community ground truths.
-    >>> tx.draw(
-    >>>     TG,
-    >>>     pos=pos,
-    >>>     figsize=(12, 3.5),
-    >>>     node_color=node_color,
-    >>>     temporal_opts=temporal_opts,
-    >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Ground truths")
+   >>> import matplotlib.pyplot as plt
+   >>>
+   >>> def get_edge_color(edges: list, node_color: dict):
+   >>>     return [node_color[u]
+   >>>             if node_color[u] == node_color[v]
+   >>>             else "#00000035"
+   >>>             for u, v in edges]
+   >>>
+   >>> c = plt.cm.tab10.colors
+   >>>
+   >>> # Node positions.
+   >>> pos = nx.circular_layout(TG.to_static())
+   >>>
+   >>> # Community ground truths.
+   >>> node_color = [c[i // clusters] for i in range(TG.temporal_order())]
+   >>>
+   >>> # Colorize within-community edges.
+   >>> temporal_opts = {t: {"edge_color": get_edge_color(TG[t].edges(), node_color)}
+   >>>                  for t in range(len(TG))}
+   >>>
+   >>> # Plot snapshots with community ground truths.
+   >>> tx.draw(
+   >>>     TG,
+   >>>     pos=pos,
+   >>>     figsize=(12, 3.5),
+   >>>     node_color=node_color,
+   >>>     temporal_opts=temporal_opts,
+   >>>     connectionstyle="arc3,rad=0.1",
+   >>>     suptitle="Ground truths")
 
 .. image:: ../../figure/example/fig-9.png
 
@@ -116,26 +115,27 @@ fails to retrieve the true communities (ground truths) in the network:
 
 .. code-block:: python
 
-    >>> import leidenalg as la
-    >>>
-    >>> membership = la.find_partition(
-    >>>     TG.to_static("igraph"),
-    >>>     la.ModularityVertexPartition,
-    >>>     n_iterations=-1,
-    >>>     seed=0,
-    >>> )
-    >>>
-    >>> node_color = [c[m] for m in membership.membership]
-    >>> edge_color = get_edge_color(TG.to_static().edges(), node_color)
-    >>>
-    >>> tx.draw(
-    >>>     TG.to_static(),
-    >>>     pos=pos,
-    >>>     figsize=(4, 4),
-    >>>     node_color=node_color,
-    >>>     edge_color=edge_color,
-    >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found on static graph")
+   >>> import leidenalg as la
+   >>>
+   >>> membership = la.find_partition(
+   >>>     TG.to_static("igraph"),
+   >>>     la.ModularityVertexPartition,
+   >>>     n_iterations=-1,
+   >>>     seed=0,
+   >>> )
+   >>>
+   >>> node_color = [c[m] for m in membership.membership]
+   >>> edge_color = get_edge_color(TG.to_static().edges(), node_color)
+   >>>
+   >>> tx.draw(
+   >>>     TG.to_static(),
+   >>>     pos=pos,
+   >>>     figsize=(4, 4),
+   >>>     node_size=300,
+   >>>     node_color=node_color,
+   >>>     edge_color=edge_color,
+   >>>     connectionstyle="arc3,rad=0.1",
+   >>>     suptitle="Modularity optimization on static graph")
 
 .. image:: ../../figure/example/fig-10.png
 
@@ -151,26 +151,26 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
 
 .. code-block:: python
 
-    >>> temporal_opts = {}
-    >>>
-    >>> for t in range(len(TG)):
-    >>>     membership = la.find_partition(
-    >>>         TG[t:t+1].to_static("igraph"),
-    >>>         la.ModularityVertexPartition,
-    >>>         n_iterations=-1,
-    >>>         seed=0,
-    >>>     )
-    >>>     node_color = [c[m] for m in membership.membership]
-    >>>     edge_color = get_edge_color(TG[t].edges(), node_color)
-    >>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
-    >>>
-    >>> tx.draw(
-    >>>     TG,
-    >>>     pos=pos,
-    >>>     figsize=(12, 3.5),
-    >>>     temporal_opts=temporal_opts,
-    >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found on snapshots")
+   >>> temporal_node_color, temporal_edge_color = {}, {}
+   >>>
+   >>> for t in range(len(TG)):
+   >>>     membership = la.find_partition(
+   >>>         TG[t:t+1].to_static("igraph"),
+   >>>         la.ModularityVertexPartition,
+   >>>         n_iterations=-1,
+   >>>         seed=0)
+   >>>     temporal_node_color[t] = [c[m] for m in membership.membership]
+   >>>     temporal_edge_color[t] = get_edge_color(TG[t].edges(), temporal_node_color[t])
+   >>>
+   >>> tx.draw(
+   >>>     TG,
+   >>>     pos=pos,
+   >>>     figsize=(12, 3.5),
+   >>>     node_size=300,
+   >>>     temporal_node_color=temporal_node_color,
+   >>>     temporal_edge_color=temporal_edge_color,
+   >>>     connectionstyle="arc3,rad=0.1",
+   >>>     suptitle="Modularity optimization on each snapshot")
 
 .. image:: ../../figure/example/fig-11.png
 
@@ -182,35 +182,40 @@ suboptimal, but the changing community indices also increases the complexity of 
 On the temporal graph
 ---------------------
 
-`Coupling temporal nodes <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers>`__
-allows the same algorithm to correctly retrieve the ground truths in this case, while at the same
-time maintaining community indices consistent over time, as seen below:
+Considering snapshots as layers (slices) of a multiplex graph, with `interslice edges coupling
+sequential node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
+is one way of employing modularity optimization on temporal graphs.
+
+This process allows the same algorithm to correctly retrieve the ground truths in this case, while
+at the same time maintaining community indices consistent over time, as seen below:
 
 .. code-block:: python
 
-    >>> temporal_opts = {}
-    >>>
-    >>> temporal_membership, improvement = la.find_partition_temporal(
-    >>>     TG.to_snapshots("igraph"),
-    >>>     la.ModularityVertexPartition,
-    >>>     interslice_weight=1.0,
-    >>>     n_iterations=-1,
-    >>>     seed=0,
-    >>>     vertex_id_attr="_nx_name"
-    >>> )
-    >>>
-    >>> for t in range(len(TG)):
-    >>>     node_color = [c[m] for m in temporal_membership[t]]
-    >>>     edge_color = get_edge_color(TG[t].edges(), node_color)
-    >>>     temporal_opts[t] = {"node_color": node_color, "edge_color": edge_color}
-    >>>
-    >>> tx.draw(
-    >>>     TG,
-    >>>     pos=pos,
-    >>>     figsize=(12, 3.5),
-    >>>     temporal_opts=temporal_opts,
-    >>>     connectionstyle="arc3,rad=0.1",
-    >>>     suptitle="Communities found on temporal graph")
+   >>> temporal_membership, improvement = la.find_partition_temporal(
+   >>>     TG.to_snapshots("igraph"),
+   >>>     la.ModularityVertexPartition,
+   >>>     interslice_weight=1.0,
+   >>>     n_iterations=-1,
+   >>>     seed=0,
+   >>>     vertex_id_attr="_nx_name")
+   >>>
+   >>> temporal_node_color = {
+   >>>     t: [c[m] for m in temporal_membership[t]]
+   >>>     for t in range(len(TG))}
+   >>>
+   >>> temporal_edge_color = {
+   >>>     t: get_edge_color(TG[t].edges(), temporal_node_color[t])
+   >>>     for t in range(len(TG))}
+   >>>
+   >>> tx.draw(
+   >>>     TG,
+   >>>     pos=pos,
+   >>>     figsize=(12, 3.5),
+   >>>     node_size=300,
+   >>>     temporal_node_color=temporal_node_color,
+   >>>     temporal_edge_color=temporal_edge_color,
+   >>>     connectionstyle="arc3,rad=0.1",
+   >>>     suptitle="Modularity optimization on multiplex graph")
 
 .. image:: ../../figure/example/fig-12.png
 

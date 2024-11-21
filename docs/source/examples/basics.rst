@@ -1,5 +1,4 @@
-.. include:: notebook.rst
-
+.. include:: ../include-examples.rst
 
 ################
 Basic operations
@@ -13,7 +12,7 @@ Build temporal graph
 ====================
 
 The main class of the package is the
-:class:`~networkx_temporal.TemporalGraph`
+:class:`~networkx_temporal.graph.TemporalGraph`
 object, which extends `NetworkX graphs
 <https://networkx.org/documentation/stable/reference/classes/index.html>`__
 to handle temporal data.
@@ -44,14 +43,14 @@ Note that the resulting graph object reports a single time step ``t=1``, as it h
 .. hint::
 
    To allow multiple interactions between the same nodes over time, create a
-   :class:`~networkx_temporal.TemporalMultiGraph` or :class:`~networkx_temporal.TemporalMultDiGraph`
+   :class:`~networkx_temporal.graph.TemporalMultiGraph` or :class:`~networkx_temporal.TemporalMultDiGraph`
    object instead. Otherwise, only a single edge is allowed among pairs.
 
 
 Slice temporal graph
 ====================
 
-Let's use the :func:`~networkx_temporal.TemporalGraph.slice` method to split the temporal graph we
+Let's use the :func:`~networkx_temporal.graph.TemporalGraph.slice` method to split the temporal graph we
 created into a number of snapshots:
 
 .. code-block:: python
@@ -74,7 +73,7 @@ Inspecting the resulting object's properties can be achieved using some familiar
    E = [1, 1, 3, 3] edges (8 unique, 8 total)
 
 
-We may also visualize the resulting snapshots using the :func:`~networkx_temporal.draw` function:
+We may also visualize the resulting snapshots using the :func:`~networkx_temporal.drawing.draw` function:
 
 .. code-block:: python
 
@@ -82,15 +81,15 @@ We may also visualize the resulting snapshots using the :func:`~networkx_tempora
 
 .. image:: ../../figure/example/fig-0.png
 
-Note that :func:`~networkx_temporal.TemporalGraph.slice` by default returns a snapshot for each
+Note that :func:`~networkx_temporal.graph.TemporalGraph.slice` by default returns a snapshot for each
 unique attribute value passed to it.
 
 .. hint::
 
-   By default, :func:`~networkx_temporal.TemporalGraph.slice` returns the interval of the resulting
-   temporal snapshots as their :attr:`~networkx_temporal.TemporalGraph.names` property. Setting
-   ``names=True`` will use these instead of indices as subplot titles, as seen below.
-
+   By default, :func:`~networkx_temporal.graph.TemporalGraph.slice` returns the interval of the resulting
+   snapshots as their :attr:`~networkx_temporal.graph.TemporalGraph.names` property. Passing
+   ``names=True`` to :func:`~networkx_temporal.drawing.draw` will use them instead of indices as
+   subplot titles, as seen below.
 
 Number of snapshots
 --------------------
@@ -107,7 +106,7 @@ A new object can be created with a specific number of snapshots by setting the
 
 .. note::
 
-   In some cases, :func:`~networkx_temporal.TemporalGraph.slice` may still not be able to split the
+   In some cases, :func:`~networkx_temporal.graph.TemporalGraph.slice` may still not be able to split the
    graph into the number of snapshots specified by ``bins`` (e.g., due to insufficient data), in
    which case the maximum possible number is returned instead. See `Quantile-based cut
    <#quantile-based-cut>`__ and `Rank-based cut <#rank-based-cut>`__ examples below for alternatives.
@@ -192,8 +191,8 @@ Static graph objects may also carry temporal information as node- and edge-level
 
    DiGraph with 6 nodes and 8 edges
 
-We may convert a static graph to a :class:`~networkx_temporal.TemporalGraph` object
-using the :func:`~networkx_temporal.from_static` function:
+We may convert a static graph to a :class:`~networkx_temporal.graph.TemporalGraph` object
+using the :func:`~networkx_temporal.transform.from_static` function:
 
 .. code-block:: python
 
@@ -216,7 +215,7 @@ Let's see how this affects the resulting temporal graph when slicing it into sna
 
 .. seealso::
 
-   The :func:`~networkx_temporal.from_snapshots` function to import a list of static graphs as
+   The :func:`~networkx_temporal.transform.from_snapshots` function to import a list of static graphs as
    temporal graph snapshots.
 
 
@@ -237,7 +236,7 @@ of nodes. This is expected, as the same nodes appear in more than one snapshot.
 
 .. note::
 
-   By default, :func:`~networkx_temporal.TemporalGraph.slice` considers ``attr`` as an edge-level
+   By default, :func:`~networkx_temporal.graph.TemporalGraph.slice` considers ``attr`` as an edge-level
    attribute, which is usually the case for temporal data. This behavior can be changed by setting
    ``level='node'``, as seen below.
 
@@ -283,8 +282,8 @@ Temporal graphs may be read from or written to a file using the following functi
    >>> TG = tx.read_graph("temporal-graph.graphml.zip")
 
 Supported formats will be automatically detected based on the file extension.
-For details on both, please refer to their respective documentations:
-:func:`~networkx_temporal.read_graph` and :func:`~networkx_temporal.write_graph`.
+For details on both, please refer to their respective documentation:
+:func:`~networkx_temporal.io.read_graph` and :func:`~networkx_temporal.io.write_graph`.
 
 .. seealso::
 
@@ -295,12 +294,12 @@ For details on both, please refer to their respective documentations:
 
 -----
 
-Other inherited methods
+Inherited methods
 =======================
 
 The methods available from a `NetworkX graph
 <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-can be called directly from a :class:`~networkx_temporal.TemporalGraph` object as well.
+can be called directly from a :class:`~networkx_temporal.graph.TemporalGraph` object as well.
 For example, the familiar methods below transform its edges into directed or undirected:
 
 .. code-block:: python
@@ -324,4 +323,4 @@ Note that both methods return new objects when called, so the original graph rem
 
    - The `NetworkX documentation
      <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-     for a list of graph methods inherited by a :class:`~networkx_temporal.TemporalGraph`.
+     for a list of graph methods inherited by a :class:`~networkx_temporal.graph.TemporalGraph`.

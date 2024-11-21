@@ -1,3 +1,7 @@
+.. note::
+
+   This documentation was generated on |today| for package release |release|.
+
 .. toctree::
    :hidden:
    :caption: Introduction
@@ -6,7 +10,7 @@
 
 .. toctree::
    :hidden:
-   :caption: API reference
+   :caption: Package reference
    :glob:
 
    api/*
@@ -24,14 +28,9 @@
    :hidden:
    :caption: Appendix
 
-   genindex
-   references
    cite
-
-.. note::
-
-   This documentation was generated on |today| for package release |release|.
-
+   references
+   genindex
 
 #################
 NetworkX-Temporal
@@ -61,10 +60,10 @@ NetworkX-Temporal
 **NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic graphs,
 i.e., temporal network data.
 
-This package provides new :class:`~networkx_temporal.TemporalGraph` classes, which inherit
+This package provides new :class:`~networkx_temporal.graph.TemporalGraph` classes, which inherit
 NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
 and implement additional functions to manipulate temporal data within. Most importantly, it
-provides ways to :func:`~networkx_temporal.TemporalGraph.slice` a graph into snapshots and
+provides ways to :func:`~networkx_temporal.graph.TemporalGraph.slice` a graph into snapshots and
 :func:`~networkx_temporal.convert` between formats and representations.
 
 
@@ -94,8 +93,8 @@ The following is a quick example of the package in action, covering its basic fu
 Build and slice temporal graph
 ------------------------------
 
-Create a directed :class:`~networkx_temporal.TemporalGraph` object and
-:func:`~networkx_temporal.TemporalGraph.slice` it into a number of snapshots:
+Create a directed :class:`~networkx_temporal.graph.TemporalGraph` object and
+:func:`~networkx_temporal.graph.TemporalGraph.slice` it into a number of snapshots:
 
 .. code-block:: python
 
@@ -131,7 +130,7 @@ Note that the total number of nodes may vary, while the total number of edges is
 
 .. note::
 
-   The :func:`~networkx_temporal.TemporalGraph.slice` method by default creates a snapshot for
+   The :func:`~networkx_temporal.graph.TemporalGraph.slice` method by default creates a snapshot for
    unique time value in the temporal graph. It internally stores `views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
    of the original graph, so no data is copied unless otherwise specified.
@@ -152,7 +151,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 Save and load data
 ------------------
 
-The :func:`~networkx_temporal.write_graph` and :func:`~networkx_temporal.read_graph`
+The :func:`~networkx_temporal.io.write_graph` and :func:`~networkx_temporal.io.read_graph`
 functions accept compressed temporal graphs:
 
 .. code-block:: python
@@ -168,7 +167,7 @@ as in the installed NetworkX library version.
 Convert and transform graphs
 ----------------------------
 
-This package allows to transform a :class:`~networkx_temporal.TemporalGraph` between different
+This package allows to transform a :class:`~networkx_temporal.graph.TemporalGraph` between different
 `graph representations <examples/convert.html#graph-representations>`__:
 
 * `Static graphs <examples/convert.html#static-graph>`__:
@@ -213,7 +212,7 @@ For more information on using this package, please refer to the following sectio
 
 - `API reference <api/classes.html>`__ for details on the classes and functions it implements.
 
-- `Examples <examples/basic.html>`__ covering some of its main functionalities and common use cases.
+- `Examples <examples/basics.html>`__ covering some of its main functionalities and common use cases.
 
 .. seealso::
 

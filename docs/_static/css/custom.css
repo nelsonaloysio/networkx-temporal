@@ -1,0 +1,12 @@
+li.toctree-l1 code span {
+    font-size: 1.2em;
+}
+
+table.autosummary td, table.autosummary th {
+    white-space: normal;
+}
+
+h1 a.reference.internal::after {
+    color: #404040;
+    display: inline;
+}

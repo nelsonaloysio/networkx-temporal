@@ -1,11 +1,11 @@
-.. include:: notebook.rst
+.. include:: ../include-examples.rst
 
-##############
-Common metrics
-##############
+######################
+Metrics and algorithms
+######################
 
 Both static and temporal graph metrics can be calculated from a
-:class:`~networkx_temporal.TemporalGraph` object. This section showcases a few common examples
+:class:`~networkx_temporal.graph.TemporalGraph` object. This section showcases a few common examples
 using some of NetworkX's built-in functions and algorithms.
 
 .. note::
@@ -126,17 +126,18 @@ Converting the graph to undirected, we also obtain nodes that have node :math:`c
 
 -----
 
+
 Temporal graph metrics
 ======================
 
-Only a few methods that consider all snapshots are currently available from :class:`~networkx_temporal.TemporalGraph` objects.
+Only a few methods that consider all snapshots are currently available from :class:`~networkx_temporal.graph.TemporalGraph` objects.
 They mostly serve as wrappers of methods implemented by NetworkX, for convenience purposes.
 
 
 Temporal degree centrality
 --------------------------
 
-The :func:`~networkx_temporal.TemporalGraph.temporal_degree` method returns a dictionary containing node degrees across all time steps:
+The :func:`~networkx_temporal.graph.TemporalGraph.temporal_degree` method returns a dictionary containing node degrees across all time steps:
 
 .. code-block:: python
 
@@ -156,8 +157,8 @@ Alternatively, to obtain the degree of a specific node considering all snapshots
 Temporal order and size
 -----------------------
 
-The :func:`~networkx_temporal.TemporalGraph.temporal_order` and
-:func:`~networkx_temporal.TemporalGraph.temporal_size` functions return the total unique nodes and edges:
+The :func:`~networkx_temporal.graph.TemporalGraph.temporal_order` and
+:func:`~networkx_temporal.graph.TemporalGraph.temporal_size` functions return the total unique nodes and edges:
 
 .. code-block:: python
 
@@ -170,14 +171,14 @@ The :func:`~networkx_temporal.TemporalGraph.temporal_order` and
 .. note::
 
    The temporal order and size of a temporal graph match the length of
-   :func:`~networkx_temporal.TemporalGraph.temporal_nodes` and
-   :func:`~networkx_temporal.TemporalGraph.temporal_edges`, i.e.,
+   :func:`~networkx_temporal.graph.TemporalGraph.temporal_nodes` and
+   :func:`~networkx_temporal.graph.TemporalGraph.temporal_edges`, i.e.,
    the sets of all (**unique**) nodes and edges considering all snapshots.
 
 
 Alternatively,
-:func:`~networkx_temporal.TemporalGraph.total_order` and
-:func:`~networkx_temporal.TemporalGraph.total_size` return the sum of nodes and edges per snapshot:
+:func:`~networkx_temporal.graph.TemporalGraph.total_order` and
+:func:`~networkx_temporal.graph.TemporalGraph.total_size` return the sum of nodes and edges per snapshot:
 
 .. code-block:: python
 
@@ -197,7 +198,7 @@ Alternatively,
 Temporal node neighborhoods
 ---------------------------
 
-The :func:`~networkx_temporal.TemporalGraph.temporal_neighbors` method returns a dictionary containing node neighbors in all snapshots:
+The :func:`~networkx_temporal.graph.TemporalGraph.temporal_neighbors` method returns a dictionary containing node neighbors in all snapshots:
 
 .. code-block:: python
 
@@ -205,10 +206,24 @@ The :func:`~networkx_temporal.TemporalGraph.temporal_neighbors` method returns a
 
    {'b'}
 
-Converting the graph to undirected, we also obtain nodes that have node :math:`c` as their neighbor:
+Converting the graph to undirected, we also obtain nodes that have node :math:`c` in their neighborhood:
 
 .. code-block:: python
 
    >>> TG.to_undirected().temporal_neighbors("c")
 
    {'a', 'b', 'd'}
+
+Lastly, we may also restrict the search to a specific snapshot or time window, e.g., from :math:`t=2` to :math:`t=4`:
+
+.. code-block:: python
+
+   >>> TG.temporal_neighbors("c", start=2, end=4)
+
+   {'a', 'd'}
+
+.. note::
+
+   The method :func:`~networkx_temporal.graph.TemporalGraph.temporal_neighbors` returns a set of neighbors
+   considering all snapshots, while the method :func:`~networkx_temporal.graph.TemporalGraph.neighbors`
+   returns a list of neighbors for each node in each snapshot.

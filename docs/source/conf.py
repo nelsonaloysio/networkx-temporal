@@ -6,11 +6,11 @@
 import os, sys
 sys.path.insert(0, os.path.abspath('../../src'))
 
-from networkx_temporal import __version__
-release = version = __version__
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+from networkx_temporal import __version__
+release = version = __version__
 
 project = "networkx-temporal"
 copyright = "2024"
@@ -24,17 +24,32 @@ for _ in ["-", "a", "b", "post", "rc"]:
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx_rtd_theme",
     "sphinxemoji.sphinxemoji",
 ]
 exclude_patterns = ["*/convert/nx2*.py"]
+templates_path = ["_templates"]
 add_module_names = False
-# templates_path = ["_templates"]
+autosummary_generate = True
+autosummary_imported_members = True
 
 # -- AutoDoc configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
 
-autodoc_mock_imports = ["matplotlib", "pandas"]
+autodoc_mock_imports = [
+    "dgl",
+    "dynetx",
+    "graph_tool",
+    "igraph",
+    "matplotlib",
+    "networkit",
+    "pandas",
+    "snap",
+    "teneto",
+    "torch_geometric",
+]
+autodoc_member_order = "bysource"
 autodoc_typehints = "both"
 
 # -- Options for HTML output -------------------------------------------------

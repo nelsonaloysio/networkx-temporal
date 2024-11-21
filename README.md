@@ -3,7 +3,7 @@
 ___
 
 [![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
-[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/en/latest)
+[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
@@ -28,7 +28,7 @@ $ pip install 'networkx-temporal[draw]'
 
 ## Quick example
 
-For detailed information on using the package, please refer to its [official documentation](https://networkx-temporal.readthedocs.io/en/latest/).
+For detailed information on using the package, please refer to its [official documentation](https://networkx-temporal.readthedocs.io).
 
 > An interactive Jupyter notebook with more examples is also [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb) ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)).
 
@@ -66,4 +66,4 @@ This package is released under the [BSD License](LICENSE.md).
 
 ## Cite
 
-In case this package is useful for your research, please kindly consider [citing it](https://networkx-temporal.readthedocs.io/en/latest/cite.html).
+In case this package is useful for your research, please kindly consider [citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).
