@@ -7,7 +7,7 @@ import networkx as nx
 from ..typing import Literal
 
 
-def get_filepath(
+def _get_filepath(
     file: Optional[Union[str, BufferedReader, BufferedWriter, BytesIO]]
 ) -> Union[str, None]:
     """
@@ -16,7 +16,7 @@ def get_filepath(
     return file if type(file) == str else file.name if hasattr(file, "name") else None
 
 
-def get_filename(path: Optional[str]) -> Union[str, None]:
+def _get_filename(path: Optional[str]) -> Union[str, None]:
     """
     Returns file name from path, if it is a string.
     """
@@ -26,7 +26,7 @@ def get_filename(path: Optional[str]) -> Union[str, None]:
     return name
 
 
-def get_format(
+def _get_format(
     path: Optional[str],
     frmt: Optional[Union[str, Callable]] = None
 ) -> Union[str, None]:
@@ -42,7 +42,7 @@ def get_format(
     return None
 
 
-def get_format_ext(frmt: Optional[str]) -> str:
+def _get_format_ext(frmt: Optional[str]) -> str:
     """
     Returns file format extension, if available.
     """
@@ -54,7 +54,7 @@ def get_format_ext(frmt: Optional[str]) -> str:
     return ext
 
 
-def get_function(
+def _get_function(
     frmt: Union[str, Callable],
     prefix: Literal["generate", "read", "write"]
 ) -> Union[Callable, None]:

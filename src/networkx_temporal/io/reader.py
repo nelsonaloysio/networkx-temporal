@@ -5,7 +5,7 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
-from .utils import get_filepath, get_filename, get_format, get_function
+from .io import _get_filepath, _get_filename, _get_format, _get_function
 from ..transform import from_snapshots, from_static
 from ..typing import TemporalGraph
 
@@ -16,13 +16,13 @@ def read_graph(
     **kwargs,
 ) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.TemporalGraph` from graph file or compressed
+    Returns :class:`~networkx_temporal.graph.TemporalGraph` from graph file or compressed
     `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__
     containing multiple snapshots.
 
     Files within the compressed ZIP file must be named as ``{name}_{t}.{ext}``,
     where ``t`` is the snapshot index and ``ext`` is the extension format.
-    See :func:`~networkx_temporal.write_graph` for more information.
+    See :func:`~networkx_temporal.io.write_graph` for more information.
 
     .. rubric:: Example
 
@@ -42,15 +42,15 @@ def read_graph(
 
     :param object file: Binary file-like object or string containing path to ZIP file.
     :param frmt: Extension format or callable function to read compressed graphs with. If unset,
-        it is inferred from each zipped file name.
+        it is inferred from the ``file`` extension.
     :param kwargs: Additional arguments to pass to NetworkX reader function.
 
     :rtype: TemporalGraph
     """
     def read(file, frmt, **kwargs):
-        path = get_filepath(file)
-        frmt = get_format(path, frmt)
-        func = get_function(frmt, "read")
+        path = _get_filepath(file)
+        frmt = _get_format(path, frmt)
+        func = _get_function(frmt, "read")
 
         assert frmt is not None,\
             "Missing extension format to read graph in file name or `frmt` parameter."
@@ -62,8 +62,8 @@ def read_graph(
 
         return func(file, **kwargs)
 
-    path = get_filepath(file)
-    name = get_filename(path)
+    path = _get_filepath(file)
+    name = _get_filename(path)
 
     assert type(file) != str or not osp.isdir(file),\
         "Argument `file` must be a file path or object, not a directory."

@@ -6,8 +6,9 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
-from .utils import get_filepath, get_filename, get_format, get_format_ext, get_function
-from ..typing import TemporalGraph, Literal
+from .io import _get_filepath, _get_filename, _get_format, _get_format_ext, _get_function
+from ..graph import is_temporal_graph
+from ..typing import Literal, TemporalGraph, StaticGraph
 
 DEFAULT_FORMAT = "graphml"
 
@@ -30,12 +31,12 @@ def write_graph(
     **kwargs
 ) -> Union[bytes, None]:
     """
-    Writes :class:`~networkx_temporal.TemporalGraph` to graph file or compressed
+    Writes :class:`~networkx_temporal.graph.TemporalGraph` to graph file or compressed
     `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__
     containing multiple snapshots.
 
     If the object contains more than one snapshot, such as after calling
-    :func:`~networkx_temporal.TemporalGraph.slice`, this function writes a single ZIP archive,
+    :func:`~networkx_temporal.graph.TemporalGraph.slice`, this function writes a single ZIP archive,
     in which each file refers to a snapshot. Files within are named ``{name}_{t}.{ext}``,
     where ``t`` is the snapshot index and ``ext`` is the extension format.
 
@@ -56,7 +57,7 @@ def write_graph(
         <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
         from NetworkX for a list of supported formats.
 
-    :param TG: :class:`~networkx_temporal.TemporalGraph` to write.
+    :param TG: :class:`~networkx_temporal.graph.TemporalGraph` to write.
     :param object file: Binary file-like object or string containing path to ZIP file. Optional. If
         ``None`` (default), returns content as bytes.
     :param frmt: Extension format or callable function to write graphs with. If unset and ``file``
@@ -87,10 +88,10 @@ def write_graph(
         Default is ``False``.
     :param kwargs: Additional arguments to pass to NetworkX writer function.
     """
-    path = get_filepath(file)
-    name = get_filename(path)
-    frmt = get_format(path, frmt)
-    func = get_function(frmt, "write")
+    path = _get_filepath(file)
+    name = _get_filename(path)
+    frmt = _get_format(path, frmt)
+    func = _get_function(frmt, "write")
 
     if frmt is None:
         frmt, func = DEFAULT_FORMAT, getattr(nx, f"write_{DEFAULT_FORMAT}")
@@ -111,7 +112,7 @@ def write_graph(
     assert compression is None or compression.upper() in COMPRESSION.__args__,\
         f"Argument `compression` must be among {COMPRESSION.__args__}."
 
-    if type(TG) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
+    if type(TG) in StaticGraph.__args__:
         TG = [TG]  # Allows a single graph to be passed as input.
 
     if makedirs and name is not None:
@@ -119,8 +120,8 @@ def write_graph(
 
     compression = getattr(zipfile, (compression or "ZIP_STORED").upper())
     file, nofile = (BytesIO(), True) if file is None else (file, False)
-    name = osp.basename(TG.name or name or 'snapshot')
-    ext = get_format_ext(frmt)
+    name = osp.basename((TG.name if is_temporal_graph(TG) else None) or name or 'snapshot')
+    ext = _get_format_ext(frmt)
 
     with zipfile.ZipFile(file, "w",
                          compression=compression,
