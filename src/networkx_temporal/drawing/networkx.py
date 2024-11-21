@@ -94,18 +94,18 @@ def draw_networkx(
        >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
        >>>
        >>> TG.add_edges_from([
-       >>> ("a", "b", {"time": 0}),
-       >>> ("c", "b", {"time": 1}),
-       >>> ("d", "c", {"time": 2}),
-       >>> ("d", "e", {"time": 2}),
-       >>> ("a", "c", {"time": 2}),
-       >>> ("f", "e", {"time": 3}),
-       >>> ("f", "a", {"time": 3}),
-       >>> ("f", "b", {"time": 3}),
-       >>> ("c", "a", {"time": 4}),
-       >>> ("f", "c", {"time": 5}),
-       >>> ("a", "f", {"time": 5}),
-       >>> ("f", "c", {"time": 5}),
+       >>>     ("a", "b", {"time": 0}),
+       >>>     ("c", "b", {"time": 1}),
+       >>>     ("d", "c", {"time": 2}),
+       >>>     ("d", "e", {"time": 2}),
+       >>>     ("a", "c", {"time": 2}),
+       >>>     ("f", "e", {"time": 3}),
+       >>>     ("f", "a", {"time": 3}),
+       >>>     ("f", "b", {"time": 3}),
+       >>>     ("c", "a", {"time": 4}),
+       >>>     ("f", "c", {"time": 5}),
+       >>>     ("a", "f", {"time": 5}),
+       >>>     ("f", "c", {"time": 5}),
        >>> ])
        >>>
        >>> TG = TG.slice(attr="time")
@@ -114,13 +114,13 @@ def draw_networkx(
        >>>               for t, nodes in enumerate(TG.nodes())}
        >>>
        >>> fig = tx.draw(TG,
-       >>> layout="kamada_kawai",
-       >>> temporal_node_color=node_color,
-       >>> figsize=(6, 4),
-       >>> nrows=2,
-       >>> ncols=3,
-       >>> border=True,
-       >>> suptitle=True)
+       >>>               layout="kamada_kawai",
+       >>>               temporal_node_color=node_color,
+       >>>               figsize=(6, 4),
+       >>>               nrows=2,
+       >>>               ncols=3,
+       >>>               border=True,
+       >>>               suptitle=True)
        >>>
        >>> handles = [mpatches.Patch(color=colors[i], label=f"$t$ = {i}")
        >>>            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
@@ -134,8 +134,6 @@ def draw_networkx(
        >>> fig
 
     .. image:: ../../figure/example/fig-draw.png
-
-    |
 
     .. seealso::
 
