@@ -6,36 +6,45 @@ from warnings import warn
 
 import networkx as nx
 
+from ..metrics import (
+    temporal_degree,
+    temporal_in_degree,
+    temporal_out_degree,
+    temporal_neighbors,
+    temporal_nodes,
+    temporal_edges,
+    temporal_order,
+    temporal_size,
+    total_order,
+    total_size
+)
 from .slice import slice
-from ..methods.static import (is_directed,
-                              is_multigraph,
-                              neighbors,
-                              to_directed,
-                              to_undirected)
-from ..methods.temporal import (temporal_degree,
-                                temporal_in_degree,
-                                temporal_out_degree,
-                                temporal_neighbors,
-                                temporal_nodes,
-                                temporal_edges,
-                                temporal_order,
-                                temporal_size,
-                                total_order,
-                                total_size)
-from ..transform import (to_events,
-                         to_snapshots,
-                         to_static,
-                         to_unified)
-from ..typing import TemporalGraph
+from .overrides import (
+    _copy,
+    _is_directed,
+    _is_multigraph,
+    _neighbors,
+    _to_directed,
+    _to_undirected
+)
+from ..transform import (
+    to_events,
+    to_snapshots,
+    to_static,
+    to_unified
+)
+from ..typing import TemporalGraph, StaticGraph
 
 
 class TemporalBase(metaclass=ABCMeta):
     """
     Base class for temporal graphs.
 
-    This class is not meant to be instantiated directly, but rather inherited by the classes
-    :class:`~networkx_temporal.TemporalGraph`, :class:`~networkx_temporal.TemporalDiGraph`,
-    :class:`~networkx_temporal.TemporalMultiGraph`, and :class:`~networkx_temporal.TemporalMultiDiGraph`.
+    This class is not meant to be instantiated directly, but is rather inherited by the classes
+    :class:`~networkx_temporal.graph.TemporalGraph`,
+    :class:`~networkx_temporal.graph.TemporalDiGraph`,
+    :class:`~networkx_temporal.graph.TemporalMultiGraph`,
+    and :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
     """
     slice = slice
     temporal_degree = temporal_degree
@@ -50,11 +59,12 @@ class TemporalBase(metaclass=ABCMeta):
     total_size = total_size
 
     # Static methods; override NetworkX methods.
-    neighbors = neighbors
-    is_directed = is_directed
-    is_multigraph = is_multigraph
-    to_directed = to_directed
-    to_undirected = to_undirected
+    copy = _copy
+    neighbors = _neighbors
+    is_directed = _is_directed
+    is_multigraph = _is_multigraph
+    to_directed = _to_directed
+    to_undirected = _to_undirected
 
     # Transform methods.
     to_events = to_events
@@ -66,7 +76,7 @@ class TemporalBase(metaclass=ABCMeta):
     def __init__(self, t: Optional[int] = None, directed: bool = None, multigraph: bool = None):
         graph = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")
         self.data = [graph() for _ in range(t or 1)]
-        wrapper_networkx(self, graph)
+        _wrapper_networkx(self, graph)
 
     def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
         """ Returns snapshot from a given interval. """
@@ -107,7 +117,7 @@ class TemporalBase(metaclass=ABCMeta):
                f"{'Multi' if self.is_multigraph() else ''}"\
                f"{'Di' if self.is_directed() else ''}"\
                f"Graph (t={len(self)}) "\
-               f"with {sum(self.order())} nodes and {sum(self.size())} edges"
+               f"with {self.temporal_order()} nodes and {self.temporal_size()} edges"
 
     @property
     def data(self) -> list:
@@ -207,10 +217,10 @@ class TemporalBase(metaclass=ABCMeta):
     def flatten(self) -> TemporalGraph:
         """
         Returns ''flattened'' version of temporal graph.
-        Equivalent to :func:`~networkx_temporal.TemporalGraph.slice` with ``bins=1``.
+        Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.slice` with ``bins=1``.
 
-        This method differs from :func:`~networkx_temporal.TemporalGraph.to_static` only in the
-        sense that it returns a :class:`~networkx_temporal.TemporalGraph` object with a single
+        This method differs from :func:`~networkx_temporal.graph.TemporalGraph.to_static` only in the
+        sense that it returns a :class:`~networkx_temporal.graph.TemporalGraph` object with a single
         snapshot, rather than a static NetworkX graph object.
 
         .. attention::
@@ -295,13 +305,49 @@ class TemporalBase(metaclass=ABCMeta):
 
         Raises an ``IndexError`` if graph is empty or index is out of range.
 
-        :param t: Index of snapshot. Default: last snapshot.
+        :param index: Index of snapshot. Default: last snapshot.
         """
         self.__getitem__(index or -1)
         return self.data.pop(index or -1)
 
 
-def decorator_networkx(cls, method: str) -> Callable:
+def is_frozen(TG: TemporalGraph, on_each: bool = False) -> bool:
+    """
+    Returns ``True`` if the graph is frozen, ``False`` otherwise.
+
+    A frozen graph is immutable, meaning that nodes and edges cannot be added or removed.
+    Calling ``copy`` on a frozen graph returns a (mutable) deep copy of the graph object.
+
+    Obtains the value from the first snapshot only, unless ``on_each=True``.
+
+    :param bool on_each: If ``True``, checks all snapshots for the graph type.
+    """
+    assert is_temporal_graph(TG) or type(TG) in StaticGraph.__args__,\
+        "Argument `TG` must be a temporal graph or a static graph."
+
+    if type(TG) in StaticGraph.__args__:
+        return nx.is_frozen(TG)
+
+    return [nx.is_frozen(G) for G in TG] if on_each else nx.is_frozen(TG[0])
+
+
+def is_temporal_graph(obj: Any) -> bool:
+    """
+    Returns ``True`` if the object is a temporal graph, ``False`` otherwise.
+
+    Matches any of:
+    :class:`~networkx_temporal.graph.TemporalGraph`,
+    :class:`~networkx_temporal.graph.TemporalDiGraph`,
+    :class:`~networkx_temporal.graph.TemporalMultiGraph`,
+    :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
+
+    :param obj: Object to be tested.
+    """
+    from . import TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
+    return issubclass(type(obj), (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
+
+
+def _decorator_networkx(cls, method: str) -> Callable:
     """
     Decorator for static NetworkX graph methods.
 
@@ -322,13 +368,13 @@ def decorator_networkx(cls, method: str) -> Callable:
     return func
 
 
-def wrapper_networkx(cls, graph: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]) -> None:
+def _wrapper_networkx(cls, graph: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]) -> None:
     """
     Wrapper for decorating static NetworkX graph methods.
     """
     for method in dir(graph):
         if method not in dir(TemporalBase) and not method.startswith("__"):
             try:
-                cls.__setattr__(method, decorator_networkx(cls, method))
+                cls.__setattr__(method, _decorator_networkx(cls, method))
             except AttributeError:  # networkx<2.8.1
                 warn("NetworkX version <2.8.1 detected, inherited methods will be undocumented.")

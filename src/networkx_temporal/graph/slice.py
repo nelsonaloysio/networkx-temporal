@@ -54,7 +54,7 @@ def slice(
        TemporalGraph (t=2) with 4 nodes and 2 edges
 
     Calling this method from the returned object, now with ``bins=1``, will
-    :func:`~networkx_temporal.TemporalGraph.flatten` the graph:
+    :func:`~networkx_temporal.graph.TemporalGraph.flatten` the graph:
 
     .. code-block:: python
 
@@ -63,15 +63,15 @@ def slice(
 
        TemporalGraph (t=1) with 3 nodes and 2 edges
 
-    Note that a :class:`~networkx_temporal.TemporalMultiGraph` or
-    :class:`~networkx_temporal.TemporalMultiDiGraph` object is required to store multiple edges
+    Note that a :class:`~networkx_temporal.graph.TemporalMultiGraph` or
+    :class:`~networkx_temporal.graph.TemporalMultiDiGraph` object is required to store multiple edges
     among pairs and allow many interactions between the same nodes.
 
     .. seealso::
 
         The
         `Examples → Basic Operations → Slice temporal graph
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/basics.html#slice-temporal-graph>`__
+        <../examples/basics.html#slice-temporal-graph>`__
         page for more examples.
 
     :param bins: Number of snapshots (*slices*) to return.
@@ -236,6 +236,13 @@ def slice(
         cats = [f"{'[' if c.closed_left else '('}"
                 f"{int(c.left) if cats is None else cats[int(c.left)]}, "
                 f"{int(c.right) if cats is None else cats[int(c.right)]}"
+                f"{']' if c.closed_right else ')'}"
+                for c in times.cat.categories]
+
+    # Check for duplicate categories due to rounded values.
+    if len(cats) != len(set(cats)):
+        cats = [f"{'[' if c.closed_left else '('}"
+                f"{c.left}, {c.right}"
                 f"{']' if c.closed_right else ')'}"
                 for c in times.cat.categories]
 
