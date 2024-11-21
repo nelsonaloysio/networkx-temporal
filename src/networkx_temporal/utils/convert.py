@@ -3,7 +3,7 @@ from typing import Any, Union
 
 import networkx as nx
 
-from ..typing import TemporalGraph, Literal
+from ..typing import TemporalGraph, StaticGraph, Literal
 
 ALIASES = {
     "dn": "dynetx",
@@ -11,6 +11,7 @@ ALIASES = {
     "ig": "igraph",
     "nk": "networkit",
     "pyg": "torch_geometric",
+    "tn": "teneto",
 }
 
 FORMATS = Literal[
@@ -24,7 +25,7 @@ FORMATS = Literal[
 ]
 
 
-def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **kwargs) -> Any:
+def convert(graph: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kwargs) -> Any:
     """
     Returns converted graph object.
 
@@ -45,7 +46,7 @@ def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **k
     +------------------------------------------------------------------+------------------------------------+------------------------+
     |`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
     +------------------------------------------------------------------+------------------------------------+------------------------+
-    |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: -       |
+    |`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: ``tn``  |
     +------------------------------------------------------------------+------------------------------------+------------------------+
 
     .. rubric:: Example
@@ -75,8 +76,8 @@ def convert(graph: Union[TemporalGraph, nx.Graph, list], to: FORMATS, *args, **k
        To reduce package dependencies and avoid unnecessary imports, the required library is
        imported on function call based on the ``to`` parameter and must be separately installed.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.TemporalGraph`, a static
-        graph, or a list of static graphs from NetworkX as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+        single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param str to: Package name or alias to convert the graph object.
     :param args: Additional positional arguments for the conversion function.
     :param kwargs: Additional keyword arguments for the conversion function.
