@@ -7,8 +7,8 @@ from os import remove
 from typing import Optional
 
 import networkx_temporal as tx
-from networkx_temporal.convert import FORMATS
 from networkx_temporal.typing import Literal
+from networkx_temporal.utils.convert import FORMATS
 
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_LEVELS = Literal["debug", "info", "warning", "error", "critical"]
@@ -21,7 +21,9 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     TG = tx.temporal_graph(directed=True, multigraph=True)
     assert TG.is_directed() == True
     assert TG.is_multigraph() == True
-    assert tx.is_temporal_graph(TG)
+    assert tx.is_temporal_graph(TG) == True
+    assert tx.from_multigraph(TG).is_multigraph() == False
+    assert tx.to_multigraph(tx.from_multigraph(TG)).is_multigraph() == True
     assert type(TG) == tx.TemporalMultiDiGraph
 
     TG.add_edges_from([
@@ -99,7 +101,15 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
 
     # TG -> ETG -> TG
     log.info("TG -> ETG -> TG")
-    ETG = TG.to_events()
+    ETG = TG.copy().to_events()
+    TG_ = tx.from_events(ETG)
+    assert TG.order() == TG_.order()
+    assert TG.size() == TG_.size()
+    ETG = TG.copy().to_events(eps=int)
+    TG_ = tx.from_events(ETG)
+    assert TG.order() == TG_.order()
+    assert TG.size() == TG_.size()
+    ETG = TG.copy().to_events(eps=float)
     TG_ = tx.from_events(ETG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
@@ -114,9 +124,9 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     # {TG,G} -> pkg
     for pkg in [pkg for pkg in FORMATS.__args__ if pkg in convert or "all" in convert]:
         log.info(f"TG -> {pkg}")
-        tx.convert(TG, to=pkg)
+        tx.utils(TG, to=pkg)
         log.info(f"G -> {pkg}")
-        tx.convert(G, to=pkg)
+        tx.utils(G, to=pkg)
 
     print("All tests passed!")
     remove("temporal-graph.graphml.zip")

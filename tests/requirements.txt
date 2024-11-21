@@ -1,0 +1,9 @@
+dgl
+dynetx
+#graph-tool  # conda install -c conda-forge graph-tool
+leidenalg
+matplotlib
+networkit
+python-igraph
+teneto
+torch_geometric
