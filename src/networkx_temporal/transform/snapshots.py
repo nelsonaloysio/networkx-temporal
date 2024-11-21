@@ -2,18 +2,18 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from ..convert import convert, FORMATS
 from ..typing import TemporalGraph
+from ..utils import convert, FORMATS
 
 
 def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.TemporalGraph` object from sequence of snapshots.
+    Returns :class:`~networkx_temporal.graph.TemporalGraph` from sequence of snapshots.
 
     .. seealso::
 
         The `Convert and transform → Graph representations
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#graph-representations>`__
+        <../examples/convert.html#graph-representations>`__
         page for details and examples.
 
     :param graphs: List or dictionary of NetworkX graphs.
@@ -46,20 +46,25 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     return TG
 
 
-def to_snapshots(TG, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
+def to_snapshots(TG: TemporalGraph, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
     """
     Returns a list of snapshots, each representing the state
     of the network at a given interval.
 
     .. note::
 
-        Internally, :class:`~networkx_temporal.TemporalGraph` already stores data as a list of graph views on :func:`~networkx_temporal.TemporalGraph.slice`.
-        This method simply returns the underlying data, unless a conversion is requested.
+        Internally, :class:`~networkx_temporal.graph.TemporalGraph` already stores data as a
+        list of graph views on :func:`~networkx_temporal.graph.TemporalGraph.slice`. This method
+        simply returns the underlying data, unless :func:`~networkx_temporal.convert` is called
+        by setting ``to``.
 
+    :param TemporalGraph TG: Temporal graph object.
     :param str to: Package name or alias to convert the graph object
         (see :func:`~networkx_temporal.convert`). Optional.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
+
+    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     if not as_view and to is not None:
         return [G.copy() for G in TG.data]

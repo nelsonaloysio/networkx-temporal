@@ -3,13 +3,13 @@ from typing import Optional, Union
 import networkx as nx
 
 from .snapshots import from_snapshots
-from ..convert import convert, FORMATS
 from ..typing import TemporalGraph
+from ..utils import convert, FORMATS
 
 
 def from_unified(UTG: nx.Graph) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.TemporalGraph` object from unified temporal graph.
+    Returns :class:`~networkx_temporal.graph.TemporalGraph` from unified temporal graph.
 
     Note that the UTG must be a valid unified temporal graph, i.e., it must contain
     temporal nodes in the format ``{name}_{t}``, where ``name`` is the original label
@@ -18,7 +18,7 @@ def from_unified(UTG: nx.Graph) -> TemporalGraph:
     .. seealso::
 
         The `Convert and transform → Graph representations
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#graph-representations>`__
+        <../examples/convert.html#graph-representations>`__
         page for details and examples.
 
     :param UTG: Unified temporal graph.
@@ -45,7 +45,7 @@ def from_unified(UTG: nx.Graph) -> TemporalGraph:
 
 
 def to_unified(
-    TG,
+    TG: TemporalGraph,
     to: Optional[FORMATS] = None,
     add_couplings: bool = True,
     node_index: Optional[list] = None,
@@ -54,17 +54,17 @@ def to_unified(
     """
     Returns a unified temporal graph.
 
-    A unified temporal graph is a single graph that contains all the nodes and edges of its
-    snapshots, plus ''proxy'' nodes and edge ''couplings'' connecting sequential temporal nodes.
+    A unified temporal graph is a single graph containing all the nodes and edges of its
+    snapshots, plus additional time-adjacent node copies and edge couplings connecting them.
 
     .. seealso::
 
         The `Examples → Convert and transform → Unified temporal graph
-        <https://networkx-temporal.readthedocs.io/en/latest/examples/convert.html#tg-utg>`__
+        <../examples/convert.html#tg-utg>`__
         page for an example.
 
-    :param str to: Package name or alias to convert the graph object
-        (see :func:`~networkx_temporal.convert`). Optional.
+    :param TemporalGraph TG: Temporal graph object.
+    :param str to: Package name or alias to :func:`~networkx_temporal.convert` the graph. Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
     :param node_index: Node index from static graph to include as node-level attribute. Optional.
     :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.
@@ -77,9 +77,11 @@ def to_unified(
         - **list**: ``[{"a": "a_0", "b": "b_0"}, {}, {"a": "a_0", "c": "c_2"}]``
 
         - **dictionary**: ``{"a": "a_0", "b": "b_0", "c": "c_2"}``
+
+    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     T = range(len(TG))
-    order, size = TG.temporal_order(), TG.temporal_size()
+    order = TG.temporal_order()
 
     assert relabel_nodes is None or type(relabel_nodes) in (dict, list),\
         f"Argument 'relabel_nodes' must be a dict or list, received: {type(relabel_nodes)}."
@@ -127,7 +129,7 @@ def to_unified(
     # Avoid using last snapshot's name for the unified graph.
     UTG.name = f"{f'{TG.name}' if TG.name else 'UTG'} ("\
                f"t={len(TG)}, "\
-               f"proxy_nodes={len(UTG)-order}, "\
+               f"node_copies={UTG.order()-order}, "\
                f"edge_couplings={True if add_couplings else False})"
 
     # Convert graph object to desired format.
