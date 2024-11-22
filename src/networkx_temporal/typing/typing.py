@@ -1,4 +1,5 @@
 from typing import Union
+from sys import version_info
 
 import networkx as nx
 
@@ -14,9 +15,6 @@ _TemporalGraphType = _TemporalGraphType()
 
 try:
     from typing import Literal
-    Figure: type = _FigureType
-    StaticGraph: type = Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
-    TemporalGraph: type = _TemporalGraphType
 except ImportError: # Python < 3.8
     from typing import _GenericAlias, _SpecialForm
     class _LiteralForm(_SpecialForm, _root=True):
@@ -25,6 +23,12 @@ except ImportError: # Python < 3.8
         def __getitem__(self, parameters):
             return _GenericAlias(self, parameters)
     Literal = _LiteralForm("Literal", doc="typing_extensions.Literal")
+
+if version_info[1] >= 12:
+    Figure: type = _FigureType
+    StaticGraph: type = Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+    TemporalGraph: type = _TemporalGraphType
+else:
     Figure = type(_FigureType)
     StaticGraph = Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
     TemporalGraph = type(_TemporalGraphType)
