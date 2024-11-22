@@ -9,6 +9,11 @@
 ### Removed
 -->
 
+## \[1.1.1\] - 2024-11-22
+
+### Fixed
+- `typing` module compatibility with `python<3.11`.
+
 ## \[1.1\] - 2024-11-21
 
 ### Added
