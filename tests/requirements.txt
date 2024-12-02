@@ -5,6 +5,7 @@ leidenalg
 matplotlib
 networkit
 python-igraph
+scipy
 snap-stanford
 stellargraph
 teneto

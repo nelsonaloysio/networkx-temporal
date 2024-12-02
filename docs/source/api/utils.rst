@@ -6,3 +6,6 @@
 
 .. automodule:: networkx_temporal.utils
    :members:
+
+.. automodule:: networkx_temporal.utils.convert
+   :members:

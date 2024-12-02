@@ -62,9 +62,10 @@ i.e., temporal network data.
 
 This package provides new :class:`~networkx_temporal.graph.TemporalGraph` classes, which inherit
 NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
-and implement additional functions to manipulate temporal data within. Most importantly, it
-provides ways to :func:`~networkx_temporal.graph.TemporalGraph.slice` a graph into snapshots and
-:func:`~networkx_temporal.convert` between formats and representations.
+and implement additional functions to manipulate temporal data within. Among others, it provides
+ways to :func:`~networkx_temporal.graph.TemporalGraph.slice` a graph into snapshots and
+:mod:`~networkx_temporal.transform` or :mod:`~networkx_temporal.utils.convert` it
+to other libraries and formats.
 
 
 Install
@@ -77,7 +78,7 @@ The package supports **Python 3.7+** and is readily available from `PyPI
 
    $ pip install networkx-temporal
 
-Optionally, support for plotting graphs may be additionally installed with:
+Additional support for plotting graphs may be optionally installed with:
 
 .. code-block:: bash
 
@@ -88,6 +89,11 @@ Quick start
 ===========
 
 The following is a quick example of the package in action, covering its basic functionality.
+More examples are accessible via the sidebar and also available as a
+`Jupyter notebook
+<https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
+(`open on Colab
+<https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
 
 
 Build and slice temporal graph
@@ -115,7 +121,7 @@ Create a directed :class:`~networkx_temporal.graph.TemporalGraph` object and
    >>>
    >>> print(TG)
 
-   TemporalDiGraph (t=4) with 12 nodes and 8 edges
+   TemporalDiGraph (t=4) with 6 nodes and 8 edges
 
 The ``attr`` parameter optionally defines the attribute name to use for slicing the temporal graph,
 while the number of snapshots to be created may likewise be specified with the ``bins`` parameter:
@@ -124,7 +130,7 @@ while the number of snapshots to be created may likewise be specified with the `
 
    >>> TG.slice(attr="time", bins=2)
 
-   TemporalDiGraph (t=2) with 9 nodes and 8 edges
+   TemporalDiGraph (t=2) with 6 nodes and 8 edges
 
 Note that the total number of nodes may vary, while the total number of edges is preserved.
 
@@ -139,13 +145,13 @@ Note that the total number of nodes may vary, while the total number of edges is
 Plot snapshots
 --------------
 
-We may visualize the resulting temporal graph using the :func:`~networkx_temporal.draw` function:
+We may visualize the resulting temporal graph using the :func:`~networkx_temporal.drawing.draw` function:
 
 .. code-block:: python
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: ../figure/example/fig-0.png
+.. image:: ../assets/figure/fig-0.png
 
 
 Save and load data
@@ -182,13 +188,12 @@ This package allows to transform a :class:`~networkx_temporal.graph.TemporalGrap
 .. code-block:: python
 
    >>> G = TG.to_static()       # TG = tx.from_static(G)
-   >>> STG = TG.to_snapshot()   # TG = tx.from_snapshot(STG)
+   >>> STG = TG.to_snapshots()  # TG = tx.from_snapshots(STG)
    >>> ETG = TG.to_events()     # TG = tx.from_events(ETG)
    >>> UTG = TG.to_unified()    # TG = tx.from_unified(UTG)
 
 In addition, both static and temporal graphs may be converted to the following
 `graph formats <examples/convert.html#graph-formats>`__:
-
 
 - `Deep Graph Library <https://www.dgl.ai>`__
 - `DyNetX <https://dynetx.readthedocs.io>`__
@@ -196,6 +201,8 @@ In addition, both static and temporal graphs may be converted to the following
 - `igraph <https://igraph.org/python/>`__
 - `NetworKit <https://networkit.github.io>`__
 - `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__
+- `Stanford Network Analysis Platform <https://snap.stanford.edu>`__
+- `StellarGraph <https://stellargraph.readthedocs.io>`__
 - `Teneto <https://teneto.readthedocs.io>`__
 
 .. code-block:: python
@@ -210,9 +217,9 @@ Links
 
 For more information on using this package, please refer to the following sections:
 
-- `API reference <api/classes.html>`__ for details on the classes and functions it implements.
+- `Package reference <api/api.html>`__ for details on the classes and functions implemented by each module.
 
-- `Examples <examples/basics.html>`__ covering some of its main functionalities and common use cases.
+- `Examples <examples/basics.html>`__ covering some of its main functionalities and most common use cases.
 
 .. seealso::
 

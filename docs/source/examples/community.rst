@@ -81,7 +81,7 @@ Let's plot the graphs, with node colors representing communities and within-comm
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Ground truths")
 
-.. image:: ../../figure/example/fig-9.png
+.. image:: ../../assets/figure/fig-9.png
 
 We see the graphs are generated with the same community structure, but continuously decreasing
 assortativity. Let's try and retrieve the ground truths using a simple community detection algorithm.
@@ -137,7 +137,7 @@ fails to retrieve the true communities (ground truths) in the network:
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on static graph")
 
-.. image:: ../../figure/example/fig-10.png
+.. image:: ../../assets/figure/fig-10.png
 
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
@@ -172,7 +172,7 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on each snapshot")
 
-.. image:: ../../figure/example/fig-11.png
+.. image:: ../../assets/figure/fig-11.png
 
 This is partly due to modularity optimization expecting an assortative community structure, while
 the network grew more disassortative over time. Not only the results of later snapshots are here
@@ -183,11 +183,9 @@ On the temporal graph
 ---------------------
 
 Considering snapshots as layers (slices) of a multiplex graph, with `interslice edges coupling
-sequential node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
-is one way of employing modularity optimization on temporal graphs.
-
-This process allows the same algorithm to correctly retrieve the ground truths in this case, while
-at the same time maintaining community indices consistent over time, as seen below:
+temporal node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
+is one way of employing modularity optimization on dynamic graphs, which may help to better capture
+their mesoscale structures. The example below uses the same algorithm as before:
 
 .. code-block:: python
 
@@ -217,7 +215,7 @@ at the same time maintaining community indices consistent over time, as seen bel
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on multiplex graph")
 
-.. image:: ../../figure/example/fig-12.png
+.. image:: ../../assets/figure/fig-12.png
 
 As observed, considering the network's temporal information allowed the algorithm to correctly
 retrieve the ground truths in this particular example, as well as to maintain the same community

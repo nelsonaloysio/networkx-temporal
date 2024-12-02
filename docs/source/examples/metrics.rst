@@ -46,10 +46,10 @@ for each snapshot:
    >>>     katz = {node: round(value, 3) for node, value in katz.items()}
    >>>     print(f"t={t}: {katz}")
 
-   # t=0: {'a': 0.673, 'b': 0.74}
-   # t=1: {'c': 0.673, 'b': 0.74}
-   # t=2: {'a': 0.464, 'c': 0.556, 'd': 0.464, 'e': 0.51}
-   # t=3: {'a': 0.511, 'b': 0.511, 'e': 0.511, 'f': 0.465}
+   t=0: {'a': 0.673, 'b': 0.74}
+   t=1: {'b': 0.74, 'c': 0.673}
+   t=2: {'a': 0.464, 'c': 0.556, 'd': 0.464, 'e': 0.51}
+   t=3: {'a': 0.511, 'b': 0.511, 'e': 0.511, 'f': 0.465}
 
 In addition, any NetworkX `Graph methods
 <https://networkx.org/documentation/stable/reference/classes/graph.html#methods>`__
@@ -75,8 +75,8 @@ return the results per snapshot:
 
    >>> TG.degree()
 
-   [DiDegreeView({'b': 1, 'a': 1}),
-    DiDegreeView({'c': 1, 'b': 1}),
+   [DiDegreeView({'a': 1, 'b': 1}),
+    DiDegreeView({'b': 1, 'c': 1}),
     DiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
     DiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
 
@@ -204,7 +204,7 @@ The :func:`~networkx_temporal.graph.TemporalGraph.temporal_neighbors` method ret
 
    >>> TG.temporal_neighbors("c")
 
-   {'b'}
+   ['b']
 
 Converting the graph to undirected, we also obtain nodes that have node :math:`c` in their neighborhood:
 
@@ -212,18 +212,16 @@ Converting the graph to undirected, we also obtain nodes that have node :math:`c
 
    >>> TG.to_undirected().temporal_neighbors("c")
 
-   {'a', 'b', 'd'}
+   ['b', 'd', 'a']
 
-Lastly, we may also restrict the search to a specific snapshot or time window, e.g., from :math:`t=2` to :math:`t=4`:
+Lastly, we may also restrict the search to a specific snapshot or time window using indexes:
 
 .. code-block:: python
 
-   >>> TG.temporal_neighbors("c", start=2, end=4)
+   >>> TG[0:2].temporal_neighbors("c")
 
-   {'a', 'd'}
+   ['b']
 
 .. note::
 
-   The method :func:`~networkx_temporal.graph.TemporalGraph.temporal_neighbors` returns a set of neighbors
-   considering all snapshots, while the method :func:`~networkx_temporal.graph.TemporalGraph.neighbors`
-   returns a list of neighbors for each node in each snapshot.
+   Indexing follows Python conventions and is inclusive on the left and exclusive on the right, i.e., the above example returns the neighbors of node :math:`c` at time steps :math:`t=0` and :math:`t=1`.

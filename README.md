@@ -1,4 +1,4 @@
-[![networkx-temporal](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/banner.png)]()
+[![NetworkX-Temporal](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/logo-banner.png)]()
 
 ___
 
@@ -28,9 +28,12 @@ $ pip install 'networkx-temporal[draw]'
 
 ## Quick example
 
-For detailed information on using the package, please refer to its [official documentation](https://networkx-temporal.readthedocs.io).
+For detailed information on using the package, please refer to its
+[official documentation](https://networkx-temporal.readthedocs.io).
 
-> An interactive Jupyter notebook with more examples is also [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb) ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)).
+> An interactive Jupyter notebook with more examples is also
+> [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)
+> ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)).
 
 ```python
 >>> import networkx_temporal as tx
@@ -57,8 +60,13 @@ For detailed information on using the package, please refer to its [official doc
 
 ## Contributing
 
-Contributions are welcome! If you find any bugs or have any suggestions, feel free to [open a ticket](issues/new), [fork the repository](fork) and create a [pull request](compare), or simply [send an e-mail](mailto:nelson.reis@phd.unipi.it).
-Please keep in mind that any out-of-scope contributions (not regarding temporal networks) should instead be directed to the [NetworkX](https://github.com/networkx/networkx) repository.
+Contributions are welcome! If you find any bugs or have any suggestions, feel free to
+[open a ticket](issues/new),
+[fork the repository](fork) and create a
+[pull request](compare), or simply
+[send an e-mail](mailto:nelson.reis@phd.unipi.it).
+Please keep in mind that any out-of-scope contributions (not regarding temporal networks)
+should instead be directed to the [NetworkX](https://github.com/networkx/networkx) repository.
 
 ## License
 
@@ -66,4 +74,5 @@ This package is released under the [BSD License](LICENSE.md).
 
 ## Cite
 
-In case this package is useful for your research, please kindly consider [citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).
+In case this package is useful for your research, please kindly consider
+[citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).

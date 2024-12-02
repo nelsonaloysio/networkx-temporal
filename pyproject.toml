@@ -58,6 +58,9 @@ test = [
     "matplotlib",
     "networkit",
     "python-igraph",
+    "scipy",
+    "snap-stanford",
+    "stellargraph",
     "teneto",
     "torch_geometric",
 ]

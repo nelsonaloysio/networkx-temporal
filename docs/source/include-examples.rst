@@ -1,4 +1,4 @@
-.. hint::
+.. seealso::
 
     All examples in this guide are also available as an interactive
     `Jupyter notebook

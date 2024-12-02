@@ -28,7 +28,7 @@ extensions = [
     "sphinx_rtd_theme",
     "sphinxemoji.sphinxemoji",
 ]
-exclude_patterns = ["*/convert/nx2*.py"]
+exclude_patterns = []
 templates_path = ["_templates"]
 add_module_names = False
 autosummary_generate = True
@@ -44,8 +44,10 @@ autodoc_mock_imports = [
     "igraph",
     "matplotlib",
     "networkit",
+    "networkx",
     "pandas",
     "snap",
+    "stellargraph",
     "teneto",
     "torch_geometric",
 ]
@@ -56,7 +58,7 @@ autodoc_typehints = "both"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_static_path = ["../_static"]
-html_logo = "../figure/logo.png"
+html_logo = "../assets/logo-text.png"
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "collapse_navigation": False,
@@ -72,4 +74,4 @@ html_theme_options = {
 html_css_files = [
     "css/custom.css",
 ]
-# html_favicon = 'favicon.ico'
+html_favicon = "../assets/favicon/favicon.ico"

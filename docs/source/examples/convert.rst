@@ -28,8 +28,8 @@ For example, multigraphs may be converted to graphs without parallel edges and v
    >>> TG = tx.TemporalMultiDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=True)
    >>>
    >>> TG.add_edge("a", "b", time=0)
-   >>> TG.add_edge("c", "b", time=0)   # parallel edge
-   >>> TG.add_edge("c", "b", time=1)
+   >>> TG.add_edge("c", "b", time=0)
+   >>> TG.add_edge("c", "b", time=1)   # parallel edge
    >>> TG.add_edge("d", "c", time=2)
    >>> TG.add_edge("d", "e", time=2)
    >>> TG.add_edge("a", "c", time=2)
@@ -66,7 +66,7 @@ dynamic attributes - e.g., ``time`` - are not preserved, causing information los
    >>>
    >>> print(TG)
 
-   TemporalDiGraph (t=1) with 6 nodes and 8 edges
+   TemporalDiGraph (t=4) with 6 nodes and 8 edges
 
 .. code-block:: python
 
@@ -80,7 +80,8 @@ dynamic attributes - e.g., ``time`` - are not preserved, causing information los
 Graph formats
 =============
 
-Graphs may also be converted to a different format by passing the desired library to :func:`~networkx_temporal.convert`:
+Graphs may also be converted to a different format by passing the desired library to
+:func:`~networkx_temporal.utils.convert.convert`:
 
 .. code-block:: python
 
@@ -103,23 +104,27 @@ objects, one per snapshot, as shown below:
 
 Support for the following output formats are implemented, here listed with their respective aliases:
 
-+------------------------------------------------------------------+------------------------------------+------------------------+
-| Format                                                           | Parameter (Package)                | Parameter (Alias)      |
-+==================================================================+====================================+========================+
-|`Deep Graph Library <https://www.dgl.ai>`__                       | .. centered :: ``dgl``             | .. centered :: -       |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered :: ``dynetx``          | .. centered :: ``dn``  |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`graph-tool <https://graph-tool.skewed.de>`__                     | .. centered :: ``graph_tool``      | .. centered :: ``gt``  |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`igraph <https://igraph.org/python>`__                            | .. centered :: ``igraph``          | .. centered :: ``ig``  |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`NetworKit <https://networkit.github.io>`__                       | .. centered :: ``networkit``       | .. centered :: ``nk``  |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered :: ``torch_geometric`` | .. centered :: ``pyg`` |
-+------------------------------------------------------------------+------------------------------------+------------------------+
-|`Teneto <https://teneto.readthedocs.io>`__                        | .. centered :: ``teneto``          | .. centered :: ``tn``  |
-+------------------------------------------------------------------+------------------------------------+------------------------+
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                            |
++===================================================================+======================================+===========================================================================+
+| `Deep Graph Library <https://www.dgl.ai>`__                       | .. centered:: ``'dgl'``              | .. centered:: :func:`~networkx_temporal.utils.convert.to_dgl`             |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered:: ``'dynetx'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_dynetx`          |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `graph-tool <https://graph-tool.skewed.de>`__                     | .. centered:: ``'graph_tool'``       | .. centered:: :func:`~networkx_temporal.utils.convert.to_graph_tool`      |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `igraph <https://igraph.org/python>`__                            | .. centered:: ``'igraph'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_igraph`          |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `NetworKit <https://networkit.github.io>`__                       | .. centered:: ``'networkit'``        | .. centered:: :func:`~networkx_temporal.utils.convert.to_networkit`       |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.convert.to_torch_geometric` |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `SNAP <https://https://snap.stanford.edu>`__                      | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `StellarGraph <https://stellargraph.readthedocs.io>`__            | .. centered:: ``'stellargraph'``     | .. centered:: :func:`~networkx_temporal.utils.convert.to_stellargraph`    |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``'teneto'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_teneto`          |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 
 
 -----
@@ -201,7 +206,7 @@ Transforming a temporal graph into a static graph with the :func:`~networkx_temp
 
    >>> tx.draw(G, layout="kamada_kawai", suptitle="Static Graph")
 
-.. image:: ../../figure/example/fig-7.png
+.. image:: ../../assets/figure/fig-7.png
 
 
 :const:`G` → :const:`TG`
@@ -275,10 +280,9 @@ An event-based temporal graph :const:`ETG` is a sequence of 3- or 4-tuple edge-b
 Depending on the temporal graph data, one of these may allow a more compact representation than the
 others. The default is to return a 3-tuple sequence (also known as a *stream graph*).
 
-.. important::
+.. attention::
 
-   Event-based temporal graphs do not currently store node- or edge-level attribute data.
-   Moreover, as sequences of events are edge-based, node isolates are not preserved.
+   As events are edge-based, node isolates without self-loops are not preserved.
 
 
 :const:`TG` → :const:`ETG`
@@ -400,7 +404,7 @@ Let's draw the resulting graph to visualize the node copies (in black) and edge 
    >>>     connectionstyle="arc3,rad=0.25",
    >>>     suptitle="Unified Temporal Graph")
 
-.. image:: ../../figure/example/fig-8.png
+.. image:: ../../assets/figure/fig-8.png
 
 
 :const:`UTG` → :const:`TG`
