@@ -56,7 +56,7 @@ For detailed information on using the package, please refer to its
 >>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
 ```
 
-![png](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/figure/example/fig-0.png)
+![Plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/fig-0.png)
 
 ## Contributing
 
