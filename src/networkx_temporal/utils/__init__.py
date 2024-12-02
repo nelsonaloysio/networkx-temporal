@@ -1,22 +1,46 @@
 """
-Utility functions for converting between graph types and formats.
+Utility functions for NetworkX static and temporal graphs.
 
 .. rubric:: Summary
 
 .. autosummary::
 
-   convert
    from_multigraph
+   is_frozen
+   is_static_graph
+   is_temporal_graph
    to_multigraph
+
+.. rubric:: Summary - Converters
+
+.. autosummary::
+
+   convert.convert
+   convert.to_dgl
+   convert.to_dynetx
+   convert.to_graph_tool
+   convert.to_igraph
+   convert.to_networkit
+   convert.to_snap
+   convert.to_stellargraph
+   convert.to_teneto
+   convert.to_torch_geometric
 
 .. rubric:: Functions
 """
 
-from .convert import convert, FORMATS
-from .networkx import from_multigraph, to_multigraph
+from .networkx import (
+    from_multigraph,
+    is_frozen,
+    is_static_graph,
+    is_temporal_graph,
+    to_multigraph,
+)
 
 __all__ = (
-    "convert",
     "from_multigraph",
+    "is_frozen",
+    "is_static_graph",
+    "is_temporal_graph",
     "to_multigraph",
 )

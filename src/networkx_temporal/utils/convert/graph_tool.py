@@ -1,7 +1,8 @@
 from typing import Any, Union
 
-import graph_tool as gt
-import networkx as nx
+from ..networkx import is_static_graph, is_temporal_graph
+from ...typing import StaticGraph, TemporalGraph
+
 
 INT16, INT32, INT64 = 2**15, 2**31, 2**63
 
@@ -20,50 +21,64 @@ NUM_TYPE = {
 }
 
 
-def nx2gt(nxG: nx.Graph, index: str = "id", encoding: str = "ascii", errors: str = "strict") -> gt.Graph:
+def to_graph_tool(
+    G: Union[TemporalGraph, StaticGraph, list],
+    index: str = "id",
+    encoding: str = "ascii",
+    errors: str = "strict",
+):
     """
-    Converts a NetworkX object to a graph-tool object with
-    properties and attributes preserved as much as possible.
+    Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    Original implementation by `bbengfort (GitHub) <
-    https://gist.github.com/bbengfort/a430d460966d64edc6cad71c502d7005>`_.
-
-    :param nxG: NetworkX graph object.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+        single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.
     :param encoding: Encoding to use for string conversion.
         Default is ``'ascii'``.
-    :param errors: Error handling scheme for string conversion.
-        Default is `'`strict'``.
+    :param errors: `Error handler <https://docs.python.org/3/library/codecs.html#error-handlers>`__
+        for string conversion. Default is ``'strict'``.
 
     :rtype: graph_tool.Graph
+
+    :note: Original implementation by
+        `bbengfort (GitHub)
+        <https://gist.github.com/bbengfort/a430d460966d64edc6cad71c502d7005>`__.
     """
-    gtG = gt.Graph(directed=nxG.is_directed())
+    import graph_tool as gt
+
+    assert is_temporal_graph(G) or is_static_graph(G),\
+        "Input must be a temporal or static NetworkX graph."
+
+    if is_temporal_graph(G) or type(G) == list:
+        return [to_graph_tool(H, index=index, encoding=encoding, errors=errors) for H in G]
+
+    gtG = gt.Graph(directed=G.is_directed())
 
     # Map graph properties.
-    for key, value in nxG.graph.items():
-        type_, key, value = get_prop(key, value, encoding=encoding, errors=errors)
+    for key, value in G.graph.items():
+        type_, key, value = _get_prop(key, value, encoding=encoding, errors=errors)
         gtG.graph_properties[key] = gtG.new_graph_property(type_)
         gtG.graph_properties[key] = value
 
     # Map node properties.
     vs, vp = {}, {}
-    for node, data in nxG.nodes(data=True):
-        type_, key, value = get_prop(index, node, encoding=encoding, errors=errors)
+    for node, data in G.nodes(data=True):
+        type_, key, value = _get_prop(index, node, encoding=encoding, errors=errors)
         vp[index].add(type_) if index in vp else vp.__setitem__(index, {type_})
         for key, value in data.items():
-            type_, key, value  = get_prop(key, value, encoding=encoding, errors=errors)
+            type_, key, value  = _get_prop(key, value, encoding=encoding, errors=errors)
             vp[key].add(type_) if key in vp else vp.__setitem__(key, {type_})
 
     # Verify numeric type and ensure each property has a single type.
     for key, types in vp.items():
-        types_ = get_types(types)
+        types_ = _get_types(types)
         assert len(types_) == 1, f"Multiple types for node property '{key}': {types}."
         gtG.vp[key] = gtG.new_vertex_property(types_[0])
 
     # Add nodes and their properties.
     gtG.vp[index] = gtG.new_vertex_property("string")
-    for node, data in nxG.nodes(data=True):
+    for node, data in G.nodes(data=True):
         v = gtG.add_vertex()
         gtG.vp[index][v] = str(node)
         for key, value in data.items():
@@ -72,19 +87,19 @@ def nx2gt(nxG: nx.Graph, index: str = "id", encoding: str = "ascii", errors: str
 
     # Map edge properties.
     ep = {}
-    for src, dst, data in nxG.edges(data=True):
+    for src, dst, data in G.edges(data=True):
         for key, value in data.items():
-            type_, key, value = get_prop(key, value, encoding=encoding, errors=errors)
+            type_, key, value = _get_prop(key, value, encoding=encoding, errors=errors)
             ep[key].add(type_) if key in ep else ep.__setitem__(key, {type_})
 
     # Verify numeric type and ensure each property has a single type.
     for key, types in ep.items():
-        types_ = get_types(types)
+        types_ = _get_types(types)
         assert len(types_) == 1, f"Multiple types for edge property '{key}': {types}."
         gtG.ep[key] = gtG.new_edge_property(types_[0])
 
     # Add edges and their properties.
-    for src, dst, data in nxG.edges(data=True):
+    for src, dst, data in G.edges(data=True):
         e = gtG.add_edge(vs[src], vs[dst])
         for key, value in data.items():
             gtG.ep[key][e] = value
@@ -92,7 +107,7 @@ def nx2gt(nxG: nx.Graph, index: str = "id", encoding: str = "ascii", errors: str
     return gtG
 
 
-def get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "strict") -> tuple:
+def _get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "strict") -> tuple:
     """
     Performs typing and key/value conversion for graph-tool's `PropertyMap` class.
 
@@ -100,8 +115,8 @@ def get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "stric
     :param value: Attribute value.
     :param encoding: Encoding to use for string conversion.
         Default is ``'ascii'``.
-    :param errors: Error handling scheme for string conversion.
-        Default is `'`strict'``.
+    :param errors: `Error handler <https://docs.python.org/3/library/codecs.html#error-handlers>`__
+        for string conversion. Default is ``'strict'``.
     """
     key = key.encode(encoding, errors=errors).decode(encoding)
     type_ = type(value).__name__
@@ -122,7 +137,7 @@ def get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "stric
     return type_, key, value
 
 
-def get_types(types: list) -> list:
+def _get_types(types: list) -> list:
     """
     Returns the type of a property based on list of observed types.
 
