@@ -6,6 +6,15 @@ from warnings import warn
 
 import networkx as nx
 
+from .methods import (
+    _copy,
+    _is_directed,
+    _is_multigraph,
+    _neighbors,
+    _to_directed,
+    _to_undirected
+)
+from .slice import slice
 from ..metrics import (
     temporal_degree,
     temporal_in_degree,
@@ -17,15 +26,6 @@ from ..metrics import (
     temporal_size,
     total_order,
     total_size
-)
-from .slice import slice
-from .overrides import (
-    _copy,
-    _is_directed,
-    _is_multigraph,
-    _neighbors,
-    _to_directed,
-    _to_undirected
 )
 from ..transform import (
     to_events,
@@ -134,19 +134,18 @@ class TemporalBase(metaclass=ABCMeta):
         return self.__dict__.get("_data", None)
 
     @data.setter
-    def data(self, data: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph, list, dict]):
+    def data(self, data: Union[StaticGraph, dict, list, tuple]):
         """
-        The ``data`` property of the temporal graph.
-
-        :param data: NetworkX graph, list or dictionary of NetworkX graphs.
-
-        :meta private:
+        Setter for the ``data`` property of the temporal graph.
         """
-        assert type(data) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph, list, dict),\
-            f"Argument 'data' must be a NetworkX graph, list or dictionary, received: {type(data)}."
+        if type(data) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
+            data = [data]
+
+        assert type(data) in (dict, list, tuple),\
+            f"Argument 'data' must be a NetworkX graph or list of graphs, received: {type(data)}."
 
         names = list(data.keys()) if type(data) == dict else None
-        data = data if type(data) == list else list(data.values()) if type(data) == dict else [data]
+        data = list(data.values() if type(data) == dict else data)
 
         assert all(type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) for G in data),\
             "All elements in data must be valid NetworkX graphs."
