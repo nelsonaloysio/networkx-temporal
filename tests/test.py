@@ -19,11 +19,11 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
         log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
 
     TG = tx.temporal_graph(directed=True, multigraph=True)
-    assert TG.is_directed() == True
-    assert TG.is_multigraph() == True
-    assert tx.is_temporal_graph(TG) == True
-    assert tx.from_multigraph(TG).is_multigraph() == False
-    assert tx.to_multigraph(tx.from_multigraph(TG)).is_multigraph() == True
+    assert TG.is_directed()
+    assert TG.is_multigraph()
+    assert tx.is_temporal_graph(TG)
+    assert not tx.from_multigraph(TG).is_multigraph()
+    assert tx.to_multigraph(tx.from_multigraph(TG)).is_multigraph()
     assert type(TG) == tx.TemporalMultiDiGraph
 
     TG.add_edges_from([
@@ -41,6 +41,8 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     # TG
     log.info("TG")
     TG = TG.slice(attr="time")
+    order = TG.order()
+    size = TG.size()
     assert len(TG) == 4
     assert len(TG.slice(bins=2)) == 2
     assert TG.order() == [2, 3, 4, 4]
@@ -51,8 +53,10 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     assert TG.temporal_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
     assert TG.temporal_degree("a") == 4
     assert TG.temporal_neighbors("c") == ["b"]
-    assert TG.to_undirected().is_directed() == False
-    assert TG.to_directed().is_directed() == True
+    assert not TG.to_undirected().is_directed()
+    assert TG.to_directed().is_directed()
+    assert order == TG.order()
+    assert size == TG.size()
 
     # TG -> path -> TG
     log.info("TG -> path -> TG")
@@ -123,10 +127,10 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
 
     # {TG,G} -> pkg
     for pkg in [pkg for pkg in FORMATS.__args__ if pkg in convert or "all" in convert]:
-        log.info(f"TG -> {pkg}")
-        tx.utils(TG, to=pkg)
-        log.info(f"G -> {pkg}")
-        tx.utils(G, to=pkg)
+        log.info("TG -> %s", pkg)
+        tx.convert(TG, to=pkg)
+        log.info("G -> %s", pkg)
+        tx.convert(G, to=pkg)
 
     print("All tests passed!")
     remove("temporal-graph.graphml.zip")

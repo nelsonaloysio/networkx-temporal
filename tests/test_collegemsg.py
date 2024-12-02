@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 
 import gzip
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import networkx as nx
+import networkx_temporal as tx
 import pandas as pd
 
 FILE = "collegemsg.csv.gz"
 
 
-def collegemsg():
+def test_collegemsg():
+    """ Test for College Message dataset. """
+    # https://stackoverflow.com/questions/72976127/how-to-create-a-temporal-network-using-networkx
+
     # First two lines from file:
     # Source,Target,Timestamp
     # 1,2,4/15/04 2:56 PM
@@ -22,12 +27,9 @@ def collegemsg():
 
     print(f"{G} (mean node degree: {2*G.size()/G.order():.2f})")
 
-    from datetime import datetime
-    import networkx_temporal as tx
-
     # Convert dates to YYYY-MM-DD format, allowing to sort them correctly.
     to_date = lambda x: datetime\
-                        .strptime(x, "%m/%d/%y %I:%M %p")\
+                        .strptime(x.strip(), "%m/%d/%y %I:%M %p")\
                         .strftime("%Y-%m-%d")
 
     TG = tx.from_static(G)
@@ -45,11 +47,11 @@ def collegemsg():
     df = pd.DataFrame({"nodes": TG.order(),
                        "edges": TG.size(),
                        "max_in_deg": [
-                            max([d[1] for d in deg]) for deg in TG.in_degree()],
+                            max(d[1] for d in deg) for deg in TG.in_degree()],
                        "max_out_deg": [
-                            max([d[1] for d in deg]) for deg in TG.out_degree()],
+                            max(d[1] for d in deg) for deg in TG.out_degree()],
                        "mean_deg": [
-                            sum([d[1] for d in deg])/len(deg) for deg in TG.degree()]})
+                            sum(d[1] for d in deg)/len(deg) for deg in TG.degree()]})
 
     print(df.describe().iloc[1:].round(2))
 
@@ -78,4 +80,4 @@ def collegemsg():
 
 
 if __name__ == "__main__":
-    collegemsg()
+    test_collegemsg()

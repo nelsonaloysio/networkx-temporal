@@ -5,5 +5,7 @@ leidenalg
 matplotlib
 networkit
 python-igraph
+snap-stanford
+stellargraph
 teneto
 torch_geometric
