@@ -147,10 +147,10 @@ def draw_networkx(
           and `Examples → Community detection
           <../examples/community.html>`__
           pages for more examples using this function to plot simple temporal graphs.
-        - The :func:`~networkx_temporal.drawing.networkx.draw_networkx_nodes`,
-          :func:`~networkx_temporal.drawing.networkx.draw_networkx_edges`,
-          :func:`~networkx_temporal.drawing.networkx.draw_networkx_labels`, and
-          :func:`~networkx_temporal.drawing.networkx.draw_networkx_edge_labels`
+        - The :func:`~networkx_temporal.drawing.draw_networkx_nodes`,
+          :func:`~networkx_temporal.drawing.draw_networkx_edges`,
+          :func:`~networkx_temporal.drawing.draw_networkx_labels`, and
+          :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
           functions for drawing specific graph elements.
 
     :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a

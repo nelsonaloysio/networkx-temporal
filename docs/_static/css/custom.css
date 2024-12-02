@@ -10,3 +10,7 @@ h1 a.reference.internal::after {
     color: #404040;
     display: inline;
 }
+
+nav.wy-nav-side img.logo {
+    max-height: 300px;
+}
