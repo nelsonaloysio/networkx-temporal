@@ -1,8 +1,8 @@
 from typing import Optional, Union
 
 from ..typing import TemporalGraph
-from ..utils import convert, is_static_graph
-from ..utils.convert import FORMATS
+from ..utils import is_static_graph
+from ..utils.convert import convert, FORMATS
 
 
 def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
