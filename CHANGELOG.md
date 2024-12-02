@@ -9,10 +9,33 @@
 ### Removed
 -->
 
+## \[1.2\] - 2024-12-02
+
+### Added
+- Conversion functions from NetworkX to SNAP, StellarGraph.
+- Function `is_static_graph` to `utils` module.
+- Functions `to_{}` in `utils.convert` submodule.
+- Method `convert` to temporal graph objects.
+- Tests for order and size of `to_directed`, `to_undirected` output graphs.
+
+### Changed
+- Function `convert` moved to `utils.convert` submodule.
+- Functions `is_frozen`, `is_temporal_graph` moved from `graph` to `utils` module.
+- Package logo image.
+
+### Fixed
+- Copy missing `names` property to `{from,to}_multigraph` output graphs.
+- Original object changed on `to_directed`, `to_undirected`.
+
+### Removed
+- Unused parameters from `temporal_neighbors`: `start` and `end`.
+
+
 ## \[1.1.1\] - 2024-11-22
 
 ### Fixed
 - `typing` module compatibility with `python<3.11`.
+
 
 ## \[1.1\] - 2024-11-21
 
