@@ -62,7 +62,7 @@ def to_unified(
         page for an example.
 
     :param TemporalGraph TG: Temporal graph object.
-    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert`
+    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert.convert`
         the graph. Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
     :param node_index: Node index from static graph to include as node-level attribute. Optional.

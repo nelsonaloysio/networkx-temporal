@@ -104,7 +104,7 @@ def temporal_size(self) -> int:
 
 def total_order(self) -> int:
     """
-    Returns number of nodes (with duplicates) in all snapshots.
+    Returns number of nodes (**with** duplicates) in all snapshots.
 
     Matches the sum of :func:`~networkx_temporal.graph.TemporalGraph.order`.
 
