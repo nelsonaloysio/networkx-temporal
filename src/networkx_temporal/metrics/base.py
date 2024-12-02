@@ -51,13 +51,11 @@ def temporal_out_degree(
     return _to_dict(reduce(_reduce_sum, self.out_degree(nbunch=nbunch, weight=weight)))
 
 
-def temporal_neighbors(self, node: Any, start: Optional[int] = None, end: Optional[int] = None) -> list:
+def temporal_neighbors(self, node: Any) -> list:
     """
     Returns list of node neighbors in all snapshots.
 
     :param node: Node in the temporal graph.
-    :param start: Snapshot index to start from. Optional.
-    :param end: Snapshot index to end at. Optional.
 
     :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
