@@ -38,6 +38,7 @@ from .graph import *
 from .io import *
 from .transform import *
 from .utils import *
+from .utils.convert import *
 
 __all__ = (
     "TemporalGraph",
@@ -46,13 +47,14 @@ __all__ = (
     "TemporalMultiDiGraph",
     "convert",
     "draw",
-    "is_frozen",
-    "is_temporal_graph",
     "from_events",
     "from_multigraph",
     "from_snapshots",
     "from_static",
     "from_unified",
+    "is_frozen",
+    "is_static_graph",
+    "is_temporal_graph",
     "read_graph",
     "temporal_graph",
     "to_multigraph",

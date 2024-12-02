@@ -3,11 +3,11 @@ from typing import Optional, Union
 import networkx as nx
 
 from .snapshots import from_snapshots
-from ..typing import TemporalGraph
-from ..utils import convert, FORMATS
+from ..typing import StaticGraph, TemporalGraph
+from ..utils.convert import convert, FORMATS
 
 
-def from_unified(UTG: nx.Graph) -> TemporalGraph:
+def from_unified(UTG: StaticGraph) -> TemporalGraph:
     """
     Returns :class:`~networkx_temporal.graph.TemporalGraph` from unified temporal graph.
 
@@ -22,8 +22,6 @@ def from_unified(UTG: nx.Graph) -> TemporalGraph:
         page for details and examples.
 
     :param UTG: Unified temporal graph.
-
-    :rtype: TemporalGraph
     """
     temporal_nodes = {}
 
@@ -50,7 +48,7 @@ def to_unified(
     add_couplings: bool = True,
     node_index: Optional[list] = None,
     relabel_nodes: Optional[Union[dict, list]] = None
-) -> nx.Graph:
+) -> StaticGraph:
     """
     Returns a unified temporal graph.
 
@@ -64,7 +62,8 @@ def to_unified(
         page for an example.
 
     :param TemporalGraph TG: Temporal graph object.
-    :param str to: Package name or alias to :func:`~networkx_temporal.convert` the graph. Optional.
+    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert`
+        the graph. Optional.
     :param add_couplings: Add inter-slice edges among temporal nodes. Default is ``True``.
     :param node_index: Node index from static graph to include as node-level attribute. Optional.
     :param relabel_nodes: Dictionary or list of dictionaries to relabel nodes.

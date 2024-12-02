@@ -1,14 +1,14 @@
-from typing import Optional
+from typing import Optional, Union
 
-from .base import is_temporal_graph
-from ..typing import TemporalGraph, StaticGraph
+from ..typing import StaticGraph, TemporalGraph
+from ..utils import is_static_graph, is_temporal_graph
 
 
 def temporal_graph(
     t: Optional[int] = None,
     directed: bool = None,
     multigraph: bool = None,
-    create_using: Optional[StaticGraph] = None,
+    create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
     """
     Creates a temporal graph with the desired properties. Similar to
@@ -44,14 +44,12 @@ def temporal_graph(
         Defaults to ``True``.
     :param object create_using: NetworkX or :class:`~networkx_temporal.graph.TemporalGraph` to use
         as template. Optional. Does not allow setting ``directed`` and ``multigraph`` if passed.
-
-    :rtype: TemporalGraph
     """
     assert directed is None or type(directed) == bool,\
         f"Argument `directed` must be a boolean, received: {type(directed)}."
     assert multigraph is None or type(multigraph) == bool,\
         f"Argument `multigraph` must be a boolean, received: {type(multigraph)}."
-    assert create_using is None or is_temporal_graph(create_using) or type(create_using) in (AnyStaticGraph.__args__),\
+    assert create_using is None or is_temporal_graph(create_using) or is_static_graph(create_using),\
         f"Argument `create_using` must be a NetworkX static or temporal graph object, received: {type(create_using)}."
     assert create_using is None or (directed is None and multigraph is None),\
         "Arguments `directed` and `multigraph` should be unset if `create_using` is given."

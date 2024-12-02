@@ -16,13 +16,12 @@ def read_graph(
     **kwargs,
 ) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.graph.TemporalGraph` from graph file or compressed
-    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__
-    containing multiple snapshots.
+    Returns a :class:`~networkx_temporal.graph.TemporalGraph` from a compressed
+    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
 
-    Files within the compressed ZIP file must be named as ``{name}_{t}.{ext}``,
-    where ``t`` is the snapshot index and ``ext`` is the extension format.
-    See :func:`~networkx_temporal.io.write_graph` for more information.
+    Graph files within the compressed ZIP file must be named as ``{name}_{t}.{ext}``,
+    where ``t`` is their snapshot index and ``ext`` is their extension format.
+    See :func:`~networkx_temporal.io.write_graph` for details.
 
     .. rubric:: Example
 
@@ -32,20 +31,18 @@ def read_graph(
 
         >>> import networkx_temporal as tx
         >>>
-        >>> TG = tx.read_graph("temporal-graph.graphml.zip")
+        >>> TG = tx.read_graph("snapshots.graphml.zip")
 
     .. seealso::
 
-        The `read and write documentation
+        The latest `read and write documentation
         <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
         from NetworkX for a list of supported formats.
 
     :param object file: Binary file-like object or string containing path to ZIP file.
     :param frmt: Extension format or callable function to read compressed graphs with. If unset,
-        it is inferred from the ``file`` extension.
+        it is inferred from their file extension.
     :param kwargs: Additional arguments to pass to NetworkX reader function.
-
-    :rtype: TemporalGraph
     """
     def read(file, frmt, **kwargs):
         path = _get_filepath(file)

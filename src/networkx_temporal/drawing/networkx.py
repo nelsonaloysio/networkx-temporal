@@ -6,8 +6,8 @@ try:
 except ImportError:
     plt = None
 
-from ..graph import is_temporal_graph
-from ..typing import Figure, TemporalGraph
+from ..typing import Figure, StaticGraph, TemporalGraph
+from ..utils import is_temporal_graph
 
 
 NODE_OPTS = {
@@ -31,7 +31,7 @@ EDGE_LABEL_OPTS = {
 
 
 def draw_networkx(
-    graph: Union[TemporalGraph, nx.Graph, list],
+    TG: Union[TemporalGraph, StaticGraph, list],
     pos: Optional[Union[list, dict]] = None,
     layout: Optional[Union[str, Callable]] = 'random',
     nrows: Optional[int] = None,
@@ -52,9 +52,9 @@ def draw_networkx(
     **opts
 ) -> Figure:
     """
+    Plot temporal graph snapshots with NetworkX.
     Returns a `Matplotlib Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__
-    using `NetworkX <https://networkx.org/documentation/stable/reference/drawing.html>`_ to plot
-    temporal graph snapshots as subplots.
+    with subplots.
 
     This function accepts global or specific options for nodes, edges, labels, and layout algorithms.
     Arguments prefixed with ``temporal_`` expect a dictionary of dictionaries (indexed by snapshot key)
@@ -84,56 +84,56 @@ def draw_networkx(
 
     .. code-block:: python
 
-       >>> import networkx_temporal as tx
-       >>>
-       >>> import matplotlib.pyplot as plt
-       >>> import matplotlib.patches as mpatches
-       >>>
-       >>> colors = plt.cm.tab10.colors
-       >>>
-       >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
-       >>>
-       >>> TG.add_edges_from([
-       >>>     ("a", "b", {"time": 0}),
-       >>>     ("c", "b", {"time": 1}),
-       >>>     ("d", "c", {"time": 2}),
-       >>>     ("d", "e", {"time": 2}),
-       >>>     ("a", "c", {"time": 2}),
-       >>>     ("f", "e", {"time": 3}),
-       >>>     ("f", "a", {"time": 3}),
-       >>>     ("f", "b", {"time": 3}),
-       >>>     ("c", "a", {"time": 4}),
-       >>>     ("f", "c", {"time": 5}),
-       >>>     ("a", "f", {"time": 5}),
-       >>>     ("f", "c", {"time": 5}),
-       >>> ])
-       >>>
-       >>> TG = TG.slice(attr="time")
-       >>>
-       >>> node_color = {t: [colors[TG.index_node(node)[0]] for node in nodes]
-       >>>               for t, nodes in enumerate(TG.nodes())}
-       >>>
-       >>> fig = tx.draw(TG,
-       >>>               layout="kamada_kawai",
-       >>>               temporal_node_color=node_color,
-       >>>               figsize=(6, 4),
-       >>>               nrows=2,
-       >>>               ncols=3,
-       >>>               border=True,
-       >>>               suptitle=True)
-       >>>
-       >>> handles = [mpatches.Patch(color=colors[i], label=f"$t$ = {i}")
-       >>>            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
-       >>>
-       >>> fig.legend(handles=handles, ncols=4, bbox_to_anchor=(0.5, -0.15),
-       >>>            loc="lower center", title="Time of first node appearance")
-       >>>
-       >>> # Save figure to file.
-       >>> # fig.savefig("figure.png")
-       >>>
-       >>> fig
+        >>> import networkx_temporal as tx
+        >>>
+        >>> import matplotlib.pyplot as plt
+        >>> import matplotlib.patches as mpatches
+        >>>
+        >>> colors = plt.cm.tab10.colors
+        >>>
+        >>> TG = tx.TemporalDiGraph()  # TG = tx.temporal_graph(directed=True, multigraph=False)
+        >>>
+        >>> TG.add_edges_from([
+        >>>     ("a", "b", {"time": 0}),
+        >>>     ("c", "b", {"time": 1}),
+        >>>     ("d", "c", {"time": 2}),
+        >>>     ("d", "e", {"time": 2}),
+        >>>     ("a", "c", {"time": 2}),
+        >>>     ("f", "e", {"time": 3}),
+        >>>     ("f", "a", {"time": 3}),
+        >>>     ("f", "b", {"time": 3}),
+        >>>     ("c", "a", {"time": 4}),
+        >>>     ("f", "c", {"time": 5}),
+        >>>     ("a", "f", {"time": 5}),
+        >>>     ("f", "c", {"time": 5}),
+        >>> ])
+        >>>
+        >>> TG = TG.slice(attr="time")
+        >>>
+        >>> node_color = {t: [colors[TG.index_node(node)[0]] for node in nodes]
+        >>>               for t, nodes in enumerate(TG.nodes())}
+        >>>
+        >>> fig = tx.draw(TG,
+        >>>               layout="kamada_kawai",
+        >>>               temporal_node_color=node_color,
+        >>>               figsize=(6, 4),
+        >>>               nrows=2,
+        >>>               ncols=3,
+        >>>               border=True,
+        >>>               suptitle=True)
+        >>>
+        >>> handles = [mpatches.Patch(color=colors[i], label=f"$t$ = {i}")
+        >>>            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
+        >>>
+        >>> fig.legend(handles=handles, ncols=4, bbox_to_anchor=(0.5, -0.15),
+        >>>            loc="lower center", title="Time of first node appearance")
+        >>>
+        >>> # Save figure to file.
+        >>> # fig.savefig("figure.png")
+        >>>
+        >>> fig
 
-    .. image:: ../../figure/example/fig-draw.png
+    .. image:: ../../assets/figure/fig-draw.png
 
     .. seealso::
 
@@ -153,7 +153,7 @@ def draw_networkx(
           :func:`~networkx_temporal.drawing.networkx.draw_networkx_edge_labels`
           functions for drawing specific graph elements.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
         static graph, or a list of static graphs from NetworkX as input.
     :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values, e.g.,
         ``{'node': (0.19813, 0.74631), ...}``.
@@ -229,14 +229,14 @@ def draw_networkx(
         "Argument `suptitle` must be a string or a boolean."
 
     # Allow a single graph to be passed as input.
-    if not is_temporal_graph(graph):
-        graph = [graph]
+    if not is_temporal_graph(TG):
+        TG = [TG]
 
     # Decide number of columns and rows if not provided.
     if not nrows:
-        nrows = len(graph) if ncols == 1 else 1
+        nrows = len(TG) if ncols == 1 else 1
     if not ncols:
-        ncols = len(graph) if nrows == 1 else 1
+        ncols = len(TG) if nrows == 1 else 1
 
     # Create figure and axes if not provided.
     if fig is None:
@@ -248,42 +248,42 @@ def draw_networkx(
         ax = fig.axes
 
     i, j = 0, 0
-    for t in range(len(graph)):
+    for t in range(len(TG)):
         ax_ = ax if nrows == 1 and ncols == 1 else ax[t] if nrows == 1 or ncols == 1 else ax[i, j]
 
         # Get or compute node positions.
         pos_ = pos if type(pos) == dict else pos[t] if type(pos) == list else layout(
-            graph[t],
+            TG[t],
             **_get_opts(opts, layout_opts, t=t, sig=layout)
         )
 
         # Draw graph elements.
         if opts.get("with_nodes", labels):
             nx.draw_networkx_nodes(
-                graph[t], pos=pos_, ax=ax_,
+                TG[t], pos=pos_, ax=ax_,
                 **_get_opts(NODE_OPTS, opts, node_opts, t=t, sig=nx.draw_networkx_nodes)
             )
 
         if opts.get("with_edges", labels):
             nx.draw_networkx_edges(
-                graph[t], pos=pos_, ax=ax_,
+                TG[t], pos=pos_, ax=ax_,
                 **_get_opts(EDGE_OPTS, opts, edge_opts, t=t, sig=nx.draw_networkx_edges)
             )
 
         # Draw node labels.
         if opts.get("with_labels", labels):
             nx.draw_networkx_labels(
-                graph[t], pos=pos_, ax=ax_,
+                TG[t], pos=pos_, ax=ax_,
                 **_get_opts(NODE_LABEL_OPTS, opts, node_label_opts, t=t, sig=nx.draw_networkx_labels),
-                **_get_node_labels(graph[t], labels)
+                **_get_node_labels(TG[t], labels)
             )
 
         # Draw edge labels.
         if opts.get("with_edge_labels", edge_labels):
             nx.draw_networkx_edge_labels(
-                graph[t], pos=pos_, ax=ax_,
+                TG[t], pos=pos_, ax=ax_,
                 **_get_opts(EDGE_LABEL_OPTS, opts, edge_label_opts, t=t, sig=nx.draw_networkx_edge_labels),
-                **_get_edge_labels(graph[t], edge_labels)
+                **_get_edge_labels(TG[t], edge_labels)
             )
 
         # Set graph borders.
@@ -296,9 +296,9 @@ def draw_networkx(
         if names is False:
             title = None
         elif names is None:
-            title = f"$t$ = {t}" if len(graph) > 1 else None
+            title = f"$t$ = {t}" if len(TG) > 1 else None
         elif names is True:
-            title = graph.names[t] if hasattr(graph, "names") else graph[t].name
+            title = TG.names[t] if hasattr(TG, "names") else TG[t].name
         elif type(names) == list:
             title = names[t]
         ax_.set_title(title)
@@ -309,7 +309,7 @@ def draw_networkx(
             i += 1
 
     if suptitle:
-        suptitle = graph.name or str(graph).replace("t=", "$t$=") if suptitle is True else suptitle
+        suptitle = TG.name or str(TG).replace("t=", "$t$=") if suptitle is True else suptitle
         plt.suptitle(suptitle)
 
     plt.close()
@@ -318,7 +318,7 @@ def draw_networkx(
 
 def draw_networkx_nodes(*args, **kwargs):
     """
-    Draw only temporal nodes from a :class:`~networkx_temporal.graph.TemporalGraph` object.
+    Plot temporal nodes from a :class:`~networkx_temporal.graph.TemporalGraph`.
 
     .. seealso::
 
@@ -338,7 +338,7 @@ def draw_networkx_nodes(*args, **kwargs):
 
 def draw_networkx_edges(*args, **kwargs):
     """
-    Draw only temporal edges from a :class:`~networkx_temporal.graph.TemporalGraph` object.
+    Plot temporal edges from a :class:`~networkx_temporal.graph.TemporalGraph`.
 
     .. seealso::
 
@@ -358,7 +358,7 @@ def draw_networkx_edges(*args, **kwargs):
 
 def draw_networkx_labels(*args, **kwargs):
     """
-    Draw only temporal node labels from a :class:`~networkx_temporal.graph.TemporalGraph` object.
+    Plot temporal node labels from a :class:`~networkx_temporal.graph.TemporalGraph`.
 
     .. seealso::
 
@@ -378,7 +378,7 @@ def draw_networkx_labels(*args, **kwargs):
 
 def draw_networkx_edge_labels(*args, **kwargs):
     """
-    Draw only temporal edge labels from a :class:`~networkx_temporal.graph.TemporalGraph` object.
+    Plot temporal edge labels from a :class:`~networkx_temporal.graph.TemporalGraph`.
 
     .. seealso::
 
@@ -400,7 +400,7 @@ def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "lab
     """
     Helper function to get node attributes in a graph.
 
-    :param G: Graph object.
+    :param G: NetworkX graph object.
     :param str attr: Dictionary or node attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'labels'``.
     """
@@ -417,7 +417,7 @@ def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edg
     """
     Helper function to get edge attributes in a graph.
 
-    :param G: Graph object.
+    :param G: NetworkX graph object.
     :param str attr: Dictionary or edge attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'edge_labels'``.
     """

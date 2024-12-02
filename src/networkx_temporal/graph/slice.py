@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, Union
 import pandas as pd
 
 from ..transform import from_snapshots
-from ..typing import TemporalGraph, Literal
+from ..typing import Literal, TemporalGraph
 
 
 def slice(
@@ -51,7 +51,7 @@ def slice(
        >>> TG = TG.slice(attr="time")
        >>> print(TG)
 
-       TemporalGraph (t=2) with 4 nodes and 2 edges
+       TemporalGraph (t=2) with 3 nodes and 2 edges
 
     Calling this method from the returned object, now with ``bins=1``, will
     :func:`~networkx_temporal.graph.TemporalGraph.flatten` the graph:
@@ -109,8 +109,6 @@ def slice(
         of the original graph. Default is ``True``.
     :param fillna: Value to fill null values in attribute data.
     :param Callable apply_func: Function to apply to temporal attribute values.
-
-    :rtype: TemporalGraph
     """
     assert self.data,\
         "Temporal graph is empty."

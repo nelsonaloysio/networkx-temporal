@@ -7,8 +7,8 @@ from typing import Callable, Optional, Union
 import networkx as nx
 
 from .io import _get_filepath, _get_filename, _get_format, _get_format_ext, _get_function
-from ..graph import is_temporal_graph
-from ..typing import Literal, TemporalGraph, StaticGraph
+from ..typing import Literal, StaticGraph, TemporalGraph
+from ..utils import is_static_graph, is_temporal_graph
 
 DEFAULT_FORMAT = "graphml"
 
@@ -21,7 +21,7 @@ COMPRESSION = Literal[
 
 
 def write_graph(
-    TG: TemporalGraph,
+    TG: Union[TemporalGraph, StaticGraph],
     file: Optional[Union[str, BufferedWriter, BytesIO]] = None,
     frmt: Optional[Union[str, Callable]] = None,
     makedirs: bool = False,
@@ -31,14 +31,13 @@ def write_graph(
     **kwargs
 ) -> Union[bytes, None]:
     """
-    Writes :class:`~networkx_temporal.graph.TemporalGraph` to graph file or compressed
-    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__
-    containing multiple snapshots.
+    Writes a :class:`~networkx_temporal.graph.TemporalGraph` to a compressed
+    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
 
     If the object contains more than one snapshot, such as after calling
     :func:`~networkx_temporal.graph.TemporalGraph.slice`, this function writes a single ZIP archive,
-    in which each file refers to a snapshot. Files within are named ``{name}_{t}.{ext}``,
-    where ``t`` is the snapshot index and ``ext`` is the extension format.
+    in which each file refers to a snapshot. Graph files are saved as ``{name}_{t}.{ext}``,
+    where ``t`` is their snapshot index and ``ext`` is their extension format.
 
     .. rubric:: Example
 
@@ -49,11 +48,11 @@ def write_graph(
         >>> import networkx_temporal as tx
         >>>
         >>> TG = tx.TemporalGraph()
-        >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
+        >>> tx.write_graph(TG, "snapshots.graphml.zip")
 
     .. seealso::
 
-        The `read and write documentation
+        The latest `read and write documentation
         <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
         from NetworkX for a list of supported formats.
 
@@ -112,7 +111,7 @@ def write_graph(
     assert compression is None or compression.upper() in COMPRESSION.__args__,\
         f"Argument `compression` must be among {COMPRESSION.__args__}."
 
-    if type(TG) in StaticGraph.__args__:
+    if is_static_graph(TG):
         TG = [TG]  # Allows a single graph to be passed as input.
 
     if makedirs and name is not None:

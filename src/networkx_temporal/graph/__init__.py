@@ -10,8 +10,6 @@ Classes and functions for handling temporal graphs.
    TemporalMultiGraph
    TemporalMultiDiGraph
    TemporalBase
-   is_frozen
-   is_temporal_graph
    temporal_graph
 
 .. rubric:: Classes
@@ -34,7 +32,7 @@ Classes and functions for handling temporal graphs.
 .. rubric:: Functions
 """
 
-from .base import TemporalBase, is_frozen, is_temporal_graph
+from .base import TemporalBase
 from .digraph import TemporalDiGraph
 from .factory import temporal_graph
 from .graph import TemporalGraph
@@ -47,7 +45,5 @@ __all__ = (
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
     "TemporalBase",
-    "is_frozen",
-    "is_temporal_graph",
     "temporal_graph",
 )

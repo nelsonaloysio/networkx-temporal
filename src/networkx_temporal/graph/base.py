@@ -33,7 +33,8 @@ from ..transform import (
     to_static,
     to_unified
 )
-from ..typing import TemporalGraph, StaticGraph
+from ..typing import StaticGraph, TemporalGraph
+from ..utils.convert import convert
 
 
 class TemporalBase(metaclass=ABCMeta):
@@ -46,6 +47,7 @@ class TemporalBase(metaclass=ABCMeta):
     :class:`~networkx_temporal.graph.TemporalMultiGraph`,
     and :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
     """
+    convert = convert
     slice = slice
     temporal_degree = temporal_degree
     temporal_in_degree = temporal_in_degree
@@ -78,7 +80,7 @@ class TemporalBase(metaclass=ABCMeta):
         self.data = [graph() for _ in range(t or 1)]
         _wrapper_networkx(self, graph)
 
-    def __getitem__(self, t: Union[str, int, slice]) -> nx.Graph:
+    def __getitem__(self, t: Union[str, int, slice]) -> StaticGraph:
         """ Returns snapshot from a given interval. """
         assert self.data,\
             "Temporal graph is empty."
@@ -124,7 +126,10 @@ class TemporalBase(metaclass=ABCMeta):
         """
         The ``data`` property of the temporal graph.
 
-        :meta private:
+        :getter: Returns temporal graph data.
+        :setter: Sets temporal graph data. Accepts a list, tuple, or dictionary of NetworkX graphs.
+            Passing a dictionary will set the ``names`` property to its keys.
+        :rtype: list
         """
         return self.__dict__.get("_data", None)
 
@@ -163,31 +168,26 @@ class TemporalBase(metaclass=ABCMeta):
     @name.setter
     def name(self, name: Any):
         """
-        The ``name`` property of the temporal graph.
-
-        :param name: Name to give to temporal graph object.
-            If ``None``, resets name to an empty string.
+        Setter for the ``name`` property of the temporal graph.
         """
         self.__dict__.pop("_name", None) if name is None else self.__setattr__("_name", name)
 
     @property
     def names(self) -> list:
         """
-        The ``name`` property of each snapshot in the temporal graph.
+        The ``names`` property of the temporal graph. Used to store temporal intervals on
+        :func:`~networkx_temporal.graph.TemporalGraph.slice`.
 
         :getter: Returns names of temporal graph snapshots.
         :setter: Sets names of temporal graph snapshots.
         :rtype: list
         """
-        return self.__dict__.get("_names", ["" for _ in range(len(self))])
+        return self.__dict__.get("_names", None)
 
     @names.setter
     def names(self, names: Optional[Union[list, tuple]]):
         """
-        The ``name`` property of each snapshot in the temporal graph.
-
-        :param names: Names to give to temporal graph snapshots.
-            If ``None``, resets names to empty strings.
+        Setter for the ``names`` property of the temporal graph.
         """
         assert names is None or type(names) in (list, tuple),\
             f"Argument 'names' must be a list or tuple, received: {type(names)}."
@@ -206,11 +206,11 @@ class TemporalBase(metaclass=ABCMeta):
 
         self.__dict__.pop("_names", None) if names is None else self.__setattr__("_names", names)
 
-    def append(self, G: Optional[nx.Graph] = None) -> None:
+    def append(self, G: Optional[StaticGraph] = None) -> None:
         """
         Appends a new snapshot to the temporal graph.
 
-        :param G: NetworkX graph to append. Optional.
+        :param G: NetworkX graph object to append. Optional.
         """
         self.insert(len(self), G)
 
@@ -226,12 +226,10 @@ class TemporalBase(metaclass=ABCMeta):
         .. attention::
 
            As each node in a flattened graph is unique, dynamic node attributes are not preserved.
-
-        :rtype: TemporalGraph
         """
         return self.slice(bins=1)
 
-    def insert(self, index: int, G: Optional[nx.Graph] = None) -> None:
+    def insert(self, index: int, G: Optional[StaticGraph] = None) -> None:
         """
         Inserts a new snapshot to the temporal graph at a given index.
 
@@ -299,7 +297,7 @@ class TemporalBase(metaclass=ABCMeta):
 
         return [i for i in (interval or range(len(self))) if self[i].has_node(node)]
 
-    def pop(self, index: Optional[int] = None) -> nx.Graph:
+    def pop(self, index: Optional[int] = None) -> StaticGraph:
         """
         Removes and returns graph snapshot at index.
 
@@ -311,50 +309,12 @@ class TemporalBase(metaclass=ABCMeta):
         return self.data.pop(index or -1)
 
 
-def is_frozen(TG: TemporalGraph, on_each: bool = False) -> bool:
-    """
-    Returns ``True`` if the graph is frozen, ``False`` otherwise.
-
-    A frozen graph is immutable, meaning that nodes and edges cannot be added or removed.
-    Calling ``copy`` on a frozen graph returns a (mutable) deep copy of the graph object.
-
-    Obtains the value from the first snapshot only, unless ``on_each=True``.
-
-    :param bool on_each: If ``True``, checks all snapshots for the graph type.
-    """
-    assert is_temporal_graph(TG) or type(TG) in StaticGraph.__args__,\
-        "Argument `TG` must be a temporal graph or a static graph."
-
-    if type(TG) in StaticGraph.__args__:
-        return nx.is_frozen(TG)
-
-    return [nx.is_frozen(G) for G in TG] if on_each else nx.is_frozen(TG[0])
-
-
-def is_temporal_graph(obj: Any) -> bool:
-    """
-    Returns ``True`` if the object is a temporal graph, ``False`` otherwise.
-
-    Matches any of:
-    :class:`~networkx_temporal.graph.TemporalGraph`,
-    :class:`~networkx_temporal.graph.TemporalDiGraph`,
-    :class:`~networkx_temporal.graph.TemporalMultiGraph`,
-    :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
-
-    :param obj: Object to be tested.
-    """
-    from . import TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
-    return issubclass(type(obj), (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
-
-
 def _decorator_networkx(cls, method: str) -> Callable:
     """
     Decorator for static NetworkX graph methods.
 
     Returns a list of values returned by calling the method on each snapshot in the temporal graph.
     If all returned values are `None` or a boolean, returns a single element instead of a list.
-
-    :meta private:
     """
     def func(*args, **kwargs):
         returns = list(G.__getattribute__(method)(*args, **kwargs) for G in cls)
@@ -368,11 +328,11 @@ def _decorator_networkx(cls, method: str) -> Callable:
     return func
 
 
-def _wrapper_networkx(cls, graph: Union[nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]) -> None:
+def _wrapper_networkx(cls, G: StaticGraph) -> None:
     """
     Wrapper for decorating static NetworkX graph methods.
     """
-    for method in dir(graph):
+    for method in dir(G):
         if method not in dir(TemporalBase) and not method.startswith("__"):
             try:
                 cls.__setattr__(method, _decorator_networkx(cls, method))

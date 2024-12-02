@@ -3,12 +3,18 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from ..typing import Literal, TemporalGraph, StaticGraph
+from ..typing import Literal, StaticGraph, TemporalGraph
+from ..utils import is_static_graph
 
 EPSILON = {"int": int, "float": float}
 
 
-def from_events(events: list, directed: bool = None, multigraph: bool = None, as_view: bool = True) -> TemporalGraph:
+def from_events(
+    events: list,
+    directed: bool = None,
+    multigraph: bool = None,
+    as_view: bool = True,
+) -> TemporalGraph:
     """
     Returns :class:`~networkx_temporal.graph.TemporalGraph` from a list of 3-tuples or
     4-tuples representing edge-level events.
@@ -35,8 +41,6 @@ def from_events(events: list, directed: bool = None, multigraph: bool = None, as
         Automatically set to ``False`` if parallel edges are not found, ``True`` otherwise.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
-
-    :rtype: TemporalGraph
     """
     from ..graph import temporal_graph
 
@@ -88,7 +92,11 @@ def from_events(events: list, directed: bool = None, multigraph: bool = None, as
     return TG if as_view else TG.copy()
 
 
-def to_events(TG: TemporalGraph, eps: Optional[Literal["int", "float"]] = None, attr: Optional[str] = None) -> list:
+def to_events(
+    TG: Union[TemporalGraph, StaticGraph],
+    eps: Optional[Literal["int", "float"]] = None,
+    attr: Optional[str] = None,
+) -> list:
     """
     Returns a list of 3-tuples or 4-tuples representing edge-level events.
 
@@ -97,12 +105,11 @@ def to_events(TG: TemporalGraph, eps: Optional[Literal["int", "float"]] = None, 
 
     - **4-tuples** (:math:`u, v, t, \\varepsilon`), where :math:`\\varepsilon` is either an
       integer for edge addition (``1``) or deletion (``-1``) event, or a float defining the
-      duration of the pairwise interaction (zero for a single snapshot).
+      duration of the interaction (zero for a single snapshot).
 
-    .. important::
+    .. attention::
 
-        As sequences of events are edge-based, node isolates without self-loops are not preserved.
-        Node and edge attributes are also not returned with the event tuples.
+        As events are edge-based, node isolates without self-loops are not preserved.
 
     :param TemporalGraph TG: Temporal graph object.
     :param eps: Defines which additional parameter :math:`\\varepsilon` should be returned.
@@ -123,7 +130,7 @@ def to_events(TG: TemporalGraph, eps: Optional[Literal["int", "float"]] = None, 
     """
     eps = EPSILON.get(eps, eps)
 
-    if type(TG) in StaticGraph.__args__:
+    if is_static_graph(TG):
         TG = [TG]  # Allows a single graph to be passed as input.
 
     assert eps in (None, int, float),\

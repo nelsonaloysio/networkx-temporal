@@ -2,20 +2,20 @@ from typing import Callable, Union
 
 import networkx as nx
 
-from ..graph import is_temporal_graph
-from ..typing import TemporalGraph
+from ..typing import StaticGraph, TemporalGraph
+from ..utils import is_temporal_graph
 
 
 def layout(
-    graph: Union[TemporalGraph, nx.Graph, list],
+    G: Union[TemporalGraph, StaticGraph, list],
     *args,
     layout: Union[str, Callable] = "random",
     **kwargs
 ) -> dict:
     """
-    Compute temporal node positions using the specified algorithm.
+    Compute temporal node positions with algorithm.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
         static graph, or a list of static graphs from NetworkX as input.
     :param layout: A callable or string with a `layout algorithm
         <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
@@ -30,7 +30,7 @@ def layout(
         f"Available choices: {[f for f in dir(nx) if f.endswith('_layout')]}"
 
     # Allow a single graph to be passed as input.
-    if not is_temporal_graph(graph):
-        return layout(graph, **kwargs)
+    if not is_temporal_graph(G):
+        return layout(G, **kwargs)
 
-    return [layout(G, *args, **kwargs) for G in graph]
+    return [layout(G, *args, **kwargs) for G in G]

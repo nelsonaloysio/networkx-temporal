@@ -1,9 +1,8 @@
 from typing import Optional, Union
 
-import networkx as nx
-
 from ..typing import TemporalGraph
-from ..utils import convert, FORMATS
+from ..utils import convert, is_static_graph
+from ..utils.convert import FORMATS
 
 
 def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
@@ -17,8 +16,6 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
         page for details and examples.
 
     :param graphs: List or dictionary of NetworkX graphs.
-
-    :rtype: TemporalGraph
     """
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
 
@@ -31,7 +28,7 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
     assert len(graphs) > 0,\
         "Argument `graphs` must be a non-empty list or dictionary."
 
-    assert all(type(graphs[t]) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) for t in T),\
+    assert all(is_static_graph(graphs[t]) for t in T),\
         "All elements in data must be valid NetworkX graphs."
 
     assert all(directed == graphs[T[t]].is_directed() for t in T),\
@@ -55,12 +52,12 @@ def to_snapshots(TG: TemporalGraph, to: Optional[FORMATS] = None, as_view: bool 
 
         Internally, :class:`~networkx_temporal.graph.TemporalGraph` already stores data as a
         list of graph views on :func:`~networkx_temporal.graph.TemporalGraph.slice`. This method
-        simply returns the underlying data, unless :func:`~networkx_temporal.convert` is called
-        by setting ``to``.
+        simply returns the underlying data, unless :func:`~networkx_temporal.utils.convert`
+        is called by setting ``to``.
 
     :param TemporalGraph TG: Temporal graph object.
     :param str to: Package name or alias to convert the graph object
-        (see :func:`~networkx_temporal.convert`). Optional.
+        (see :func:`~networkx_temporal.utils.convert`). Optional.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
 
