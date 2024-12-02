@@ -94,10 +94,10 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
     pkg = ALIASES.get(to, to)
     func = ALIASES.get(pkg, pkg)
 
-    if pkg in ALIASES:
+    if to in ALIASES:
         warn(
             f"Alias '{to}' for '{pkg}' is deprecated and will be removed in future versions.",
-            DeprecationWarning
+            category=FutureWarning
         )
 
     assert pkg in FORMATS.__args__,\
