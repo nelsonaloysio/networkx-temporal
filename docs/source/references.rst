@@ -36,7 +36,7 @@ For more information on specific packages, please refer to their respective docu
 .. [4] Gábor Csárdi, Tamas Nepusz (2006).
    ''The igraph software package for complex network research''.
    InterJournal, Complex Systems, 1695.
-   doi: `10.5281/zenodo.3630268 <https://doi.org/10.5281/zenodo.3630268/>`__
+   doi: `10.5281/zenodo.3630268 <https://doi.org/10.5281/zenodo.3630268>`__
 
 .. [5] John D. Hunter (2007).
    ''Matplotlib: A 2D Graphics Environment''.
