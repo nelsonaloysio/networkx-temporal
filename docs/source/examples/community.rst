@@ -99,7 +99,7 @@ capture their underlying structure.
 
 .. attention ::
 
-   Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network
+   Optimization algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
    <https://skewed.de/tiago/posts/descriptive-inferential/>`__ [2]_ for a discussion.
 
@@ -107,9 +107,9 @@ capture their underlying structure.
 On the static graph
 -------------------
 
-Let's start by considering the network as a single static graph, i.e., ignoring its temporal information.
+Let's start by considering the network as a single static graph, ignoring its temporal information.
 
-We can observe that depending on the initial node community assigments (e.g., with ``seed=0`` below),
+We can observe that, depending on the initial node community assignments (e.g., with ``seed=0`` below),
 `modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
 fails to retrieve the true communities (ground truths) in the network:
 
