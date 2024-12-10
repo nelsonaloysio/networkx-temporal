@@ -1,6 +1,6 @@
 .. code-block:: tex
 
-   @misc{pubmedtemporal2024,
+   @misc{networkxtemporal2024,
         title     = {NetworkX-Temporal: Building, manipulating, and analyzing dynamic graph structures},
         author    = {Nelson Aloysio Reis de Almeida Passos and Emanuele Carlini and Salvatore Trani},
         year      = {2024},

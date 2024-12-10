@@ -17,10 +17,10 @@ a network's temporal dynamics can overall benefit the detection of its mesoscale
 Generate graph
 ==============
 
-As a toy example, let's first use the simplest `Stochastic Block Model
+As a toy example, let's use the simplest `Stochastic Block Model
 <https://networkx.org/documentation/stable/reference/generated/networkx.generators.community.stochastic_block_model.html>`__
 to generate 4 graph snapshots, in which each of the 5 clusters of 5 nodes each continuously mix
-together over time:
+over time (decreasing assortativity):
 
 .. code-block:: python
 
@@ -83,8 +83,8 @@ Let's plot the graphs, with node colors representing communities and within-comm
 
 .. image:: ../../assets/figure/fig-9.png
 
-We see the graphs are generated with the same community structure, but continuously decreasing
-assortativity. Let's try and retrieve the ground truths using a simple community detection algorithm.
+We see that all snapshots are generated with the same community structure, but varying degrees of
+assortativity. Let's try to retrieve the ground truths using a simple community detection algorithm.
 
 
 -----
@@ -99,7 +99,7 @@ capture their underlying structure.
 
 .. attention ::
 
-   Optimizations algorithms may help with descriptive or exploratory tasks and post-hoc network
+   Optimization algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
    <https://skewed.de/tiago/posts/descriptive-inferential/>`__ [2]_ for a discussion.
 
@@ -107,9 +107,9 @@ capture their underlying structure.
 On the static graph
 -------------------
 
-Let's start by considering the network as a single static graph, i.e., ignoring its temporal information.
+Let's start by considering the network as a single static graph, ignoring its temporal information.
 
-We can observe that depending on the initial node community assigments (e.g., with ``seed=0`` below),
+We can observe that, depending on the initial node community assignments (e.g., with ``seed=0`` below),
 `modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
 fails to retrieve the true communities (ground truths) in the network:
 
@@ -147,7 +147,7 @@ On each snapshot
 
 Running the same algorithm separately on each of the generated snapshots retrieves the correct
 clusters only on the first graph (:math:`t=0`). In addition, community indices (represented by their
-colors) are not fixed over snapshots, which makes understanding their mesoscale dynamics harder:
+colors) are not fixed over snapshots, which makes it harder to track their mesoscale dynamics:
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ colors) are not fixed over snapshots, which makes understanding their mesoscale 
 
 This is partly due to modularity optimization expecting an assortative community structure, while
 the network grew more disassortative over time. Not only the results of later snapshots are here
-suboptimal, but the changing community indices also increases the complexity of their analysis.
+suboptimal, but the varying community indices increase the complexity of their temporal analysis.
 
 
 On the temporal graph
@@ -217,12 +217,12 @@ their mesoscale structures. The example below uses the same algorithm as before:
 
 .. image:: ../../assets/figure/fig-12.png
 
-As observed, considering the network's temporal information allowed the algorithm to correctly
-retrieve the ground truths in this particular example, as well as to maintain the same community
-indices across snapshots, which helps in the study of the network's mesoscale temporal dynamics.
+As observed in this particular example, considering the network's temporal information allowed the
+algorithm to correctly retrieve the ground truths, as well as to maintain the same community
+indices across snapshots, potentially facilitating the study of the network's mesoscale temporal dynamics.
 
 Although very simple, this example showcases how considering a network's temporal information can
-benefit its analysis, as well as help to better understand and visualize its mesoscale structures,
+benefit its analysis and help to better understand and visualize its mesoscale structures,
 for which this package provides a flexible framework to work with, especially in a topological level.
 
 -----

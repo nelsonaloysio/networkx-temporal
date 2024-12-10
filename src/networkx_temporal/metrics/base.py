@@ -95,7 +95,7 @@ def temporal_size(self) -> int:
     """
     Returns number of edges (interactions) in all snapshots.
 
-    Matches the length of :func:`~networkx_temporal.graph.TemporalGraph.temporal_edges`.
+    Matches the length of :func:`~networkx_temporal.graph.TemporalGraph.temporal_edges` and the sum of :func:`~networkx_temporal.graph.TemporalGraph.size`.
 
     :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """

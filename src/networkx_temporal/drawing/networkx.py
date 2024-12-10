@@ -110,18 +110,20 @@ def draw_networkx(
         >>>
         >>> TG = TG.slice(attr="time")
         >>>
-        >>> node_color = {t: [colors[TG.index_node(node)[0]] for node in nodes]
-        >>>               for t, nodes in enumerate(TG.nodes())}
+        >>> # Plot temporal graph snapshots with node colors by time of first appearance.
+        >>> temporal_node_color = {t: [colors[TG.index_node(node)[0]] for node in nodes]
+        >>>                        for t, nodes in enumerate(TG.nodes())}
         >>>
         >>> fig = tx.draw(TG,
         >>>               layout="kamada_kawai",
-        >>>               temporal_node_color=node_color,
+        >>>               temporal_node_color=temporal_node_color,
         >>>               figsize=(6, 4),
         >>>               nrows=2,
         >>>               ncols=3,
         >>>               border=True,
         >>>               suptitle=True)
         >>>
+        >>> # Add legend to figure.
         >>> handles = [mpatches.Patch(color=colors[i], label=f"$t$ = {i}")
         >>>            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
         >>>
@@ -153,7 +155,7 @@ def draw_networkx(
           :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
           functions for drawing specific graph elements.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object TG: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
         static graph, or a list of static graphs from NetworkX as input.
     :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values, e.g.,
         ``{'node': (0.19813, 0.74631), ...}``.
@@ -168,33 +170,39 @@ def draw_networkx(
         <https://matplotlib.org/stable/users/explain/axes/constrainedlayout_guide.html>`__.
         Default is ``True``.
     :param border: Draw border around subplots. Default is ``False``.
-    :param suptitle: Centered suptitle of the figure. If ``True``, uses the temporal graph
-        :attr:`~networkx_temporal.graph.TemporalGraph.name` property or its string representation. Optional.
+    :param suptitle: Centered figure's `super title <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.suptitle.html>`__.
+        Default is ``None``.
+
+        * If ``True``, use the graph's :attr:`~networkx_temporal.graph.TemporalGraph.name` property or its string representation.
+
+        * If ``False`` or ``None``, does not show a super title.
+
+        * If a ``str``, use it as the super title.
     :param names: Whether to show the graph :attr:`~networkx_temporal.graph.TemporalGraph.names` property
         as titles. Default is ``None``.
 
-        * If ``None``, shows the snapshot index as title.
+        * If ``None``, show the snapshot index as title.
 
         * If ``True``, show the graph names as title.
 
         * If ``False``, does not show titles.
 
-        * If a ``list``, shows the values in it as titles.
-    :param labels: A string, dictionary, or boolean to control node labels.
+        * If a ``list``, passed values are used as titles.
+    :param labels: A string, dictionary, or boolean to control node labels. Default is ``True``.
 
         * If a ``str``, use it as the attribute name to show as labels.
 
         * If a ``dict``, keys are node indices and values are labels.
 
-        * If a ``bool``, whether to show labels or not. Default is ``True``.
+        * If a ``bool``, whether to show labels or not.
 
-    :param edge_labels: A string, dictionary, or boolean to control edge labels.
+    :param edge_labels: A string, dictionary, or boolean to control edge labels. Default is ``False``.
 
         * If a ``str``, use it as the attribute name to show as labels.
 
         * If a ``dict``, keys are edge indices and values are labels.
 
-        * If a ``bool``, whether to show labels or not. Default is ``False``.
+        * If a ``bool``, whether to show labels or not.
 
     :param node_opts: Dictionary or dictionary of dictionaries (one per snapshot) with
         additional options for drawing nodes. Optional.

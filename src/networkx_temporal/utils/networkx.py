@@ -72,7 +72,7 @@ def is_frozen(G: Union[TemporalGraph, StaticGraph], on_each: bool = False) -> bo
     return [nx.is_frozen(G) for G in graph] if on_each else nx.is_frozen(graph[0])
 
 
-def is_static_graph(obj: Any) -> bool:
+def is_static_graph(G: Any) -> bool:
     """
     Returns ``True`` if object is a static graph, ``False`` otherwise.
 
@@ -82,12 +82,12 @@ def is_static_graph(obj: Any) -> bool:
     `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__,
     `MultiDiGraph <https://networkx.org/documentation/stable/reference/classes/multidigraph.html>`__.
 
-    :param obj: Object to check.
+    :param G: Object to check.
     """
-    return not is_temporal_graph(obj) and isinstance(obj, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+    return not is_temporal_graph(G) and isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
 
 
-def is_temporal_graph(obj: Any) -> bool:
+def is_temporal_graph(G: Any) -> bool:
     """
     Returns ``True`` if object is a temporal graph, ``False`` otherwise.
 
@@ -97,10 +97,10 @@ def is_temporal_graph(obj: Any) -> bool:
     :class:`~networkx_temporal.graph.TemporalMultiGraph`,
     :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
 
-    :param obj: Object to check.
+    :param G: Object to check.
     """
     from ..graph import TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
-    return isinstance(obj, (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
+    return isinstance(G, (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
 
 
 def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:
