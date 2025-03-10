@@ -9,6 +9,12 @@
 ### Removed
 -->
 
+## \[1.2.1\] - 2025-03-10
+
+### Fixed
+- Single graph drawing passing `fig` to `draw_networkx`.
+
+
 ## \[1.2\] - 2024-12-02
 
 ### Added

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "networkx-temporal"
-version = "1.2"
+version = "1.2.1"
 description = "Python package to build and manipulate dynamic NetworkX graphs."
 requires-python = ">=3.7"
 readme = {file = "README.md", content-type = "text/markdown"}
