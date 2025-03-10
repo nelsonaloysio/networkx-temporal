@@ -267,7 +267,7 @@ node-level attributes resulted in it being placed at the snapshot :math:`t=0` in
 .. note::
 
     When ``level='node'``, the source node's temporal attribute is used by default to determine the
-    time step of an edge. This behavior can be changed by setting ``node_level='target'`` instead.
+    time step of an edge. This behavior can be changed by setting ``level='target'`` instead.
 
 
 -----

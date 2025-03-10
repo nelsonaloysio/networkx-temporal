@@ -170,7 +170,7 @@ colors) are not fixed over snapshots, which makes it harder to track their mesos
    >>>     temporal_node_color=temporal_node_color,
    >>>     temporal_edge_color=temporal_edge_color,
    >>>     connectionstyle="arc3,rad=0.1",
-   >>>     suptitle="Modularity optimization on each snapshot")
+   >>>     suptitle="Modularity optimization on graph snapshots")
 
 .. image:: ../../assets/figure/fig-11.png
 
@@ -185,7 +185,7 @@ On the temporal graph
 Considering snapshots as layers (slices) of a multiplex graph, with `interslice edges coupling
 temporal node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
 is one way of employing modularity optimization on dynamic graphs, which may help to better capture
-their mesoscale structures. The example below uses the same algorithm as before:
+their mesoscale structures [4]_. This example uses the same algorithm as before:
 
 .. code-block:: python
 
@@ -213,7 +213,7 @@ their mesoscale structures. The example below uses the same algorithm as before:
    >>>     temporal_node_color=temporal_node_color,
    >>>     temporal_edge_color=temporal_edge_color,
    >>>     connectionstyle="arc3,rad=0.1",
-   >>>     suptitle="Modularity optimization on multiplex graph")
+   >>>     suptitle="Modularity optimization on multislice graph")
 
 .. image:: ../../assets/figure/fig-12.png
 
@@ -237,3 +237,6 @@ for which this package provides a flexible framework to work with, especially in
    Cambridge University Press.
 
 .. [3] Mark Newman (2018). ''Networks''. Oxford University Press, 2nd ed., pp. 498--514.
+
+.. [4] P. J. Mucha et al (2010). ''Community Structure in Time-Dependent,
+   Multiscale, and Multiplex Networks''. Science, 328, 876--878.
