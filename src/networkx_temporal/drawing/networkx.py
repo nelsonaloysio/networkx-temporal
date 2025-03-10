@@ -253,11 +253,11 @@ def draw_networkx(
                                figsize=figsize,
                                constrained_layout=constrained_layout)
     else:
-        ax = fig.axes
+        ax = fig.axes[0] if len(fig.axes) == len(TG) == 1 else fig.axes
 
     i, j = 0, 0
     for t in range(len(TG)):
-        ax_ = ax if nrows == 1 and ncols == 1 else ax[t] if nrows == 1 or ncols == 1 else ax[i, j]
+        ax_ = ax if nrows == ncols == 1 else ax[t] if nrows == 1 or ncols == 1 else ax[i, j]
 
         # Get or compute node positions.
         pos_ = pos if type(pos) == dict else pos[t] if type(pos) == list else layout(
