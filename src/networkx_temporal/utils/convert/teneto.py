@@ -8,8 +8,8 @@ def to_teneto(G: Union[TemporalGraph, StaticGraph, list], attr: str = "time"):
     """
     Convert from NetworkX to `Teneto <https://teneto.readthedocs.io>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param attr: Attribute name for the temporal edges. Default is ``'time'``.
 
     :rtype: teneto.TemporalNetwork

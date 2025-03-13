@@ -4,6 +4,31 @@ from ..typing import StaticGraph, TemporalGraph
 from ..utils import is_static_graph, is_temporal_graph
 
 
+def empty_graph(
+    directed: bool = None,
+    multigraph: bool = None,
+    create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
+) -> TemporalGraph:
+    """
+    Creates a temporal graph with the desired properties. Similar to `empty_graph
+    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.empty_graph.html>`__
+    from NetworkX.
+
+    This is a factory method for temporal graphs. Equivalent to calling
+    :func:`~networkx_temporal.graph.temporal_graph` with ``t=1``.
+
+    :param directed: If ``True``, inherits a
+        `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.
+        Defaults to ``False``.
+    :param multigraph: If ``True``, inherits a
+        `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__.
+        Defaults to ``True``.
+    :param object create_using: NetworkX or :class:`~networkx_temporal.graph.TemporalGraph` to use
+        as template. Optional. Does not allow setting ``directed`` and ``multigraph`` if passed.
+    """
+    return temporal_graph(directed=directed, multigraph=multigraph, create_using=create_using)
+
+
 def temporal_graph(
     t: Optional[int] = None,
     directed: bool = None,
@@ -11,9 +36,7 @@ def temporal_graph(
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
     """
-    Creates a temporal graph with the desired properties. Similar to
-    `empty_graph <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.empty_graph.html>`__
-    from NetworkX.
+    Creates a temporal graph with the desired properties and number of snapshots.
 
     This is a factory method for temporal graphs. It returns a
     :class:`~networkx_temporal.graph.TemporalGraph`,
@@ -21,6 +44,17 @@ def temporal_graph(
     :class:`~networkx_temporal.graph.TemporalMultiGraph`, or
     :class:`~networkx_temporal.graph.TemporalMultiDiGraph`
     object, depending on the choice of parameters.
+
+    .. hint::
+
+        Initializing a large number of snapshots ``t`` may lead to increased memory usage.
+        Unless dynamic node attributes are needed, consider creating snapshots on the fly with
+        :func:`~networkx_temporal.graph.TemporalGraph.slice`.
+
+    .. seealso::
+
+        The `Examples → Basic operations → Slice temporal graph
+        <../examples/basics.html#slice-temporal-graph>`__ page for a series of examples.
 
     .. rubric:: Example
 
@@ -30,12 +64,12 @@ def temporal_graph(
 
         >>> import networkx_temporal as tx
         >>>
-        >>> TG = tx.temporal_graph(directed=True, multigraph=True)
+        >>> TG = tx.temporal_graph(directed=True)  # multigraph=True
         >>> print(TG)
 
         TemporalMultiDiGraph (t=1) with 0 nodes and 0 edges
 
-    :param int t: Number of snapshots to initialize. Optional. Default is ``1``.
+    :param int t: Number of snapshots to initialize. Optional. Defaults to ``1``.
     :param directed: If ``True``, inherits a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.
         Defaults to ``False``.
@@ -50,7 +84,7 @@ def temporal_graph(
     assert multigraph is None or type(multigraph) == bool,\
         f"Argument `multigraph` must be a boolean, received: {type(multigraph)}."
     assert create_using is None or is_temporal_graph(create_using) or is_static_graph(create_using),\
-        f"Argument `create_using` must be a NetworkX static or temporal graph object, received: {type(create_using)}."
+        f"Argument `create_using` must be a static or temporal graph object, received: {type(create_using)}."
     assert create_using is None or (directed is None and multigraph is None),\
         "Arguments `directed` and `multigraph` should be unset if `create_using` is given."
 

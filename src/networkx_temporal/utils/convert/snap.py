@@ -15,8 +15,8 @@ def to_snap(
     """
     Convert from NetworkX to `SNAP <https://snap.stanford.edu/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param node_id: Attribute key to use as node identifier. Optional. Default is ``'id'``.
     :param node_attrs: Boolean or list of node attributes to include in the conversion.
         Optional. Default is ``True``.
@@ -33,8 +33,6 @@ def to_snap(
     if is_temporal_graph(G) or type(G) == list:
         return [to_snap(H, node_id=node_id, node_attrs=node_attrs, edge_attrs=edge_attrs) for H in G]
 
-    assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
-        f"Input graph must be a static NetworkX graph object, received: {type(G)}."
     assert type(node_id) == str,\
         f"Node identifier must be a string, received: {type(node_id)}."
     assert node_attrs is None or type(node_attrs) in (bool, list),\
@@ -76,6 +74,7 @@ def to_snap(
     # Add node attributes.
     if node_attrs:
         added_node_attrs = set()
+
         for n in G.nodes(data=node_attrs):
             for k, v in n[-1].items():
                 # Add node attribute to the graph.
@@ -98,6 +97,7 @@ def to_snap(
     # Add edge attributes.
     if edge_attrs:
         added_edge_attrs = set()
+
         for i, e in enumerate(G.edges(data=edge_attrs)):
             for k, v in e[-1].items():
                 # Add edge attribute to the graph.
@@ -116,6 +116,7 @@ def to_snap(
                     H.AddFltAttrDatE(i, v, k)
                 else:
                     H.AddStrAttrDatE(i, v, k)
+
         # Add reversed edge attributes.
         if not directed and (multigraph or node_attrs or edge_attrs):
             for i, e in enumerate(G.edges(data=edge_attrs)):

@@ -238,5 +238,5 @@ for which this package provides a flexible framework to work with, especially in
 
 .. [3] Mark Newman (2018). ''Networks''. Oxford University Press, 2nd ed., pp. 498--514.
 
-.. [4] P. J. Mucha et al (2010). ''Community Structure in Time-Dependent,
+.. [4] P. J. Mucha et al. (2010). ''Community Structure in Time-Dependent,
    Multiscale, and Multiplex Networks''. Science, 328, 876--878.

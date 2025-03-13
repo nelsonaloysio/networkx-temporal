@@ -30,8 +30,8 @@ def to_graph_tool(
     """
     Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.
     :param encoding: Encoding to use for string conversion.

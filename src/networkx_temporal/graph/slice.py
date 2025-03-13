@@ -63,9 +63,11 @@ def slice(
 
        TemporalGraph (t=1) with 3 nodes and 2 edges
 
-    Note that a :class:`~networkx_temporal.graph.TemporalMultiGraph` or
-    :class:`~networkx_temporal.graph.TemporalMultiDiGraph` object is required to store multiple edges
-    among pairs and allow many interactions between the same nodes.
+    .. important::
+
+       Note that a :class:`~networkx_temporal.graph.TemporalMultiGraph` or
+       :class:`~networkx_temporal.graph.TemporalMultiDiGraph` object is required to store multiple
+       edges among pairs and allow many interactions between the same nodes.
 
     .. seealso::
 
@@ -80,8 +82,8 @@ def slice(
     :param attr: Node- or edge-level attribute to
         consider as temporal data. If unset, the method will consider the order of appearance of
         edges or nodes (``rank_first=True``).
-    :param str level: Whether to consider node- or edge-level data for slicing. Required if ``attr``
-        is a string. Defaults to ``'edge'`` if unset. Choices:
+    :param str level: Whether to consider node- or edge-level data for slicing. Required if
+        ``attr`` is a string. Defaults to ``'edge'`` if unset. Choices:
 
         - ``'edge'``: Edge-level temporal slice. This is the default.
 
@@ -123,10 +125,10 @@ def slice(
 
     # Automatically set `level` if `attr` is not a string.
     if attr is not None and type(attr) != str:
-        order, size = self.temporal_order(), self.temporal_size()
+        order, size = self.total_order(), self.total_size()
 
         assert hasattr(attr, "__len__"),\
-            f"Attribute data must be a list, dictionary or sequence of elements, received: {type(attr)}."
+            f"Attribute data must be a dictionary or sequence of elements, received: {type(attr)}."
         assert level is not None or order != size,\
             "Parameter `level` must be set for graphs with the same number of nodes and edges."
 

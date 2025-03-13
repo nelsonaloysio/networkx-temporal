@@ -81,15 +81,16 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
         Graph named "Zachary's Karate Club" with 34 nodes and 78 edges
         Data(edge_index=[2, 156], club=[34], weight=[156], name='Zachary's Karate Club', num_nodes=34)
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param str to: Package name or alias to convert the graph object.
     :param args: Additional positional arguments for the conversion function.
     :param kwargs: Additional keyword arguments for the conversion function.
 
     :rtype: Any
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     pkg = ALIASES.get(to, to)
     func = ALIASES.get(pkg, pkg)

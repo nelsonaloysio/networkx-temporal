@@ -126,7 +126,8 @@ def to_events(
         duration of the pairwise interaction is calculated based on the attribute value
         instead of the number of time steps. Optional.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     eps = EPSILON.get(eps, eps)
 

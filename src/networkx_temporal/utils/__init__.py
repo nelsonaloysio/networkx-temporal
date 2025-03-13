@@ -36,6 +36,10 @@ from .networkx import (
     is_temporal_graph,
     to_multigraph,
 )
+from .utils import (
+    _dict,
+    _sum,
+)
 
 __all__ = (
     "from_multigraph",

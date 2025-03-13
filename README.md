@@ -36,24 +36,24 @@ For detailed information on using the package, please refer to its
 > ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)).
 
 ```python
->>> import networkx_temporal as tx
->>>
->>> # Build directed temporal graph.
->>> TG = tx.TemporalDiGraph()
->>> TG.add_edge("a", "b", time=0)
->>> TG.add_edge("c", "b", time=1)
->>> TG.add_edge("d", "c", time=2)
->>> TG.add_edge("d", "e", time=2)
->>> TG.add_edge("a", "c", time=2)
->>> TG.add_edge("f", "e", time=3)
->>> TG.add_edge("f", "a", time=3)
->>> TG.add_edge("f", "b", time=3)
->>>
->>> # Slice it into snapshots.
->>> TG = TG.slice(attr="time")
->>>
->>> # Plot resulting object.
->>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
+import networkx_temporal as tx
+
+# Build directed temporal graph.
+TG = tx.TemporalDiGraph()
+TG.add_edge("a", "b", time=0)
+TG.add_edge("c", "b", time=1)
+TG.add_edge("d", "c", time=2)
+TG.add_edge("d", "e", time=2)
+TG.add_edge("a", "c", time=2)
+TG.add_edge("f", "e", time=3)
+TG.add_edge("f", "a", time=3)
+TG.add_edge("f", "b", time=3)
+
+# Slice it into snapshots.
+TG = TG.slice(attr="time")
+
+# Plot resulting object.
+tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
 ```
 
 ![Plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/fig-0.png)

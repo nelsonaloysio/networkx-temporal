@@ -8,8 +8,8 @@ def to_networkit(G: Union[TemporalGraph, StaticGraph, list], *args, **kwargs):
     """
     Convert from NetworkX to `Networkit <https://networkit.github.io/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 

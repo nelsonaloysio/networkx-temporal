@@ -47,9 +47,9 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     assert len(TG.slice(bins=2)) == 2
     assert TG.order() == [2, 3, 4, 4]
     assert TG.size() == [1, 2, 3, 3]
-    assert TG.temporal_order() == 6
-    assert TG.total_order() == 13
-    assert TG.temporal_size() == TG.total_size() == 9
+    assert TG.total_order() == 6
+    assert TG.total_order(copies=True) == 13
+    assert TG.total_size() == 9
     assert TG.temporal_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
     assert TG.temporal_degree("a") == 4
     assert TG.temporal_neighbors("c") == ["b"]

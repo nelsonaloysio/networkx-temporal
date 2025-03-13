@@ -8,8 +8,8 @@ def to_dynetx(G: Union[TemporalGraph, StaticGraph, list], attr: Optional[str] = 
     """
     Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.io/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`,
+        a single static graph, or a list of static graphs as input.
     :param attr: Attribute name for the temporal edges. Optional.
     :param kwargs: Keyword arguments for the DyNetX graph object.
 

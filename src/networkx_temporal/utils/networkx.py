@@ -1,13 +1,16 @@
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import networkx as nx
 
 from ..typing import StaticGraph, TemporalGraph
 
 
-def from_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:
+def from_multigraph(
+    G: Union[TemporalGraph, StaticGraph],
+    weight: Optional[Union[str, bool]] = None,
+) -> Union[TemporalGraph, StaticGraph]:
     """
-    Returns a graph from a multigraph object.
+    Returns a graph from a temporal or static multigraph.
 
     Parallel (multiple) edges among nodes are converted to single edges, with a ``weight`` attribute
     storing their total occurrences. If the attribute already exists, their total sum is stored instead.
@@ -25,27 +28,27 @@ def from_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph
        >>> from networkx_temporal import from_multigraph
        >>>
        >>> G = nx.MultiGraph()
+       >>> G.add_edge(1, 2, weight=1)
        >>> G.add_edge(1, 2, weight=2)
-       >>> G.add_edge(1, 2, weight=3)
        >>>
        >>> H = from_multigraph(G)
        >>> print(H.edges(data=True))
 
-       [(1, 2, {'weight': 5})]
+       [(1, 2, {'weight': 3})]
 
-    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
-        or static NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
+    :param weight: Edge attribute key to consider. Defaults to ``'weight'``.
     """
     from ..graph import temporal_graph
 
     assert is_temporal_graph(G) or is_static_graph(G),\
-        "Argument `graph` must be either a temporal or static NetworkX graph object."
+        "Argument `graph` must be either a temporal or static graph object."
 
     if not is_temporal_graph(G):
         return _from_multigraph(G)
 
     TG = temporal_graph(directed=G.is_directed(), multigraph=False)
-    TG.data = [_from_multigraph(H) for H in G]
+    TG.data = [_from_multigraph(H, weight=weight) for H in G]
     TG.name = G.name
     TG.names = G.names
     return TG
@@ -60,7 +63,7 @@ def is_frozen(G: Union[TemporalGraph, StaticGraph], on_each: bool = False) -> bo
 
     Obtains the value from the first snapshot only, unless ``on_each=True``.
 
-    :param object G: :class:`~networkx_temporal.graph.TemporalGraph` or static NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
     :param bool on_each: If ``True``, checks all snapshots for the graph type.
     """
     assert is_temporal_graph(graph) or is_static_graph(TG),\
@@ -82,7 +85,7 @@ def is_static_graph(G: Any) -> bool:
     `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__,
     `MultiDiGraph <https://networkx.org/documentation/stable/reference/classes/multidigraph.html>`__.
 
-    :param G: Object to check.
+    :param object G: Object to check.
     """
     return not is_temporal_graph(G) and isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
 
@@ -97,15 +100,15 @@ def is_temporal_graph(G: Any) -> bool:
     :class:`~networkx_temporal.graph.TemporalMultiGraph`,
     :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
 
-    :param G: Object to check.
+    :param object G: Object to check.
     """
-    from ..graph import TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
-    return isinstance(G, (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
+    from ..graph import TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
+    return isinstance(G, (TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
 
 
 def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:
     """
-    Returns a multigraph from a graph object.
+    Returns a multigraph from a temporal or static graph.
 
     A multigraph is a graph that allows multiple (parallel) edges between pairwise nodes.
 
@@ -114,8 +117,7 @@ def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, 
         The :func:`~networkx_temporal.utils.from_multigraph`
         function to convert a multigraph to a graph object.
 
-    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
-        or static NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
     """
     from ..graph import temporal_graph
 
@@ -132,16 +134,22 @@ def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, 
     return TG
 
 
-def _from_multigraph(G: nx.MultiGraph) -> StaticGraph:
+def _from_multigraph(G: nx.MultiGraph, weight: Optional[Union[str, bool]] = None) -> StaticGraph:
     """ Returns a multigraph object from a graph. """
     H = getattr(nx, f"{f'Di' if G.is_directed() else ''}Graph")()
     H.add_edges_from(G.edges(data=True))
 
-    weight = {}
-    for u, v, w in G.edges(data="weight", default=1):
-        weight[(u, v)] = weight.get((u, v), 0) + w
+    if weight in (True, None):
+        weight = "weight"
 
-    nx.set_edge_attributes(H, weight, "weight")
+    if weight is not False:
+        weights = {}
+
+        for u, v, w in G.edges(data=weight, default=1):
+            weights[(u, v)] = weights.get((u, v), 0) + w
+
+        nx.set_edge_attributes(H, weights, weight)
+
     return H
 
 

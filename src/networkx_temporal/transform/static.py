@@ -57,7 +57,8 @@ def to_static(
         Optional.
     :param attr: Edge attribute name to store time. Optional.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     assert attr is None or sum(TG.size()) == 0 or attr not in next(iter(TG[0].edges(data=True)))[-1],\
         f"Edge attribute '{attr}' already exists in graph."

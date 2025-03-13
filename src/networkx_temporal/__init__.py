@@ -9,6 +9,7 @@ Top-level module for the package.
    graph
    io
    metrics
+   models
    transform
    typing
    utils
@@ -36,6 +37,10 @@ from .__version__ import __version__
 from .drawing import *
 from .graph import *
 from .io import *
+from .metrics.community import *
+from .metrics.graph import *
+from .metrics.node import *
+from .models import *
 from .transform import *
 from .utils import *
 from .utils.convert import *
@@ -45,16 +50,21 @@ __all__ = (
     "TemporalDiGraph",
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
+    "all_neighbors",
     "convert",
+    "degree",
     "draw",
+    "empty_graph",
     "from_events",
     "from_multigraph",
     "from_snapshots",
     "from_static",
     "from_unified",
+    "in_degree",
     "is_frozen",
     "is_static_graph",
     "is_temporal_graph",
+    "out_degree",
     "read_graph",
     "temporal_graph",
     "to_multigraph",

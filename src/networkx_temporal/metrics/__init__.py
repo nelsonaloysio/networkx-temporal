@@ -1,46 +1,30 @@
 """
 Metrics and measures for temporal graphs.
 
-.. rubric:: Summary
+.. rubric:: Summary - Graph metrics
 
 .. autosummary::
 
-   temporal_degree
-   temporal_in_degree
-   temporal_out_degree
-   temporal_neighbors
-   temporal_nodes
-   temporal_edges
-   temporal_order
-   temporal_size
-   total_order
-   total_size
+   graph.order
+   graph.size
 
-.. rubric:: Functions
+.. rubric:: Summary - Node metrics
+
+.. autosummary::
+
+   node.degree
+   node.in_degree
+   node.out_degree
+   node.temporal_betweenness
+
+.. rubric:: Summary - Community metrics
+
+.. autosummary::
+
+   community.modularity
+   community.longitudinal_modularity
+   community.multislice_modularity
 """
-
-from .base import (
-    temporal_degree,
-    temporal_in_degree,
-    temporal_out_degree,
-    temporal_neighbors,
-    temporal_nodes,
-    temporal_edges,
-    temporal_order,
-    temporal_size,
-    total_order,
-    total_size,
-)
-
-__all__ = (
-    "temporal_degree",
-    "temporal_in_degree",
-    "temporal_out_degree",
-    "temporal_neighbors",
-    "temporal_nodes",
-    "temporal_edges",
-    "temporal_order",
-    "temporal_size",
-    "total_order",
-    "total_size",
-)
+from .community import *
+from .graph import *
+from .node import *

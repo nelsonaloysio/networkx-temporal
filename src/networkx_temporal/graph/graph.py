@@ -2,10 +2,10 @@ from typing import Optional
 
 import networkx as nx
 
-from .base import TemporalBase
+from .abc import TemporalABC
 
 
-class TemporalGraph(TemporalBase, nx.Graph if nx.__version__ >= "2.8.1" else object):
+class TemporalGraph(TemporalABC, nx.Graph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal undirected graph. Does not allow parallel edges among node pairs.
 
@@ -15,25 +15,32 @@ class TemporalGraph(TemporalBase, nx.Graph if nx.__version__ >= "2.8.1" else obj
     :func:`neighbors`, :func:`subgraph`, :func:`to_directed`, and :func:`to_undirected`,
     as well as additional methods implemented for handling temporal graphs and snapshots.
 
-    This is equivalent to calling :func:`~networkx_temporal.graph.temporal_graph` with ``directed=False``
-    and ``multigraph=False``.
+    This is equivalent to calling :func:`~networkx_temporal.graph.temporal_graph` with
+    ``directed=False`` and ``multigraph=False``.
+
+    .. hint::
+
+       Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
+       representing a snapshot in time. Unless dynamic node attributes are required, it is
+       recommended to use the :func:`~networkx_temporal.graph.TemporalGraph.slice` method instead,
+       allowing to create less resource-demanding graph `views
+       <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+       on the fly.
 
     .. seealso::
 
+       - The :class:`~networkx_temporal.graph.temporal_graph`
+         function for creating temporal graphs with different configurations.
        - The `Examples → Basic operations
          <../examples/basics.html#build-temporal-graph>`__
-         page for examples on building a temporal graph.
+         page for examples on building temporal graphs.
        - The `official NetworkX documentation
          <https://networkx.org/documentation/stable/reference/classes/index.html>`__
          for a list of methods inherited by this class.
-       - The :class:`~networkx_temporal.graph.TemporalDiGraph`,
-         :class:`~networkx_temporal.graph.TemporalMultiGraph`,
-         and :class:`~networkx_temporal.graph.TemporalMultiDiGraph` classes for other temporal graph types
-         with directed and/or multiple edges among node pairs.
 
     .. rubric:: Example
 
-    The following example demonstrates how to create a temporal graph with two snapshots:
+    The following example demonstrates how to initialize a temporal graph with two snapshots:
 
     .. code-block:: python
 
@@ -49,18 +56,9 @@ class TemporalGraph(TemporalBase, nx.Graph if nx.__version__ >= "2.8.1" else obj
 
        TemporalGraph (t=2) with 4 nodes and 2 edges
 
-    .. hint::
-
-       Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
-       representing a snapshot in time. Unless dynamic node attributes are required, it is
-       recommended to use the :func:`~networkx_temporal.graph.TemporalGraph.slice` method instead,
-       allowing to create less resource-demanding graph `views
-       <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-       on the fly.
-
     :param int t: Number of temporal graphs to initialize. Optional. Default is ``1``.
 
     :note: Documentation on inherited methods is available only if ``networkx>=2.8.1``.
     """
     def __init__(self, t: Optional[int] = None):
-        super().__init__(t=t, directed=False, multigraph=False)
+        super().__init__(t=t, create_using=nx.Graph)

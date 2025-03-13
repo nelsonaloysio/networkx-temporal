@@ -77,10 +77,11 @@ def to_unified(
 
         - **dictionary**: ``{"a": "a_0", "b": "b_0", "c": "c_2"}``
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     T = range(len(TG))
-    order = TG.temporal_order()
+    order = TG.total_order()
 
     assert relabel_nodes is None or type(relabel_nodes) in (dict, list),\
         f"Argument 'relabel_nodes' must be a dict or list, received: {type(relabel_nodes)}."

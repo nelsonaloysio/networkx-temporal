@@ -61,7 +61,8 @@ def to_snapshots(TG: TemporalGraph, to: Optional[FORMATS] = None, as_view: bool 
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
     if not as_view and to is not None:
         return [G.copy() for G in TG.data]
