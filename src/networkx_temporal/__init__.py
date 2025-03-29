@@ -6,6 +6,7 @@ Top-level module for the package.
 .. autosummary::
 
    drawing
+   generators
    graph
    io
    metrics
