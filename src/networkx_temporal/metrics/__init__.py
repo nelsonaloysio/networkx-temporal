@@ -10,6 +10,8 @@ Metrics and measures for temporal graphs.
    node.degree
    node.in_degree
    node.out_degree
+   node.bridging_centrality
+   node.bridging_coefficient
 """
 
 from .graph import *
