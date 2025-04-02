@@ -2,10 +2,10 @@ from typing import Optional
 
 import networkx as nx
 
-from .base import TemporalBase
+from .abc import TemporalABC
 
 
-class TemporalDiGraph(TemporalBase, nx.DiGraph if nx.__version__ >= "2.8.1" else object):
+class TemporalDiGraph(TemporalABC, nx.DiGraph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal directed graph. Does not allow parallel edges among node pairs.
 

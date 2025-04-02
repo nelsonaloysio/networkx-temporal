@@ -253,7 +253,7 @@ def draw_networkx(
                                figsize=figsize,
                                constrained_layout=constrained_layout)
     else:
-        ax = fig.axes[0] if len(fig.axes) == len(TG) == 1 else fig.axes
+        ax = fig.axes[0] if len(TG) == 1 else fig.axes
 
     i, j = 0, 0
     for t in range(len(TG)):

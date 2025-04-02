@@ -5,42 +5,12 @@ Metrics and measures for temporal graphs.
 
 .. autosummary::
 
-   temporal_degree
-   temporal_in_degree
-   temporal_out_degree
-   temporal_neighbors
-   temporal_nodes
-   temporal_edges
-   temporal_order
-   temporal_size
-   total_order
-   total_size
-
-.. rubric:: Functions
+   graph.order
+   graph.size
+   node.degree
+   node.in_degree
+   node.out_degree
 """
 
-from .base import (
-    temporal_degree,
-    temporal_in_degree,
-    temporal_out_degree,
-    temporal_neighbors,
-    temporal_nodes,
-    temporal_edges,
-    temporal_order,
-    temporal_size,
-    total_order,
-    total_size,
-)
-
-__all__ = (
-    "temporal_degree",
-    "temporal_in_degree",
-    "temporal_out_degree",
-    "temporal_neighbors",
-    "temporal_nodes",
-    "temporal_edges",
-    "temporal_order",
-    "temporal_size",
-    "total_order",
-    "total_size",
-)
+from .graph import *
+from .node import *

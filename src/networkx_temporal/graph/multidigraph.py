@@ -2,10 +2,10 @@ from typing import Optional
 
 import networkx as nx
 
-from .base import TemporalBase
+from .abc import TemporalABC
 
 
-class TemporalMultiDiGraph(TemporalBase, nx.MultiDiGraph if nx.__version__ >= "2.8.1" else object):
+class TemporalMultiDiGraph(TemporalABC, nx.MultiDiGraph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal directed multigraph. Allows parallel edges among the same pair of nodes.
 

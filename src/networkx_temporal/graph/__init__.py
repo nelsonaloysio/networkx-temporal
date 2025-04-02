@@ -9,7 +9,7 @@ Classes and functions for handling temporal graphs.
    TemporalDiGraph
    TemporalMultiGraph
    TemporalMultiDiGraph
-   TemporalBase
+   TemporalABC
    temporal_graph
 
 .. rubric:: Classes
@@ -27,12 +27,12 @@ Classes and functions for handling temporal graphs.
 .. autoclass:: networkx_temporal.graph.TemporalMultiDiGraph
    :members:
 
-.. autoclass:: TemporalBase
+.. autoclass:: TemporalABC
 
 .. rubric:: Functions
 """
 
-from .base import TemporalBase
+from .abc import TemporalABC
 from .digraph import TemporalDiGraph
 from .factory import temporal_graph
 from .graph import TemporalGraph
@@ -44,6 +44,6 @@ __all__ = (
     "TemporalDiGraph",
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
-    "TemporalBase",
+    "TemporalABC",
     "temporal_graph",
 )

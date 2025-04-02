@@ -3,7 +3,7 @@ from typing import Callable, Union
 import networkx as nx
 
 from ..typing import StaticGraph, TemporalGraph
-from ..utils import is_temporal_graph
+from ..utils import is_static_graph
 
 
 def layout(
@@ -29,8 +29,7 @@ def layout(
         "Argument `layout` must be a string with a valid NetworkX layout algorithm."\
         f"Available choices: {[f for f in dir(nx) if f.endswith('_layout')]}"
 
-    # Allow a single graph to be passed as input.
-    if not is_temporal_graph(TG):
+    if is_static_graph(TG):
         return layout(TG, **kwargs)
 
     return [layout(G, *args, **kwargs) for G in TG]
