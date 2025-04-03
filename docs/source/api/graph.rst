@@ -6,4 +6,4 @@
 
 .. automodule:: networkx_temporal.graph
    :members:
-   :exclude-members: TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph, TemporalBase
+   :exclude-members: TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph, TemporalABC

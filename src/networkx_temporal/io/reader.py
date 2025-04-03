@@ -19,9 +19,9 @@ def read_graph(
     Returns a :class:`~networkx_temporal.graph.TemporalGraph` from a compressed
     `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
 
-    Graph files within the compressed ZIP file must be named as ``{name}_{t}.{ext}``,
+    Graph files within the compressed file must be named as ``{name}_{t}.{ext}``,
     where ``t`` is their snapshot index and ``ext`` is their extension format.
-    See :func:`~networkx_temporal.io.write_graph` for details.
+    See :func:`~networkx_temporal.io.write_graph` for more information.
 
     .. rubric:: Example
 

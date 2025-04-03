@@ -1,5 +1,6 @@
 .. include:: ../include-examples.rst
 
+
 ################
 Basic operations
 ################
@@ -92,6 +93,7 @@ unique attribute value passed to it.
    ``names=True`` to :func:`~networkx_temporal.drawing.draw` will use them instead of indices as
    subplot titles, as seen below.
 
+
 Number of snapshots
 --------------------
 
@@ -156,8 +158,6 @@ by sorting the edges by the order in which they were added to the graph.
 Although the resulting number of nodes per snapshot may vary, this method is useful to obtain an
 arbitrarily defined number of subgraphs, especially when its temporal values are not known.
 
-
------
 
 Import static graphs
 ====================
@@ -227,8 +227,8 @@ Converting a static graph considering edge-level temporal data in to a temporal 
 
 .. code-block:: python
 
-   >>> TG_ = TG.slice(attr="time")
-   >>> tx.draw(TG_, layout="kamada_kawai", figsize=(8, 2))
+   >>> TG = TG.slice(attr="time")  # level="edge"
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
 .. image:: ../../assets/figure/fig-5.png
 
@@ -249,8 +249,8 @@ Converting a static graph considering node-level temporal data to a temporal gra
 
 .. code-block:: python
 
-   >>> TG_ = TG.slice(attr="time", level="node")
-   >>> tx.draw(TG_, layout="kamada_kawai", figsize=(8, 2))
+   >>> TG = TG.slice(attr="time", level="node")
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
 .. image:: ../../assets/figure/fig-6.png
 
@@ -269,8 +269,6 @@ node-level attributes resulted in it being placed at the snapshot :math:`t=0` in
     When ``level='node'``, the source node's temporal attribute is used by default to determine the
     time step of an edge. This behavior can be changed by setting ``level='target'`` instead.
 
-
------
 
 Save and load data
 ==================
@@ -293,15 +291,13 @@ For details on both, please refer to their respective documentation:
    from NetworkX for a list of supported graph formats.
 
 
------
-
 Inherited methods
-=======================
+=================
 
-The methods available from a `NetworkX graph
+Any methods available from a `NetworkX graph
 <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-can be called directly from a :class:`~networkx_temporal.graph.TemporalGraph` object as well.
-For example, the familiar methods below transform its edges into directed or undirected:
+can be called directly from a :class:`~networkx_temporal.graph.TemporalGraph` object.
+For example, the familiar methods below transform edges in the graph into directed or undirected:
 
 .. code-block:: python
 
@@ -319,8 +315,8 @@ Note that both methods return new objects when called, so the original graph rem
 
 .. seealso::
 
-   - The `Appendix → Index <../genindex.html>`__  page for a list of the implemented classes, methods,
-     and functions.
+   - The `Appendix → Index <../genindex.html>`__  page for a list of the implemented classes,
+     methods, and functions.
 
    - The `NetworkX documentation
      <https://networkx.org/documentation/stable/reference/classes/graph.html#methods>`__

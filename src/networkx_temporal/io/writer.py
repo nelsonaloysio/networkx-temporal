@@ -35,8 +35,8 @@ def write_graph(
     `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
 
     If the object contains more than one snapshot, such as after calling
-    :func:`~networkx_temporal.graph.TemporalGraph.slice`, this function writes a single ZIP archive,
-    in which each file refers to a snapshot. Graph files are saved as ``{name}_{t}.{ext}``,
+    :func:`~networkx_temporal.graph.TemporalGraph.slice`, this function writes a single compressed
+    file in which each file within refers to a snapshot. Graph files are saved as ``{name}_{t}.{ext}``,
     where ``t`` is their snapshot index and ``ext`` is their extension format.
 
     .. rubric:: Example
@@ -56,7 +56,7 @@ def write_graph(
         <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
         from NetworkX for a list of supported formats.
 
-    :param TG: :class:`~networkx_temporal.graph.TemporalGraph` to write.
+    :param TG: :class:`~networkx_temporal.graph.TemporalGraph` object.
     :param object file: Binary file-like object or string containing path to ZIP file. Optional. If
         ``None`` (default), returns content as bytes.
     :param frmt: Extension format or callable function to write graphs with. If unset and ``file``

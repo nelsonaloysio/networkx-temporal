@@ -74,14 +74,9 @@ def to_static(
     if multigraph is None:
         multigraph = TG.is_multigraph()
 
-    G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
-
-    list(G.add_nodes_from(nodes)
-         for nodes in TG.nodes(data=True))
-
-    list(G.add_edges_from(
-         [(e[0], e[1], {**e[2], **({attr: t} if attr else {})}) for e in edges])
-         for t, edges in enumerate(TG.edges(data=True)))
+    G = getattr(nx, f"{'Multi' if TG.is_multigraph() else ''}{f'Di' if TG.is_directed() else ''}Graph")()
+    list(G.add_nodes_from(nodes) for nodes in TG.nodes(data=True))
+    list(G.add_edges_from(nodes) for nodes in TG.edges(data=True))
 
     G.name = TG.name
     return convert(G, to) if to else G

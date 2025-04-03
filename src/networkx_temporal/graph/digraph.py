@@ -2,10 +2,10 @@ from typing import Optional
 
 import networkx as nx
 
-from .base import TemporalBase
+from .abc import TemporalABC
 
 
-class TemporalDiGraph(TemporalBase, nx.DiGraph if nx.__version__ >= "2.8.1" else object):
+class TemporalDiGraph(TemporalABC, nx.DiGraph if nx.__version__ >= "2.8.1" else object):
     """
     Creates a temporal directed graph. Does not allow parallel edges among node pairs.
 
@@ -28,4 +28,4 @@ class TemporalDiGraph(TemporalBase, nx.DiGraph if nx.__version__ >= "2.8.1" else
     :note: Documentation on inherited methods is available only if ``networkx>=2.8.1``.
     """
     def __init__(self, t: Optional[int] = None):
-        super().__init__(t=t, directed=True, multigraph=False)
+        super().__init__(t=t, create_using=nx.DiGraph)

@@ -49,16 +49,16 @@ Static or temporal multigraphs may be converted to graphs without parallel edges
 
 Note that, in the example above, the temporal multigraph ``TG`` was first sliced into snapshots.
 Parallel edges in the same snapshot are instead combined into single edges with an additional
-``weight`` attribute, such as those between nodes :math:`c` and :math:`b` on the flattened graph
-(see :func:`~networkx_temporal.graph.TemporalGraph.flatten`):
+``weight`` attribute, equal to the number of interactions between :math:`c` and :math:`b` across
+time (see :func:`~networkx_temporal.graph.TemporalGraph.flatten`):
 
 .. code-block:: python
 
-   >>> TG_ = tx.to_multigraph(TG)     # Change temporal graph back to a multigraph.
-   >>> TG_ = TG_.flatten()            # Return temporal graph with a single snapshot.
-   >>> TG_ = tx.from_multigraph(TG_)  # Combine parallel edges into single ones.
+   >>> TG = tx.to_multigraph(TG)    # Change temporal graph back to a multigraph.
+   >>> TG = TG.flatten()            # Return temporal graph with a single snapshot.
+   >>> TG = tx.from_multigraph(TG)  # Combine parallel edges into single ones.
    >>>
-   >>> TG_.edges(("c", "b"), data=True)
+   >>> TG.edges(("c", "b"), data=True)
 
    [OutEdgeDataView([('c', 'b', {'time': 1, 'weight': 2})])]
 

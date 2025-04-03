@@ -13,7 +13,14 @@
    :caption: Package reference
    :glob:
 
-   api/*
+   api/api
+   api/algorithms
+   api/drawing
+   api/graph
+   api/io
+   api/transform
+   api/typing
+   api/utils
 
 .. toctree::
    :hidden:
