@@ -87,8 +87,6 @@ We see that all snapshots are generated with the same community structure, but v
 assortativity. Let's try to retrieve the ground truths using a simple community detection algorithm.
 
 
------
-
 Modularity optimization
 =======================
 

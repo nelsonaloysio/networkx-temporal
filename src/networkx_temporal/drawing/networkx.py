@@ -31,7 +31,7 @@ EDGE_LABEL_OPTS = {
 
 
 def draw_networkx(
-    TG: Union[TemporalGraph, StaticGraph, list],
+    TG: Union[TemporalGraph, StaticGraph],
     pos: Optional[Union[list, dict]] = None,
     layout: Optional[Union[str, Callable]] = 'random',
     nrows: Optional[int] = None,
@@ -85,7 +85,6 @@ def draw_networkx(
     .. code-block:: python
 
         >>> import networkx_temporal as tx
-        >>>
         >>> import matplotlib.pyplot as plt
         >>> import matplotlib.patches as mpatches
         >>>
@@ -155,8 +154,7 @@ def draw_networkx(
           :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
           functions for drawing specific graph elements.
 
-    :param object TG: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        static graph, or a list of static graphs from NetworkX as input.
+    :param object TG: A :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
     :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values, e.g.,
         ``{'node': (0.19813, 0.74631), ...}``.
     :param layout: A callable or string with a `layout algorithm
@@ -253,7 +251,7 @@ def draw_networkx(
                                figsize=figsize,
                                constrained_layout=constrained_layout)
     else:
-        ax = fig.axes[0] if len(fig.axes) == len(TG) == 1 else fig.axes
+        ax = fig.axes[0] if len(TG) == 1 else fig.axes
 
     i, j = 0, 0
     for t in range(len(TG)):
@@ -408,7 +406,8 @@ def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "lab
     """
     Helper function to get node attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or node attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'labels'``.
     """
@@ -425,7 +424,8 @@ def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edg
     """
     Helper function to get edge attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or edge attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'edge_labels'``.
     """

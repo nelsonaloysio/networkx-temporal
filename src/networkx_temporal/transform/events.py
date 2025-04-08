@@ -124,7 +124,7 @@ def to_events(
 
     :param str attr: Edge attribute to consider when ``eps`` is ``'float'``. If provided, the
         duration of the pairwise interaction is calculated based on the attribute value
-        instead of the number of time steps. Optional.
+        instead of the distance between snapshot indexes. Optional.
 
     :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
@@ -137,7 +137,7 @@ def to_events(
         f"Argument `eps` must be either `int` or `float` if provided."
     assert attr is None or type(attr) == str,\
         f"Argument `attr` must be a string if provided."
-    assert attr is None or not any(TG.is_multigraph(on_each=True)),\
+    assert attr is None or not any(TG.is_multigraph()),\
         "Edge attributes are not supported when converting multigraphs to events; " \
         "consider calling the `slice` method or converting it with `from_multigraph` beforehand."
     # Filtered (frozen) multigraphs produce inconsistent results. [networkx/networkx#7724]

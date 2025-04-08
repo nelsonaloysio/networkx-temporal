@@ -40,33 +40,48 @@ Static or temporal multigraphs may be converted to graphs without parallel edges
    >>>
    >>> TG = TG.slice(attr="time")
    >>> print(TG)
-   >>>
-   >>> TG = tx.from_multigraph(TG)
-   >>> print(TG)
 
    TemporalMultiDiGraph (t=4) with 6 nodes and 9 edges
-   TemporalDiGraph (t=4) with 6 nodes and 9 edges
 
-Note that, in the example above, the temporal multigraph ``TG`` was first sliced into snapshots.
-Parallel edges in the same snapshot are instead combined into single edges with an additional
-``weight`` attribute, such as those between nodes :math:`c` and :math:`b` on the flattened graph
-(see :func:`~networkx_temporal.graph.TemporalGraph.flatten`):
+
+In the example above, the temporal multigraph ``TG`` was first sliced into :math:`t=4` snapshots.
+Let's now convert it to a simple graph, in which parallel edges among the same node pair are
+not allowed:
 
 .. code-block:: python
 
-   >>> TG_ = tx.to_multigraph(TG)     # Change temporal graph back to a multigraph.
-   >>> TG_ = TG_.flatten()            # Return temporal graph with a single snapshot.
-   >>> TG_ = tx.from_multigraph(TG_)  # Combine parallel edges into single ones.
-   >>>
-   >>> TG_.edges(("c", "b"), data=True)
+   >>> TG = tx.from_multigraph(TG)
+   >>> print(TG)
 
+   TemporalDiGraph (t=4) with 6 nodes and 9 edges
+
+The resulting graph has the same size of :math:`|\mathcal{E}| = 9` edges, as the parallel edges
+among nodes :math:`c` and :math:`b` were in different snapshots, :math:`t=\{0,1\}`.
+Let's now :func:`~networkx_temporal.graph.TemporalGraph.flatten` it and call
+:func:`~networkx_temporal.utils.from_multigraph` again:
+
+.. code-block:: python
+
+   >>> TG = tx.to_multigraph(TG)    # Restore temporal graph back to a multigraph.
+   >>> TG = TG.flatten()            # Obtain temporal graph with a single snapshot.
+   >>> TG = tx.from_multigraph(TG)  # Combine parallel edges into single ones.
+   >>>
+   >>> print(TG)
+   >>> TG.edges(("c", "b"), data=True)
+
+   TemporalDiGraph (t=4) with 6 nodes and 8 edges
    [OutEdgeDataView([('c', 'b', {'time': 1, 'weight': 2})])]
+
+In this case, the resulting graph has :math:`|\mathcal{E}| = 8` edges, as the parallel edges
+among nodes :math:`c` and :math:`b` were combined into a single one with the attributes
+``time=1`` and ``weight=2``, referring to the last snapshot time and their total number of
+interactions, respectively, resulting in an irreversible operation.
 
 .. attention::
 
-   Dynamic edge attributes, e.g., ``time``, are not preserved when converting multigraphs to graphs.
+   The conversion from a temporal multigraph to a simple graph is not always reversible, and
+   dynamic edge attributes, e.g., ``time``, are overwritten when converting multigraphs to graphs.
 
------
 
 Graph formats
 =============

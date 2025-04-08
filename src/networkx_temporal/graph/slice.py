@@ -8,8 +8,8 @@ from ..transform import from_snapshots
 from ..typing import Literal, TemporalGraph
 
 
-def slice(
-    self,
+def _slice(
+    self: TemporalGraph,
     bins: Optional[int] = None,
     attr: Optional[Union[str, list, dict, pd.DataFrame, pd.Series]] = None,
     level: Optional[Literal["edge", "node", "source", "target"]] = None,
@@ -88,10 +88,10 @@ def slice(
         - ``'node'``: Node-level temporal slice. Alias for ``'source'``.
 
         - ``'source'``: Node-level slice with temporality defined by the source node
-          (interaction times are considered as that of the source node).
+          (pairwise interaction time is defined by the source node ``attr``).
 
         - ``'target'``: Node-level slice with temporality defined by the target node
-          (interaction times are considered as that of the target node).
+          (pairwise interaction time is defined by the target node ``attr``).
 
     :param qcut: If ``True``, applies `quantile-based discretization
         <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.qcut.html>`__

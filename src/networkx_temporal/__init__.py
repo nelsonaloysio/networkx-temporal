@@ -5,10 +5,10 @@ Top-level module for the package.
 
 .. autosummary::
 
+   algorithms
    drawing
    graph
    io
-   metrics
    transform
    typing
    utils
@@ -33,6 +33,7 @@ For detailed information on each class and function, please refer to the individ
 """
 
 from .__version__ import __version__
+from .algorithms import *
 from .drawing import *
 from .graph import *
 from .io import *
@@ -45,8 +46,19 @@ __all__ = (
     "TemporalDiGraph",
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
+    "centralization",
     "convert",
     "draw",
+    "degree",
+    "degree_centrality",
+    "degree_centralization",
+    "in_degree",
+    "in_degree_centrality",
+    "in_degree_centralization",
+    "out_degree",
+    "out_degree_centrality",
+    "out_degree_centralization",
+    "all_neighbors",
     "from_events",
     "from_multigraph",
     "from_snapshots",
@@ -55,6 +67,7 @@ __all__ = (
     "is_frozen",
     "is_static_graph",
     "is_temporal_graph",
+    "neighbors",
     "read_graph",
     "temporal_graph",
     "to_multigraph",

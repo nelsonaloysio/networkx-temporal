@@ -59,22 +59,20 @@ def to_static(
 
     :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
     """
-    assert attr is None or sum(TG.size()) == 0 or attr not in next(iter(TG[0].edges(data=True)))[-1],\
-        f"Edge attribute '{attr}' already exists in graph."
+    assert attr is None or type(attr) == str,\
+        "Argument `attr` expects a string."
 
     if is_static_graph(TG):
         return convert(TG, to) if to else TG
-
     if len(TG) == 1:
         return convert(TG[0], to) if to else TG[0]
 
     if directed is None:
         directed = TG.is_directed()
-
     if multigraph is None:
         multigraph = TG.is_multigraph()
 
-    G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
+    G = getattr(nx, f"{'Multi' if multigraph else ''}{f'Di' if directed else ''}Graph")()
 
     list(G.add_nodes_from(nodes)
          for nodes in TG.nodes(data=True))

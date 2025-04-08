@@ -13,7 +13,14 @@
    :caption: Package reference
    :glob:
 
-   api/*
+   api/api
+   api/algorithms
+   api/drawing
+   api/graph
+   api/io
+   api/transform
+   api/typing
+   api/utils
 
 .. toctree::
    :hidden:
@@ -166,7 +173,7 @@ functions accept compressed temporal graphs:
    >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
 
 Both functions support the same `extension formats
-<https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
+<https://networkx.org/documentation/stable/reference/io/index.html>`__
 as in the installed NetworkX library version.
 
 
