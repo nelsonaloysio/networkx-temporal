@@ -16,13 +16,12 @@ def from_events(
     as_view: bool = True,
 ) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.graph.TemporalGraph` from a list of 3-tuples or
-    4-tuples representing edge-level events.
+    Returns :class:`~networkx_temporal.classes.TemporalGraph` from edge-level events. Events are:
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;
 
-    - **4-tuples** (:math:`u, v, t, \\varepsilon`), where :math:`\\varepsilon` is either an
+    - **4-tuples** (:math:`u, v, t, \delta`), where :math:`\delta` is either an
       integer for edge addition (``1``) or deletion (``-1``) event, or a float defining the
       duration of the pairwise interaction (zero for a single snapshot).
 
@@ -42,7 +41,7 @@ def from_events(
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
     """
-    from ..graph import temporal_graph
+    from ..classes import temporal_graph
 
     assert events,\
         "Argument `events` must be a non-empty list."
@@ -98,12 +97,12 @@ def to_events(
     attr: Optional[str] = None,
 ) -> list:
     """
-    Returns a list of 3-tuples or 4-tuples representing edge-level events.
+    Returns a list of edge-level events.
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;
 
-    - **4-tuples** (:math:`u, v, t, \\varepsilon`), where :math:`\\varepsilon` is either an
+    - **4-tuples** (:math:`u, v, t, \delta`), where :math:`\delta` is either an
       integer for edge addition (``1``) or deletion (``-1``) event, or a float defining the
       duration of the interaction (zero for a single snapshot).
 
@@ -112,7 +111,7 @@ def to_events(
         As events are edge-based, node isolates without self-loops are not preserved.
 
     :param TemporalGraph TG: Temporal graph object.
-    :param eps: Defines which additional parameter :math:`\\varepsilon` should be returned.
+    :param eps: Defines which additional parameter :math:`\delta` should be returned.
 
         * If ``None``, returns events as 3-tuples. Default.
 
@@ -124,9 +123,9 @@ def to_events(
 
     :param str attr: Edge attribute to consider when ``eps`` is ``'float'``. If provided, the
         duration of the pairwise interaction is calculated based on the attribute value
-        instead of the number of time steps. Optional.
+        instead of the distance between snapshot indexes. Optional.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
     eps = EPSILON.get(eps, eps)
 
@@ -137,7 +136,7 @@ def to_events(
         f"Argument `eps` must be either `int` or `float` if provided."
     assert attr is None or type(attr) == str,\
         f"Argument `attr` must be a string if provided."
-    assert attr is None or not any(TG.is_multigraph(on_each=True)),\
+    assert attr is None or not any(TG.is_multigraph()),\
         "Edge attributes are not supported when converting multigraphs to events; " \
         "consider calling the `slice` method or converting it with `from_multigraph` beforehand."
     # Filtered (frozen) multigraphs produce inconsistent results. [networkx/networkx#7724]

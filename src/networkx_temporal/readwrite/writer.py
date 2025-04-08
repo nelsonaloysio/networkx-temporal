@@ -6,7 +6,7 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
-from .io import _get_filepath, _get_filename, _get_format, _get_format_ext, _get_function
+from .readwrite import _get_filepath, _get_filename, _get_format, _get_format_ext, _get_function
 from ..typing import Literal, StaticGraph, TemporalGraph
 from ..utils import is_static_graph, is_temporal_graph
 
@@ -31,13 +31,13 @@ def write_graph(
     **kwargs
 ) -> Union[bytes, None]:
     """
-    Writes a :class:`~networkx_temporal.graph.TemporalGraph` to a compressed
-    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
+    Writes a :class:`~networkx_temporal.classes.TemporalGraph` to file or binary object.
 
-    If the object contains more than one snapshot, such as after calling
-    :func:`~networkx_temporal.graph.TemporalGraph.slice`, this function writes a single ZIP archive,
-    in which each file refers to a snapshot. Graph files are saved as ``{name}_{t}.{ext}``,
-    where ``t`` is their snapshot index and ``ext`` is their extension format.
+    If the temporal graph contains more than one snapshot, such as after calling
+    :func:`~networkx_temporal.classes.TemporalGraph.slice`, a compressed
+    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__
+    is created in which each graph file refers to a snapshot. Graph files are saved as
+    ``{name}_{t}.{ext}``, where ``t`` is their snapshot index and ``ext`` is the extension format.
 
     .. rubric:: Example
 
@@ -53,10 +53,10 @@ def write_graph(
     .. seealso::
 
         The latest `read and write documentation
-        <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
+        <https://networkx.org/documentation/stable/reference/io/index.html>`__
         from NetworkX for a list of supported formats.
 
-    :param TG: :class:`~networkx_temporal.graph.TemporalGraph` to write.
+    :param TG: :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param object file: Binary file-like object or string containing path to ZIP file. Optional. If
         ``None`` (default), returns content as bytes.
     :param frmt: Extension format or callable function to write graphs with. If unset and ``file``

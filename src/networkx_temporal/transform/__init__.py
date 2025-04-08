@@ -8,11 +8,11 @@ Transform data between different temporal graph representations.
    from_events
    from_snapshots
    from_static
-   from_unified
+   from_unrolled
    to_events
    to_snapshots
    to_static
-   to_unified
+   to_unrolled
 
 .. rubric:: Functions
 """
@@ -20,15 +20,15 @@ Transform data between different temporal graph representations.
 from .events import from_events, to_events
 from .snapshots import from_snapshots, to_snapshots
 from .static import from_static, to_static
-from .unified import from_unified, to_unified
+from .unrolled import from_unrolled, to_unrolled
 
 __all__ = (
     "from_events",
     "from_snapshots",
     "from_static",
-    "from_unified",
+    "from_unrolled",
     "to_events",
     "to_snapshots",
     "to_static",
-    "to_unified",
+    "to_unrolled",
 )

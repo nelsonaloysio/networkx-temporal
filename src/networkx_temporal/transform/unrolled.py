@@ -7,21 +7,20 @@ from ..typing import StaticGraph, TemporalGraph
 from ..utils.convert import convert, FORMATS
 
 
-def from_unified(UTG: StaticGraph) -> TemporalGraph:
+def from_unrolled(UTG: StaticGraph) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.graph.TemporalGraph` from unified temporal graph.
+    Returns :class:`~networkx_temporal.classes.TemporalGraph` from an unrolled graph.
 
-    Note that the UTG must be a valid unified temporal graph, i.e., it must contain
-    temporal nodes in the format ``{name}_{t}``, where ``name`` is the original label
-    and ``t`` is a non-negative integer.
+    Unrolled graphs are a static representation of temporal networks, where each node is suffixed
+    with its temporal index (e.g., ``'a_0'``) and inter-slice edges are added to connect copies of
+    the same node at different time steps (e.g., ``'a_0'`` and ``'a_1'``), resulting in increased
+    order and size.
 
-    .. seealso::
+    .. attention::
 
-        The `Convert and transform → Graph representations
-        <../examples/convert.html#graph-representations>`__
-        page for details and examples.
+        Dynamic graph-level attributes are not preserved in this representation of temporal graphs.
 
-    :param UTG: Unified temporal graph.
+    :param UTG: Unrolled temporal graph.
     """
     temporal_nodes = {}
 
@@ -29,7 +28,7 @@ def from_unified(UTG: StaticGraph) -> TemporalGraph:
         t = node.rsplit("_", 1)[-1]
 
         assert t.isdigit(),\
-            f"Unified temporal graph (UTG) contains non-temporal nodes ('{node}')."
+            f"Unrolled temporal graph (UTG) contains non-temporal nodes ('{node}')."
 
         temporal_nodes[t] = temporal_nodes.get(t, []) + [node]
 
@@ -42,7 +41,7 @@ def from_unified(UTG: StaticGraph) -> TemporalGraph:
     ])
 
 
-def to_unified(
+def to_unrolled(
     TG: TemporalGraph,
     to: Optional[FORMATS] = None,
     add_couplings: bool = True,
@@ -50,14 +49,14 @@ def to_unified(
     relabel_nodes: Optional[Union[dict, list]] = None
 ) -> StaticGraph:
     """
-    Returns a unified temporal graph.
+    Returns an unrolled temporal graph.
 
-    A unified temporal graph is a single graph containing all the nodes and edges of its
+    An unrolled temporal graph is a single graph containing all the nodes and edges of its
     snapshots, plus additional time-adjacent node copies and edge couplings connecting them.
 
     .. seealso::
 
-        The `Examples → Convert and transform → Unified temporal graph
+        The `Examples → Convert and transform → Unrolled temporal graph
         <../examples/convert.html#tg-utg>`__
         page for an example.
 
@@ -77,7 +76,7 @@ def to_unified(
 
         - **dictionary**: ``{"a": "a_0", "b": "b_0", "c": "c_2"}``
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
     T = range(len(TG))
     order = TG.temporal_order()
@@ -125,7 +124,7 @@ def to_unified(
             "node_index"
         )
 
-    # Avoid using last snapshot's name for the unified graph.
+    # Avoid using last snapshot's name for the unrolled graph.
     UTG.name = f"{f'{TG.name}' if TG.name else 'UTG'} ("\
                f"t={len(TG)}, "\
                f"node_copies={UTG.order()-order}, "\

@@ -8,8 +8,8 @@ from ..transform import from_snapshots
 from ..typing import Literal, TemporalGraph
 
 
-def slice(
-    self,
+def _slice(
+    self: TemporalGraph,
     bins: Optional[int] = None,
     attr: Optional[Union[str, list, dict, pd.DataFrame, pd.Series]] = None,
     level: Optional[Literal["edge", "node", "source", "target"]] = None,
@@ -54,7 +54,7 @@ def slice(
        TemporalGraph (t=2) with 3 nodes and 2 edges
 
     Calling this method from the returned object, now with ``bins=1``, will
-    :func:`~networkx_temporal.graph.TemporalGraph.flatten` the graph:
+    :func:`~networkx_temporal.classes.TemporalGraph.flatten` the graph:
 
     .. code-block:: python
 
@@ -63,8 +63,8 @@ def slice(
 
        TemporalGraph (t=1) with 3 nodes and 2 edges
 
-    Note that a :class:`~networkx_temporal.graph.TemporalMultiGraph` or
-    :class:`~networkx_temporal.graph.TemporalMultiDiGraph` object is required to store multiple edges
+    Note that a :class:`~networkx_temporal.classes.TemporalMultiGraph` or
+    :class:`~networkx_temporal.classes.TemporalMultiDiGraph` object is required to store multiple edges
     among pairs and allow many interactions between the same nodes.
 
     .. seealso::
@@ -88,10 +88,10 @@ def slice(
         - ``'node'``: Node-level temporal slice. Alias for ``'source'``.
 
         - ``'source'``: Node-level slice with temporality defined by the source node
-          (interaction times are considered as that of the source node).
+          (pairwise interaction time is defined by the source node ``attr``).
 
         - ``'target'``: Node-level slice with temporality defined by the target node
-          (interaction times are considered as that of the target node).
+          (pairwise interaction time is defined by the target node ``attr``).
 
     :param qcut: If ``True``, applies `quantile-based discretization
         <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.qcut.html>`__

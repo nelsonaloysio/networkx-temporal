@@ -11,13 +11,11 @@ from networkx_temporal.typing import Literal
 from networkx_temporal.utils.convert import FORMATS
 
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-LOG_LEVELS = Literal["debug", "info", "warning", "error", "critical"]
+LOG_LEVELS = Literal
 
 
-def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) -> None:
-    if log_level is not None:
-        log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
-
+def test_networkx_temporal(test_convert: bool = False) -> None:
+    """ Test networkx-temporal package. """
     TG = tx.temporal_graph(directed=True, multigraph=True)
     assert TG.is_directed()
     assert TG.is_multigraph()
@@ -43,20 +41,33 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     TG = TG.slice(attr="time")
     order = TG.order()
     size = TG.size()
+    assert len(TG.flatten()) == 1
     assert len(TG) == 4
     assert len(TG.slice(bins=2)) == 2
     assert TG.order() == [2, 3, 4, 4]
     assert TG.size() == [1, 2, 3, 3]
-    assert TG.temporal_order() == 6
-    assert TG.total_order() == 13
-    assert TG.temporal_size() == TG.total_size() == 9
-    assert TG.temporal_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
-    assert TG.temporal_degree("a") == 4
-    assert TG.temporal_neighbors("c") == ["b"]
-    assert not TG.to_undirected().is_directed()
+    assert TG.temporal_order() == TG.order(copies=False) == 6
+    assert TG.temporal_size() == TG.size(copies=False) == 8
+    assert TG.total_order() == TG.order(copies=True) == 13
+    assert TG.total_size() == TG.size(copies=True) == 9
+    assert TG.total_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
+    assert TG.total_degree("a") == 4
+    assert TG.total_in_degree("a") == 1
+    assert TG.total_out_degree("a") == 3
+    assert tx.degree_centrality(TG, "a") == 0.8
+    assert tx.degree_centralization(TG) == [0, 1.0, 0.3333333333333333, 1.0]
+    assert list(TG.neighbors("c")) == [[], ['b'], [], []]
+    assert list(tx.neighbors(TG, "c")) == ["b"]
     assert TG.to_directed().is_directed()
+    assert not TG.to_undirected().is_directed()
     assert order == TG.order()
     assert size == TG.size()
+
+    # TG.copy()
+    TG_ = TG.copy()
+    TG_[-1].add_edge("g", "h")
+    assert TG_.order()[-1] == TG.order()[-1] + 2
+    assert TG_.size()[-1] == TG.size()[-1] + 1
 
     # TG -> path -> TG
     log.info("TG -> path -> TG")
@@ -120,17 +131,18 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
 
     # TG -> UTG -> TG
     log.info("TG -> UTG -> TG")
-    UTG = TG.to_unified()
-    TG_ = tx.from_unified(UTG)
+    UTG = TG.to_unrolled()
+    TG_ = tx.from_unrolled(UTG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
 
     # {TG,G} -> pkg
-    for pkg in [pkg for pkg in FORMATS.__args__ if pkg in convert or "all" in convert]:
-        log.info("TG -> %s", pkg)
-        tx.convert(TG, to=pkg)
-        log.info("G -> %s", pkg)
-        tx.convert(G, to=pkg)
+    if test_convert:
+        for pkg in FORMATS.__args__:
+            log.info("TG -> %s", pkg)
+            tx.convert(TG, to=pkg)
+            log.info("G -> %s", pkg)
+            tx.convert(G, to=pkg)
 
     print("All tests passed!")
     remove("temporal-graph.graphml.zip")
@@ -140,15 +152,19 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument("--log-level",
-                        choices=LOG_LEVELS.__args__,
+                        choices=["debug", "info", "warning", "error", "critical"],
+                        default="info",
                         help="Set the logging level.")
 
     parser.add_argument("--convert",
-                        default=[],
-                        dest="convert",
-                        nargs="+",
-                        help="Perform conversion tests for specified (or 'all') packages.")
+                        action="store_true",
+                        dest="test_convert",
+                        help="Perform conversion tests to other packages.")
 
     args = parser.parse_args()
+    log_level = args.__dict__.pop("log_level")
+
+    if log_level is not None:
+        log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
 
     test_networkx_temporal(**vars(args))

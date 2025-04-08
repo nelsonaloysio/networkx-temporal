@@ -10,7 +10,7 @@ from ..utils.convert import convert, FORMATS
 
 def from_static(G: StaticGraph) -> TemporalGraph:
     """
-    Returns :class:`~networkx_temporal.graph.TemporalGraph` from a static graph.
+    Returns :class:`~networkx_temporal.classes.TemporalGraph` from a static graph.
 
     .. seealso::
 
@@ -44,7 +44,7 @@ def to_static(
 
     .. seealso::
 
-        The :func:`~networkx_temporal.graph.TemporalGraph.to_unified` method for a static
+        The :func:`~networkx_temporal.classes.TemporalGraph.to_unrolled` method for a static
         representation allowing dynamic node attributes.
 
     :param TemporalGraph TG: Temporal graph object.
@@ -57,24 +57,22 @@ def to_static(
         Optional.
     :param attr: Edge attribute name to store time. Optional.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
-    assert attr is None or sum(TG.size()) == 0 or attr not in next(iter(TG[0].edges(data=True)))[-1],\
-        f"Edge attribute '{attr}' already exists in graph."
+    assert attr is None or type(attr) == str,\
+        "Argument `attr` expects a string."
 
     if is_static_graph(TG):
         return convert(TG, to) if to else TG
-
     if len(TG) == 1:
         return convert(TG[0], to) if to else TG[0]
 
     if directed is None:
         directed = TG.is_directed()
-
     if multigraph is None:
         multigraph = TG.is_multigraph()
 
-    G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
+    G = getattr(nx, f"{'Multi' if multigraph else ''}{f'Di' if directed else ''}Graph")()
 
     list(G.add_nodes_from(nodes)
          for nodes in TG.nodes(data=True))

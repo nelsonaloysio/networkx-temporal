@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
@@ -15,7 +15,7 @@ def to_snap(
     """
     Convert from NetworkX to `SNAP <https://snap.stanford.edu/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param node_id: Attribute key to use as node identifier. Optional. Default is ``'id'``.
     :param node_attrs: Boolean or list of node attributes to include in the conversion.

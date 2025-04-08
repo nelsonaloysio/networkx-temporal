@@ -1,14 +1,14 @@
 from typing import Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
 def to_stellargraph(G: Union[TemporalGraph, StaticGraph, list], *args, **kwargs):
     """
-    Convert from NetworkX to `StellarGraph <https://stellargraph.readthedocs.io/>`__.
+    Convert from NetworkX to `StellarGraph <https://stellargraph.readthedocs.readwrite/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
@@ -17,7 +17,7 @@ def to_stellargraph(G: Union[TemporalGraph, StaticGraph, list], *args, **kwargs)
 
     :note: Wrapper function for
         `stellargraph.StellarGraph.from_networkx
-        <https://stellargraph.readthedocs.io/en/latest/api.html#stellargraph.StellarGraph.from_networkx>`__.
+        <https://stellargraph.readthedocs.readwrite/en/latest/api.html#stellargraph.StellarGraph.from_networkx>`__.
     """
     import stellargraph as sg
 

@@ -1,14 +1,14 @@
 from typing import Optional, Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
 def to_dynetx(G: Union[TemporalGraph, StaticGraph, list], attr: Optional[str] = None, **kwargs):
     """
-    Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.io/>`__.
+    Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.readwrite/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param attr: Attribute name for the temporal edges. Optional.
     :param kwargs: Keyword arguments for the DyNetX graph object.
