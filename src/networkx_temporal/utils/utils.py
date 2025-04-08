@@ -51,28 +51,25 @@ def from_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph
     return TG
 
 
-def is_frozen(G: Union[TemporalGraph, StaticGraph], on_each: bool = False) -> bool:
+def is_frozen(TG: Union[TemporalGraph, StaticGraph]) -> bool:
     """
     Returns ``True`` if graph is frozen, ``False`` otherwise.
 
     A frozen graph is immutable, meaning that nodes and edges cannot be added or removed.
     Calling ``copy`` on a frozen graph returns a (mutable) deep copy of the graph object.
 
-    Obtains the value from the first snapshot only, unless ``on_each=True``.
-
-    :param object G: :class:`~networkx_temporal.graph.TemporalGraph` or static NetworkX graph object.
-    :param bool on_each: If ``True``, checks all snapshots for the graph type.
+    :param object TG: A :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
     """
-    assert is_temporal_graph(graph) or is_static_graph(TG),\
+    assert is_temporal_graph(TG) or is_static_graph(TG),\
         "Argument `graph` must be a temporal graph or a static graph."
 
-    if is_static_graph(graph):
-        return nx.is_frozen(graph)
+    if is_static_graph(TG):
+        return nx.is_frozen(TG)
 
-    return [nx.is_frozen(G) for G in graph] if on_each else nx.is_frozen(graph[0])
+    return [nx.is_frozen(G) for G in TG]
 
 
-def is_static_graph(G: Any) -> bool:
+def is_static_graph(obj: Any) -> bool:
     """
     Returns ``True`` if object is a static graph, ``False`` otherwise.
 
@@ -82,12 +79,12 @@ def is_static_graph(G: Any) -> bool:
     `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__,
     `MultiDiGraph <https://networkx.org/documentation/stable/reference/classes/multidigraph.html>`__.
 
-    :param G: Object to check.
+    :param obj: Object to check.
     """
-    return not is_temporal_graph(G) and isinstance(G, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+    return not is_temporal_graph(obj) and isinstance(obj, (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
 
 
-def is_temporal_graph(G: Any) -> bool:
+def is_temporal_graph(obj: Any) -> bool:
     """
     Returns ``True`` if object is a temporal graph, ``False`` otherwise.
 
@@ -97,10 +94,10 @@ def is_temporal_graph(G: Any) -> bool:
     :class:`~networkx_temporal.graph.TemporalMultiGraph`,
     :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
 
-    :param G: Object to check.
+    :param obj: Object to check.
     """
-    from ..graph import TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
-    return isinstance(G, (TemporalBase, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
+    from ..graph import TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
+    return isinstance(obj, (TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
 
 
 def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:
@@ -148,5 +145,6 @@ def _from_multigraph(G: nx.MultiGraph) -> StaticGraph:
 def _to_multigraph(G: nx.MultiGraph) -> StaticGraph:
     """ Returns a graph object from a multigraph. """
     H = getattr(nx, f"Multi{f'Di' if G.is_directed() else ''}Graph")()
+    H.add_nodes_from(G.nodes(data=True))
     H.add_edges_from(G.edges(data=True))
     return H

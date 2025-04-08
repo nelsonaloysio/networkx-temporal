@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 

@@ -15,12 +15,21 @@ def temporal_graph(
     `empty_graph <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.empty_graph.html>`__
     from NetworkX.
 
-    This is a factory method for temporal graphs. It returns a
+    This is a factory function for temporal graphs. It returns a
     :class:`~networkx_temporal.graph.TemporalGraph`,
     :class:`~networkx_temporal.graph.TemporalDiGraph`,
     :class:`~networkx_temporal.graph.TemporalMultiGraph`, or
     :class:`~networkx_temporal.graph.TemporalMultiDiGraph`
     object, depending on the choice of parameters.
+
+    .. hint::
+
+       Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
+       representing a snapshot in time. Unless dynamic node attributes are required, it is
+       recommended to use the :func:`~networkx_temporal.graph.TemporalGraph.slice` method instead,
+       allowing to create less resource-demanding graph `views
+       <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+       on the fly.
 
     .. rubric:: Example
 

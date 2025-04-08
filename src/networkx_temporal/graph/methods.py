@@ -1,92 +1,191 @@
+from functools import reduce
 from typing import Any, Optional
+
+import networkx as nx
 
 from ..typing import TemporalGraph
 
 
-def _copy(self: TemporalGraph) -> TemporalGraph:
+def all_neighbors(self: TemporalGraph, node: Any) -> iter:
     """
-    Returns a deep copy of the temporal graph.
+    Returns iterator of node neighbors for each snapshot. Does not consider edge direction.
 
-    Overrides the default behavior of ``networkx.Graph.copy`` to return a
-    :class:`~networkx_temporal.graph.TemporalGraph` object instead of a list of graph objects.
-
-    :meta private:
+    :param node: Node to get neighbors for.
     """
-    self.data = [G.copy() for G in self]
-    return self
+    yield from list(list(nx.all_neighbors(G, node)) if G.has_node(node) else [] for G in self)
 
 
-def _is_directed(self: TemporalGraph, on_each: bool = False) -> bool:
+def neighbors(self: TemporalGraph, node: Any) -> iter:
     """
-    Returns ``True`` if the graph is directed, ``False`` otherwise.
+    Returns iterator of node neighbors for each snapshot. Considers edge direction.
 
-    Obtains the value from the first snapshot only, unless ``on_each=True``.
-
-    :param self: Temporal graph object.
-    :param bool on_each: If ``True``, checks all snapshots for the graph type.
+    :param node: Node to get neighbors for.
     """
-    return [G.is_directed() for G in self] if on_each else self[0].is_directed()
+    yield from list(list(G.neighbors(node)) if G.has_node(node) else [] for G in self)
 
 
-def _is_multigraph(self: TemporalGraph, on_each: bool = False) -> bool:
+def order(self: TemporalGraph, copies: Optional[bool] = None) -> int:
     """
-    Returns ``True`` if the graph is a multigraph, ``False`` otherwise.
+    Returns number of nodes in the temporal graph.
 
-    Obtains the value from the first snapshot only, unless ``on_each=True``.
+    The argument ``copies`` determines how multiple nodes are counted:
 
-    :param self: Temporal graph object.
-    :param bool on_each: If ``True``, checks all snapshots for the graph type.
+    - If ``True``, returns the sum of the number of nodes in each snapshot.
+    - If ``False``, returns the number of unique nodes across all snapshots.
+    - If ``None``, returns the number of nodes in each snapshot (default).
+
+    The order of a temporal graph is therefore equivalent to:
+
+    .. math::
+
+        \\text{order}(\\mathcal{G}) =
+        \\begin{cases}
+            \\bigcup_{G \\in \\mathcal{G}} |V| & \\text{if } \\texttt{copies} \\text{ is } \\texttt{False} \\\\
+            \\sum_{G \\in \\mathcal{G}} |V| & \\text{if } \\texttt{copies} \\text{ is } \\texttt{True} \\\\
+            \\forall_{G \\in \\mathcal{G}} \\, |V| & \\text{otherwise,}
+        \\end{cases}
+
+    where
+    :math:`\\mathcal{G}` is a temporal graph,
+    :math:`G` is a snapshot,
+    and :math:`|V|` is its number of nodes.
+
+    .. note::
+
+        Matches the length of :func:`~networkx_temporal.graph.TemporalGraph.temporal_nodes`
+        if ``copies=False`` (consider each node once).
+
+    :param copies: If ``True``, consider multiple instances of the same node in different
+        snapshots. If ``False``, consider unique nodes. Optional.
     """
-    return [G.is_multigraph() for G in self] if on_each else self[0].is_multigraph()
+    if copies is None:
+        return [G.order() for G in self]
+    if copies is True:
+        return sum(G.order() for G in self)
+    if copies is False:
+        return len(set(self.temporal_nodes()))
+    raise TypeError(f"Argument 'copies' must be of type bool, received: {type(copies)}.")
 
 
-def _neighbors(self: TemporalGraph, node: Any) -> list:
+def size(self: TemporalGraph, copies: Optional[bool] = None) -> int:
     """
-    Returns neighbors of a node for each snapshot.
+    Returns number of edges in the temporal graph.
 
-    Overrides the default behavior of ``networkx.Graph.neighbors`` to return an empty
-    list if the node is not present in the snapshot, instead of raising an exception.
+    The argument ``copies`` determines how multiple edges are counted:
 
-    :param node: Node in the temporal graph.
+    - If ``True``, returns the sum of the number of edges in each snapshot.
+    - If ``False``, returns the number of unique edges across all snapshots.
+    - If ``None``, returns the number of edges in each snapshot (default).
 
-    :meta private:
+    The size of a temporal graph is therefore equivalent to:
+
+    .. math::
+
+        \\text{size}(\\mathcal{G}) =
+        \\begin{cases}
+            \\sum_{G \\in \\mathcal{G}} |E| & \\text{if } \\texttt{copies} \\text{ is } \\texttt{True} \\\\
+            \\bigcup_{G \\in \\mathcal{G}} |E| & \\text{if } \\texttt{copies} \\text{ is } \\texttt{False} \\\\
+            \\forall_{G \\in \\mathcal{G}} \\, |E| & \\text{otherwise,}
+        \\end{cases}
+
+    where
+    :math:`\\mathcal{G}` is a temporal graph,
+    :math:`G` is a snapshot,
+    and :math:`|E|` is its number of edges.
+
+    .. note::
+
+        Matches the length of :func:`~networkx_temporal.graph.TemporalGraph.temporal_edges`
+        if ``copies=True`` (consider all node interactions).
+
+    :param copies: If ``True``, consider multiple instances of the same edge in different
+        snapshots. If ``False``, consider unique edges. Optional.
     """
-    return list(list(G.neighbors(node)) if G.has_node(node) else [] for G in self)
+    if copies is None:
+        return [G.size() for G in self]
+    if copies is True:
+        return sum(G.size() for G in self)
+    if copies is False:
+        return len(set(self.temporal_edges()))
+    raise TypeError(f"Argument 'copies' must be of type bool, received: {type(copies)}.")
 
 
-def _to_directed(self: TemporalGraph, as_view: Optional[bool] = True) -> TemporalGraph:
+def temporal_edges(self: TemporalGraph, copies: Optional[bool] = None, *args, **kwargs) -> list:
     """
-    Returns directed version of temporal graph.
+    Returns list of edges (interactions) in all snapshots.
 
-    :param self: Temporal graph object.
-    :param as_view: If ``False``, returns copies instead of views of the original graph.
-        Default is ``True``.
+    :param copies: If ``True``, consider multiple instances of the same edge in different
+        snapshots. Default is ``True``.
+    :param args: Additional arguments to pass to the NetworkX graph method.
+    :param kwargs: Additional keyword arguments to pass to the NetworkX graph method.
     """
-    assert as_view is None or type(as_view) == bool,\
-        "Argument 'as_view' must be either True or False."
-
-    from . import temporal_graph
-    TG = temporal_graph(directed=True, multigraph=self.is_multigraph())
-    TG.data = [G.to_directed(as_view=as_view) for G in self]
-    TG.name = self.name
-    TG.names = self.names
-    return TG
+    if copies is False:
+        return reduce(lambda x, y: x.union(y), [set(G.edges(*args, **kwargs)) for G in self])
+    return list(e for G in self for e in G.edges(*args, **kwargs))
 
 
-def _to_undirected(self: TemporalGraph, as_view: Optional[bool] = True) -> TemporalGraph:
+def temporal_nodes(self: TemporalGraph, copies: Optional[bool] = None, *args, **kwargs) -> list:
     """
-    Returns undirected version of temporal graph.
+    Returns list of nodes in all snapshots.
 
-    :param self: Temporal graph object.
-    :param as_view: If ``False``, returns copies instead of views of the original graph.
-        Default is ``True``.
+    :param copies: If ``True``, consider multiple instances of the same node in different
+        snapshots. Default is ``False``.
+    :param args: Additional arguments to pass to the NetworkX graph method.
+    :param kwargs: Additional keyword arguments to pass to the NetworkX graph method.
     """
-    assert as_view is None or type(as_view) == bool,\
-        "Argument 'as_view' must be either True or False."
+    copies = False if copies is None else copies
+    if copies is False:
+        return reduce(lambda x, y: x.union(y), [set(G.nodes(*args, **kwargs)) for G in self])
+    return list(e for G in self for e in G.nodes(*args, **kwargs))
 
-    from . import temporal_graph
-    TG = temporal_graph(directed=False, multigraph=self.is_multigraph())
-    TG.data = [G.to_undirected(as_view=as_view) for G in self]
-    TG.name = self.name
-    TG.names = self.names
-    return TG
+
+def temporal_order(self: TemporalGraph) -> int:
+    """
+    Return number of unique nodes in all snapshots.
+    Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.order` with ``copies=False``.
+
+    .. seealso::
+
+        The :func:`~networkx_temporal.graph.TemporalGraph.total_order` method for the sum of
+        the number of nodes in all snapshots.
+    """
+    return self.order(copies=False)
+
+
+def temporal_size(self: TemporalGraph) -> int:
+    """
+    Return number of unique edges in all snapshots.
+    Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.size` with ``copies=False``.
+
+    .. seealso::
+
+        The :func:`~networkx_temporal.graph.TemporalGraph.total_order` method for the sum of
+        the number of edges in all snapshots.
+    """
+    return self.size(copies=False)
+
+
+def total_order(self: TemporalGraph) -> int:
+    """
+    Return sum of nodes from all snapshots.
+    Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.order` with ``copies=True``.
+
+    .. seealso::
+
+        The :func:`~networkx_temporal.graph.TemporalGraph.temporal_order` method for the
+        number of unique nodes in the temporal graph.
+    """
+    return self.order(copies=True)
+
+
+def total_size(self: TemporalGraph) -> int:
+    """
+    Return sum of edges from all snapshots.
+    Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.size` with ``copies=True``.
+
+    .. seealso::
+
+        The :func:`~networkx_temporal.graph.TemporalGraph.temporal_size` method for the
+        number of unique edges in the temporal graph.
+    """
+    return self.size(copies=True)

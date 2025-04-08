@@ -1,31 +1,36 @@
-from __future__ import annotations
-
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable, Optional, Union
+from functools import reduce, wraps
+from typing import Any, Optional, Union
 from warnings import warn
 
 import networkx as nx
 
 from .methods import (
-    _copy,
-    _is_directed,
-    _is_multigraph,
-    _neighbors,
-    _to_directed,
-    _to_undirected
-)
-from .slice import slice
-from ..metrics import (
-    temporal_degree,
-    temporal_in_degree,
-    temporal_out_degree,
-    temporal_neighbors,
-    temporal_nodes,
+    all_neighbors,
+    neighbors,
+    order,
+    size,
     temporal_edges,
+    temporal_nodes,
     temporal_order,
     temporal_size,
     total_order,
-    total_size
+    total_size,
+)
+from .slice import slice
+from .wraps import (
+    copy,
+    degree,
+    in_degree,
+    out_degree,
+    to_directed,
+    to_undirected,
+    wrapper,
+)
+from ..algorithms import (
+    degree as total_degree,
+    in_degree as total_in_degree,
+    out_degree as total_out_degree,
 )
 from ..transform import (
     to_events,
@@ -34,69 +39,72 @@ from ..transform import (
     to_unified
 )
 from ..typing import StaticGraph, TemporalGraph
-from ..utils.convert import convert
+from ..utils import convert
 
 
-class TemporalBase(metaclass=ABCMeta):
+class TemporalABC(metaclass=ABCMeta):
     """
-    Base class for temporal graphs.
+    Abstract base class for temporal graphs.
 
-    This class is not meant to be instantiated directly, but is rather inherited by the classes
+    This class is not meant to be instantiated directly, but rather inherited by the classes
     :class:`~networkx_temporal.graph.TemporalGraph`,
     :class:`~networkx_temporal.graph.TemporalDiGraph`,
     :class:`~networkx_temporal.graph.TemporalMultiGraph`,
     and :class:`~networkx_temporal.graph.TemporalMultiDiGraph`.
     """
-    convert = convert
+    all_neighbors = all_neighbors
+    convert = convert.convert
+    copy = copy
+    degree = degree
+    in_degree = in_degree
+    neighbors = neighbors
+    order = order
+    order = order
+    out_degree = out_degree
+    size = size
+    size = size
     slice = slice
-    temporal_degree = temporal_degree
-    temporal_in_degree = temporal_in_degree
-    temporal_out_degree = temporal_out_degree
-    temporal_neighbors = temporal_neighbors
-    temporal_nodes = temporal_nodes
     temporal_edges = temporal_edges
+    temporal_nodes = temporal_nodes
     temporal_order = temporal_order
     temporal_size = temporal_size
-    total_order = total_order
-    total_size = total_size
-
-    # Static methods; override NetworkX methods.
-    copy = _copy
-    neighbors = _neighbors
-    is_directed = _is_directed
-    is_multigraph = _is_multigraph
-    to_directed = _to_directed
-    to_undirected = _to_undirected
-
-    # Transform methods.
+    to_directed = to_directed
     to_events = to_events
     to_snapshots = to_snapshots
     to_static = to_static
+    to_undirected = to_undirected
     to_unified = to_unified
+    total_degree = total_degree
+    total_in_degree = total_in_degree
+    total_order = total_order
+    total_out_degree = total_out_degree
+    total_size = total_size
 
     @abstractmethod
-    def __init__(self, t: Optional[int] = None, directed: bool = None, multigraph: bool = None):
-        graph = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")
-        self.data = [graph() for _ in range(t or 1)]
-        _wrapper_networkx(self, graph)
+    def __init__(self, t: int, create_using: StaticGraph):
+        self.data = [nx.empty_graph(create_using=create_using) for _ in range(t or 1)]
 
-    def __getitem__(self, t: Union[str, int, slice]) -> StaticGraph:
+        # Inherit methods from NetworkX graph.
+        for name in dir(create_using):
+            if not name.startswith("__") and name not in dir(TemporalABC):
+                try:
+                    setattr(self, name, wrapper(self, name))
+                except AttributeError:  # networkx<2.8.1
+                    warn("NetworkX version <2.8.1: inherited methods will be undocumented.")
+
+    def __getitem__(self, t: Union[str, int, range]) -> StaticGraph:
         """ Returns snapshot from a given interval. """
         assert self.data,\
             "Temporal graph is empty."
-
         assert type(t) != str or self.names,\
             "Temporal graph snapshots are not named."
-
         assert type(t) != int or -len(self) <= t < len(self),\
             f"Received index {t}, but temporal graph has {len(self)} snapshots."
-
         assert type(t) != slice or -len(self) <= (t.start or 0) < (t.stop or len(self)) <= len(self),\
             f"Received slice {t.start, t.stop}, but temporal graph has {len(self)} snapshots."
 
         if type(t) == str:
             return self.data[self.names.index(t)]
-
         if type(t) == int:
             return self.data[t]
 
@@ -119,7 +127,7 @@ class TemporalBase(metaclass=ABCMeta):
                f"{'Multi' if self.is_multigraph() else ''}"\
                f"{'Di' if self.is_directed() else ''}"\
                f"Graph (t={len(self)}) "\
-               f"with {self.temporal_order()} nodes and {self.temporal_size()} edges"
+               f"with {self.order(copies=False)} nodes and {self.size(copies=True)} edges"
 
     @property
     def data(self) -> list:
@@ -190,13 +198,10 @@ class TemporalBase(metaclass=ABCMeta):
         """
         assert names is None or type(names) in (list, tuple),\
             f"Argument 'names' must be a list or tuple, received: {type(names)}."
-
         assert names is None or len(names) == len(self),\
             f"Length of names ({len(names)}) differs from number of snapshots ({len(self)})."
-
         assert names is None or all(type(n) in (str, int) and type(n) == type(names[0]) for n in names),\
             "All elements in names must be either strings or integers."
-
         assert names is None or len(names) == len(set(names)),\
             "All elements in names must be unique."
 
@@ -218,15 +223,50 @@ class TemporalBase(metaclass=ABCMeta):
         Returns ''flattened'' version of temporal graph.
         Equivalent to :func:`~networkx_temporal.graph.TemporalGraph.slice` with ``bins=1``.
 
-        This method differs from :func:`~networkx_temporal.graph.TemporalGraph.to_static` only in the
-        sense that it returns a :class:`~networkx_temporal.graph.TemporalGraph` object with a single
-        snapshot, rather than a static NetworkX graph object.
+        This method differs from :func:`~networkx_temporal.graph.TemporalGraph.to_static` only in
+        the sense that it returns a :class:`~networkx_temporal.graph.TemporalGraph` object with a
+        single snapshot, rather than a static NetworkX graph object.
 
         .. attention::
 
            As each node in a flattened graph is unique, dynamic node attributes are not preserved.
+           Note that parallel edges are not preserved either, unless the graph is a multigraph.
         """
         return self.slice(bins=1)
+
+    def index_edge(self, edge: tuple, interval: Optional[range] = None) -> list:
+        """
+        Returns index of all snapshots in which an edge is present.
+
+        :param edge: Edge to look for.
+        :param interval: Range to consider. Optional. Defaults to all snapshots.
+        """
+        assert interval is None or type(interval) in (range, tuple, list),\
+            "Argument `interval` must be a range of integers."
+
+        if interval is None:
+            interval = range(len(self))
+        elif type(interval) in (tuple, list):
+            interval = range(*interval) or range(interval[0], interval[1]+1)
+
+        return [i for i in (interval or range(len(self))) if self[i].has_edge(*edge)]
+
+    def index_node(self, node: Any, interval: Optional[range] = None) -> list:
+        """
+        Returns index of all snapshots in which a node is present.
+
+        :param node: Node to look for.
+        :param interval: Range to consider. Optional. Defaults to all snapshots.
+        """
+        assert interval is None or type(interval) in (range, tuple, list),\
+            "Argument `interval` must be a range of integers."
+
+        if interval is None:
+            interval = range(len(self))
+        elif type(interval) in (tuple, list):
+            interval = range(*interval) or range(interval[0], interval[1]+1)
+
+        return [i for i in (interval or range(len(self))) if self[i].has_node(node)]
 
     def insert(self, index: int, G: Optional[StaticGraph] = None) -> None:
         """
@@ -243,58 +283,16 @@ class TemporalBase(metaclass=ABCMeta):
 
         assert type(index) == int,\
             f"Argument `index` must be an integer, received: {type(index)}."
-
         assert type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),\
             f"Argument `G` must be a valid NetworkX graph, received: {type(G)}."
-
         assert G.is_directed() == directed,\
             f"Received a{' directed' if G.is_directed() else 'n undirected'} graph, "\
             f"but temporal graph is {'' if directed else 'un'}directed."
-
         assert G.is_multigraph() == multigraph,\
             f"Received a {'multi' if G.is_multigraph() else ''}graph, "\
             f"but temporal graph is {'' if multigraph else 'not '}a multigraph."
 
         self.data.insert(index, G)
-
-    def index_edge(self, edge: tuple, interval: Optional[range] = None) -> list:
-        """
-        Returns index of all snapshots in which an edge is present.
-
-        :param edge: Edge to look for.
-        :param interval: Range to consider. Optional. Defaults to all snapshots.
-            Accepts either a ``range`` or a ``tuple`` of integers.
-        """
-        assert interval is None or type(interval) in (range, tuple),\
-            "Argument `interval` must be a range or tuple of integers."
-
-        if interval is None:
-            interval = range(len(self))
-
-        elif type(interval) == tuple:
-            interval = range(*interval)
-
-        print(edge)
-        return [i for i in (interval or range(len(self))) if self[i].has_edge(*edge)]
-
-    def index_node(self, node: Any, interval: Optional[range] = None) -> list:
-        """
-        Returns index of all snapshots in which a node is present.
-
-        :param node: Node to look for.
-        :param interval: Range to consider. Optional. Defaults to all snapshots.
-            Accepts either a ``range`` or a ``tuple`` of integers.
-        """
-        assert interval is None or type(interval) in (range, tuple),\
-            "Argument `interval` must be a range or tuple of integers."
-
-        if interval is None:
-            interval = range(len(self))
-
-        elif type(interval) == tuple:
-            interval = range(*interval)
-
-        return [i for i in (interval or range(len(self))) if self[i].has_node(node)]
 
     def pop(self, index: Optional[int] = None) -> StaticGraph:
         """
@@ -307,33 +305,20 @@ class TemporalBase(metaclass=ABCMeta):
         self.__getitem__(index or -1)
         return self.data.pop(index or -1)
 
+    @wraps(total_degree)
+    def temporal_degree(self, *args, **kwargs) -> list:
+        warn("`temporal_degree` deprecated in favor of `total_degree`.", DeprecationWarning)
+        return self.total_degree(*args, **kwargs)
+    temporal_degree.__doc__ += "\n:meta private:"
 
-def _decorator_networkx(cls, method: str) -> Callable:
-    """
-    Decorator for static NetworkX graph methods.
+    @wraps(total_in_degree)
+    def temporal_in_degree(self, *args, **kwargs) -> list:
+        warn("`temporal_in_degree` deprecated in favor of `total_in_degree`.", DeprecationWarning)
+        return self.total_in_degree(*args, **kwargs)
+    temporal_in_degree.__doc__ += "\n:meta private:"
 
-    Returns a list of values returned by calling the method on each snapshot in the temporal graph.
-    If all returned values are `None` or a boolean, returns a single element instead of a list.
-    """
-    def func(*args, **kwargs):
-        returns = list(G.__getattribute__(method)(*args, **kwargs) for G in cls)
-        if all(r is None for r in returns):
-            return None
-        if all(r is True for r in returns):
-            return True
-        if all(r is False for r in returns):
-            return False
-        return returns
-    return func
-
-
-def _wrapper_networkx(cls, G: StaticGraph) -> None:
-    """
-    Wrapper for decorating static NetworkX graph methods.
-    """
-    for method in dir(G):
-        if method not in dir(TemporalBase) and not method.startswith("__"):
-            try:
-                cls.__setattr__(method, _decorator_networkx(cls, method))
-            except AttributeError:  # networkx<2.8.1
-                warn("NetworkX version <2.8.1 detected, inherited methods will be undocumented.")
+    @wraps(total_out_degree)
+    def temporal_out_degree(self, *args, **kwargs) -> list:
+        warn("`temporal_out_degree` deprecated in favor of `total_out_degree`.", DeprecationWarning)
+        return self.total_out_degree(*args, **kwargs)
+    temporal_out_degree.__doc__ += "\n:meta private:"

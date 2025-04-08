@@ -63,7 +63,7 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
 
     Convert the `Karate Club
     <https://networkx.org/documentation/stable/auto_examples/graph/plot_karate_club.html>`__
-    graph dataset from NetworkX into a PyTorch Geometric `Data
+    dataset from NetworkX into a PyTorch Geometric `Data
     <https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.Data.html>`__
     object:
 

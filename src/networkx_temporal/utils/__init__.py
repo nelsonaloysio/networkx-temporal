@@ -29,7 +29,7 @@ Utility functions for NetworkX static and temporal graphs.
 .. rubric:: Functions
 """
 
-from .networkx import (
+from .utils import (
     from_multigraph,
     is_frozen,
     is_static_graph,
