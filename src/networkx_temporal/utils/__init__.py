@@ -9,6 +9,7 @@ Utility functions for NetworkX static and temporal graphs.
    is_frozen
    is_static_graph
    is_temporal_graph
+   partitions
    to_multigraph
 
 .. rubric:: Summary - Converters
@@ -34,6 +35,7 @@ from .utils import (
     is_frozen,
     is_static_graph,
     is_temporal_graph,
+    partitions,
     to_multigraph,
 )
 
@@ -42,5 +44,6 @@ __all__ = (
     "is_frozen",
     "is_static_graph",
     "is_temporal_graph",
+    "partitions",
     "to_multigraph",
 )

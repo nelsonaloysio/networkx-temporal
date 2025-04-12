@@ -1,7 +1,7 @@
 """
 Algorithms and metrics for temporal graphs.
 
-.. rubric:: Summary - Graph-level
+.. rubric:: Summary - Graphs
 
 .. autosummary::
 
@@ -9,8 +9,11 @@ Algorithms and metrics for temporal graphs.
    degree_centralization
    in_degree_centralization
    out_degree_centralization
+   modularity
+   multislice_modularity
+   longitudinal_modularity
 
-.. rubric:: Summary - Node-level
+.. rubric:: Summary - Nodes
 
 .. autosummary::
 
@@ -20,10 +23,16 @@ Algorithms and metrics for temporal graphs.
    degree_centrality
    in_degree_centrality
    out_degree_centrality
+   bridging_centrality
+   bridging_coefficient
 
 .. rubric:: Functions
 """
 
+from .bridging import (
+    bridging_centrality,
+    bridging_coefficient,
+)
 from .centrality import (
     degree_centrality,
     in_degree_centrality,
@@ -40,16 +49,26 @@ from .degree import (
     in_degree,
     out_degree,
 )
+from .modularity import (
+    modularity,
+    multislice_modularity,
+    longitudinal_modularity,
+)
 
 __all__ = (
     "centralization",
-    "degree",
-    "degree_centrality",
     "degree_centralization",
-    "in_degree",
-    "in_degree_centrality",
     "in_degree_centralization",
-    "out_degree",
-    "out_degree_centrality",
     "out_degree_centralization",
+    "degree",
+    "in_degree",
+    "out_degree",
+    "degree_centrality",
+    "in_degree_centrality",
+    "out_degree_centrality",
+    "bridging_centrality",
+    "bridging_coefficient",
+    "modularity",
+    "multislice_modularity",
+    "longitudinal_modularity",
 )

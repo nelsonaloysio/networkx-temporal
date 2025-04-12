@@ -85,7 +85,6 @@ def draw_networkx(
     .. code-block:: python
 
         >>> import networkx_temporal as tx
-        >>>
         >>> import matplotlib.pyplot as plt
         >>> import matplotlib.patches as mpatches
         >>>
@@ -407,7 +406,8 @@ def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "lab
     """
     Helper function to get node attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or node attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'labels'``.
     """
@@ -424,7 +424,8 @@ def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edg
     """
     Helper function to get edge attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.graph.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or edge attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'edge_labels'``.
     """

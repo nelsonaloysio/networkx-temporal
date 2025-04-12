@@ -9,12 +9,12 @@ from networkx.classes.reportviews import (
 )
 
 from ..typing import TemporalGraph, StaticGraph, Literal
-from ..utils import is_static_graph
+from ..utils import from_multigraph, is_static_graph
 
 
-def centralization(G: StaticGraph, centrality: Union[list, dict], scalar: Union[int, float] = None) -> float:
+def centralization(centrality: Union[list, dict], scalar: Union[int, float] = None) -> float:
     """
-    Returns graph centralization for each snapshot.
+    Returns centralization of a graph.
 
     Centralization [1]_ is defined as the sum of differences between the most central node's
     centrality and each of the other nodes' centralities, divided by the maximum theoretical sum of
@@ -25,12 +25,42 @@ def centralization(G: StaticGraph, centrality: Union[list, dict], scalar: Union[
 
         C(G) = \\frac
         {\\sum_{i \\in V}\\big(\\text{centrality}_{\\text{max}} - \\text{centrality}(i) \\big)}
-        {\\text{centrality}^\\star},
+        {\\sum_{i \\in V}\\big(\\text{theoretical}_{\\text{max}} - \\text{theoretical}(i) \\big)}
 
-    where :math:`\\text{centrality}_{\\text{max}}` is the maximum centrality of a graph :math:`G`,
+    where
+    :math:`\\text{centrality}_{\\text{max}}` is the maximum node centrality in :math:`G`,
     :math:`\\text{centrality}(i)` is the centrality of node :math:`i \\in V`,
-    and :math:`\\text{centrality}^\\star` is the maximum theoretical sum of values
-    in a similar graph.
+    and :math:`{\\text{theoretical}}_{\\text{max}}` and :math:`{\\text{theoretical}}(i)`
+    refer to node centralities of a theoretical likewise graph for which the sum of differences
+    results in the highest possible ``scalar`` value.
+
+    .. rubric:: Example
+
+    Calculating the degree centralization of a simple graph (no parallel edges, self-loops
+    or isolates):
+
+    .. code-block:: python
+
+        >>> import networkx as nx
+        >>> import networkx_temporal as tx
+        >>>
+        >>> G = nx.Graph()
+        >>> G.add_edges_from([
+        ...     (1, 0),
+        ...     (2, 0),
+        ...     (3, 0),
+        ... ])
+        >>>
+        >>> centrality = G.degree()  # Node degree values.
+        >>> maximum = G.order() - 1  # Highest possible degree.
+        >>> minimum = 1              # Minimum possible degree.
+        >>>
+        >>> # Highest theoretical sum of values in a simple star-like graph.
+        >>> scalar = sum(maximum - minimum for n in range(G.order()-1))
+        >>>
+        >>> tx.centralization(centrality=centrality, scalar=scalar)
+
+        1.0
 
     .. seealso::
 
@@ -44,7 +74,7 @@ def centralization(G: StaticGraph, centrality: Union[list, dict], scalar: Union[
        doi: `10.1016/0378-8733(78)90021-7 <https://doi.org/10.1016/0378-8733(78)90021-7>`__
 
     :param centrality: List or dictionary of node centralities.
-    :param scalar: Scalar value for normalization. Optional.
+    :param scalar: Maximum theoretical sum of values. Optional.
     """
     if isinstance(centrality, (DegreeView, DiDegreeView, MultiDegreeView, DiMultiDegreeView)):
         centrality = [d for n, d in centrality]
@@ -66,33 +96,55 @@ def centralization(G: StaticGraph, centrality: Union[list, dict], scalar: Union[
     return float(centralization)
 
 
-def degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: Optional[bool] = None) -> float:
+def degree_centralization(
+    TG: Union[TemporalGraph, StaticGraph],
+    loops: Optional[bool] = None,
+    isolates: Optional[bool] = None,
+) -> float:
     """
-    Returns degree centralization for each snapshot.
+    Returns degree centralization of a graph.
 
-    Centralization [1]_ is the sum of differences between the centrality of the most central node
-    and each of the other nodes' centralities, divided by the maximum theoretical
-    sum of values in a graph with the same properties.
-    In case of degree centralization [2]_, this corresponds to a `star graph
-    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__,
-    i.e., a graph with one node connected to all other nodes. The maximum degree of a star
-    graph without self-loops is equal to :math:`|V|-1`, where :math:`|V|` is the
-    :func:`~networkx_temporal.graph.TemporalGraph.order` of the graph.
+    The degree centralization [2]_ of a graph is the sum of differences between the centrality of
+    the most central node and each of the other nodes' centralities, divided by the maximum
+    theoretical sum of values in a graph with the same order, size, and edge directionality,
+    i.e., a `star graph
+    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__.
 
-    The degree centralization :math:`C_\\text{deg}` of a graph :math:`G` without self-loops
-    corresponds to:
+    The degree centralization :math:`C_\\text{deg}` of a simple graph without self-loops
+    :math:`G` corresponds to:
 
     .. math::
 
         C_\\text{deg}(G) = \\frac{\\sum_{i \\in V}
         \\big(\\text{deg}_{\\text{max}} - \\text{deg}(i) \\big)}
-        {(|V|-1)(\\text{deg}^\\star_{\\text{max}}-1)},
+        {(|V|-1)(\\text{deg}^\\star_{\\text{max}} - 1)},
 
-    where :math:`\\text{deg}_{\\text{max}}` is the highest degree in :math:`G`,
+    where :math:`|V|` is the number of nodes,
+    :math:`\\text{deg}_{\\text{max}}` is the highest node degree in :math:`G`,
     :math:`\\text{deg}(i)` is the degree of node :math:`i \\in V`,
-    :math:`|V|` is the number of nodes,
-    and :math:`\\text{deg}^\\star_{\\text{max}}` is the maximum node degree in a
-    star graph.
+    and :math:`\\text{deg}^\\star_{\\text{max}} = |V|-1`
+    is the maximum theoretical node degree.
+
+    .. rubric:: Example
+
+    .. code-block:: python
+
+        >>> import networkx as nx
+        >>> import networkx_temporal as tx
+        >>>
+        >>> TG = tx.TemporalGraph(2)
+        >>> TG[0].add_edges_from([
+        ...     (0, 1),
+        ...     (0, 2),
+        ... ])
+        >>> TG[1].add_edges_from([
+        ...     (0, 1),
+        ...     (1, 2),
+        ...     (2, 0),
+        ... ])
+        >>> tx.degree_centralization(TG)
+
+        [1.0, 0.75]
 
     .. seealso::
 
@@ -105,39 +157,42 @@ def degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: Opti
        (package version 1.3.5).
 
     :param object TG: A :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
-    :param bool selfloops: If ``True``, self-loops are considered in the calculation.
-        If ``False``, self-loops are ignored. Default is ``None`` (auto-detect).
+    :param bool loops: If ``True``, self-loops are considered in the calculation.
+        Defaults to ``False``.
+    :param bool isolates: If ``True``, node isolates are considered in the calculation.
+        Defaults to ``False``.
     """
-    return _degree_centralization(TG, "degree", selfloops=selfloops)
+    return _degree_centralization(TG, "degree", loops=loops, isolates=isolates)
 
 
-def in_degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: Optional[bool] = None) -> float:
+def in_degree_centralization(
+    TG: Union[TemporalGraph, StaticGraph],
+    loops: Optional[bool] = None,
+    isolates: Optional[bool] = None,
+) -> float:
     """
-    Returns in-degree centralization for each snapshot.
+    Returns in-degree centralization of a graph.
 
-    Centralization [1]_ is the sum of differences between the centrality of the most central node
-    and each of the other nodes' centralities, divided by the maximum theoretical
-    sum of values in a graph with the same properties.
-    In case of in-degree centralization [2]_, this corresponds to a `star graph
-    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__,
-    i.e., a graph with one node connected to all other nodes. The maximum in-degree of a star
-    graph without self-loops is equal to :math:`|V|-1`, where :math:`|V|` is the
-    :func:`~networkx_temporal.graph.TemporalGraph.order` of the graph.
+    The degree centralization [2]_ of a graph is the sum of differences between the centrality of
+    the most central node and each of the other nodes' centralities, divided by the maximum
+    theoretical sum of values in a graph with the same order, size, and edge directionality,
+    i.e., a `star graph
+    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__.
 
-    The in-degree centralization :math:`C_\\text{in}` of a graph :math:`G` without self-loops
-    corresponds to:
+    The in-degree centralization :math:`C_\\text{deg}` of a simple graph without self-loops
+    :math:`G` corresponds to:
 
     .. math::
 
         C_\\text{in}(G) = \\frac{\\sum_{i \\in V}
-        \\big(\\text{deg}_{\\text{in max}} - \\text{deg}_{\\text{in}}(i) \\big)}
-        {(|V|-1)(\\text{deg}^\\star_{\\text{in max}})},
+        \\big(\\text{in}_{\\text{max}} - \\text{in}(i) \\big)}
+        {(|V|-1)(\\text{in}^\\star_{\\text{max}} - 1)},
 
-    where :math:`\\text{deg}_{\\text{in max}}` is the highest in-degree in :math:`G`,
-    :math:`\\text{deg}_{\\text{in}}(i)` is the in-degree of node :math:`i \\in V`,
-    :math:`|V|` is the number of nodes,
-    and :math:`\\text{deg}^\\star_{\\text{in max}}` is the maximum node in-degree in a
-    star graph.
+    where :math:`|V|` is the number of nodes,
+    :math:`\\text{dineing}_{\\text{max}}` is the highest node in-degree in :math:`G`,
+    :math:`\\text{in}(i)` is the in-degree of node :math:`i \\in V`,
+    and :math:`\\text{in}^\\star_{\\text{max}} = |V|-1`
+    is the maximum theoretical node in-degree.
 
     .. seealso::
 
@@ -146,39 +201,42 @@ def in_degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: O
         page for an example of usage.
 
     :param object TG: A :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
-    :param bool selfloops: If ``True``, self-loops are considered in the calculation.
-        If ``False``, self-loops are ignored. Default is ``None`` (auto-detect).
+    :param bool loops: If ``True``, self-loops are considered in the calculation.
+        Defaults to ``False``.
+    :param bool isolates: If ``True``, node isolates are considered in the calculation.
+        Defaults to ``False``.
     """
-    return _degree_centralization(TG, "in_degree", selfloops=selfloops)
+    return _degree_centralization(TG, "in_degree", loops=loops, isolates=isolates)
 
 
-def out_degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: Optional[bool] = None) -> float:
+def out_degree_centralization(
+    TG: Union[TemporalGraph, StaticGraph],
+    loops: Optional[bool] = None,
+    isolates: Optional[bool] = None,
+) -> float:
     """
-    Returns out-degree centralization for each snapshot.
+    Returns out-degree centralization of a graph.
 
-    Centralization [1]_ is the sum of differences between the centrality of the most central node
-    and each of the other nodes' centralities, divided by the maximum theoretical
-    sum of values in a graph with the same properties.
-    In case of out-degree centralization [2]_, this corresponds to a `star graph
-    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__,
-    i.e., a graph with one node connected to all other nodes. The maximum out-degree of a star
-    graph without self-loops is equal to :math:`|V|-1`, where :math:`|V|` is the
-    :func:`~networkx_temporal.graph.TemporalGraph.order` of the graph.
+    The degree centralization [2]_ of a graph is the sum of differences between the centrality of
+    the most central node and each of the other nodes' centralities, divided by the maximum
+    theoretical sum of values in a graph with the same order, size, and edge directionality,
+    i.e., a `star graph
+    <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.star_graph.html>`__.
 
-    The out-degree centralization :math:`C_\\text{out}` of a graph :math:`G` without self-loops
-    corresponds to:
+    The degree centralization :math:`C_\\text{deg}` of a simple graph without self-loops
+    :math:`G` corresponds to:
 
     .. math::
 
         C_\\text{out}(G) = \\frac{\\sum_{i \\in V}
-        \\big(\\text{deg}_{\\text{out max}} - \\text{deg}_{\\text{out}}(i) \\big)}
-        {(|V|-1)(\\text{deg}^\\star_{\\text{out max}})},
+        \\big(\\text{out}_{\\text{max}} - \\text{out}(i) \\big)}
+        {(|V|-1)(\\text{out}^\\star_{\\text{max}} - 1)},
 
-    where :math:`\\text{deg}_{\\text{out max}}` is the highest out-degree in :math:`G`,
-    :math:`\\text{deg}_{\\text{out}}(i)` is the out-degree of node :math:`i \\in V`,
-    :math:`|V|` is the number of nodes,
-    and :math:`\\text{deg}^\\star_{\\text{out max}}` is the maximum node out-degree in a
-    star graph.
+    where :math:`|V|` is the number of nodes,
+    :math:`\\text{out}_{\\text{max}}` is the highest node out-degree in :math:`G`,
+    :math:`\\text{out}(i)` is the out-degree of node :math:`i \\in V`,
+    and :math:`\\text{out}^\\star_{\\text{max}} = |V|-1`
+    is the maximum theoretical node out-degree.
 
     .. seealso::
 
@@ -187,38 +245,47 @@ def out_degree_centralization(TG: Union[TemporalGraph, StaticGraph], selfloops: 
         page for an example of usage.
 
     :param object TG: A :class:`~networkx_temporal.graph.TemporalGraph` or static graph object.
-    :param bool selfloops: If ``True``, self-loops are considered in the calculation.
-        If ``False``, self-loops are ignored. Default is ``None`` (auto-detect).
+    :param bool loops: If ``True``, self-loops are considered in the calculation.
+        Defaults to ``False``.
+    :param bool isolates: If ``True``, node isolates are considered in the calculation.
+        Defaults to ``False``.
     """
-    return _degree_centralization(TG, "out_degree", selfloops=selfloops)
+    return _degree_centralization(TG, "out_degree", loops=loops, isolates=isolates)
 
 
 def _degree_centralization(
     TG: Union[TemporalGraph, StaticGraph],
     degree: Literal["degree", "in_degree", "out_degree"],
-    selfloops: Optional[bool] = None,
-):
+    loops: Optional[bool] = None,
+    isolates: Optional[bool] = None,
+) -> Union[float, list]:
 
-    assert type(degree) == str,\
-        f"Invalid `degree` type ({type(degree)}): expects a string: 'degree', 'in_degree', or 'out_degree'."
-    assert degree in ("degree", "in_degree", "out_degree"), \
+    assert degree in ("degree", "in_degree", "out_degree"),\
         f"Invalid `degree`: expects 'degree', 'in_degree', or 'out_degree'."
 
-    if selfloops is None:
-        selfloops = any(
-            nx.number_of_selfloops(G) > 0
-            for G in ([TG] if is_static_graph(TG) else TG)
-        )
+    if any(G.is_multigraph() for G in ([TG] if is_static_graph(TG) else TG)):
+        TG = from_multigraph(TG)
 
-    minimum = 0 if degree in ("in_degree", "out_degree") else 1
+    # if loops is None:
+    #     loops = any(
+    #         nx.number_of_selfloops(G) > 0
+    #         for G in ([TG] if is_static_graph(TG) else TG)
+    #     )
+    # if isolates is None:
+    #     isolates = any(
+    #         len(list(nx.isolates(G))) > 0
+    #         for G in ([TG] if is_static_graph(TG) else TG)
+    #     )
 
-    dc = [
-        centralization(
-            G,
-            centrality=[d for n, d in getattr(G, degree)()],
-            scalar=sum((G.order() - (0 if selfloops else 1)) - minimum for n in range(G.order()-1)),
-        )
-        for G in ([TG] if is_static_graph(TG) else TG)
-    ]
+    centralizations = []
+    for G in ([TG] if is_static_graph(TG) else TG):
+        centrality = getattr(G, degree)()
+        maximum = G.order() - 1 if not loops else G.number_of_nodes()
+        minimum = 1 if not loops else 0
+        scalar = sum(maximum - minimum for n in range(G.order() - 1))
+        if loops:
+            scalar += G.number_of_selfloops()
+        c = centralization(centrality=centrality, scalar=scalar)
+        centralizations.append(c)
 
-    return dc[0] if is_static_graph(TG) else dc
+    return centralizations[0] if is_static_graph(TG) else centralizations

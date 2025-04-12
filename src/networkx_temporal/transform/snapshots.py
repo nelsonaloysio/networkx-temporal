@@ -24,16 +24,12 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
 
     assert type(graphs) in (dict, list),\
         "Argument `graphs` must be a list or dictionary of NetworkX graphs."
-
     assert len(graphs) > 0,\
         "Argument `graphs` must be a non-empty list or dictionary."
-
     assert all(is_static_graph(graphs[t]) for t in T),\
         "All elements in data must be valid NetworkX graphs."
-
     assert all(directed == graphs[T[t]].is_directed() for t in T),\
         "Mixed graphs and digraphs are not supported."
-
     assert all(multigraph == graphs[T[t]].is_multigraph() for t in T),\
         "Mixed graphs and multigraphs are not supported."
 

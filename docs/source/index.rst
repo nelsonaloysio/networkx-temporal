@@ -17,7 +17,7 @@
    api/algorithms
    api/drawing
    api/graph
-   api/readwrite
+   api/io
    api/transform
    api/typing
    api/utils
@@ -164,7 +164,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 Save and load data
 ------------------
 
-The :func:`~networkx_temporal.readwrite.write_graph` and :func:`~networkx_temporal.readwrite.read_graph`
+The :func:`~networkx_temporal.io.write_graph` and :func:`~networkx_temporal.io.read_graph`
 functions accept compressed temporal graphs:
 
 .. code-block:: python

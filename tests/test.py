@@ -137,7 +137,7 @@ def test_networkx_temporal(test_convert: bool = False) -> None:
     assert TG.size() == TG_.size()
 
     # {TG,G} -> pkg
-    if args.test_convert:
+    if test_convert:
         for pkg in FORMATS.__args__:
             log.info("TG -> %s", pkg)
             tx.convert(TG, to=pkg)

@@ -36,7 +36,7 @@ from .__version__ import __version__
 from .algorithms import *
 from .drawing import *
 from .graph import *
-from .readwrite import *
+from .io import *
 from .transform import *
 from .utils import *
 from .utils.convert import *

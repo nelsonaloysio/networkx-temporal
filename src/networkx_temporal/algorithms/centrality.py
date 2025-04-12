@@ -6,7 +6,10 @@ from ..typing import Literal, TemporalGraph, StaticGraph
 from ..utils import is_static_graph
 
 
-def degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int]:
+def degree_centrality(
+    TG: Union[TemporalGraph, StaticGraph],
+    nbunch: Optional[Any] = None,
+) -> Union[dict, int]:
     """
     Returns temporal node degree centralities.
     Defined as the fraction of connected nodes, i.e.,
@@ -27,10 +30,13 @@ def degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int]:
 
     :param nbunch: One or more nodes to return. Optional.
     """
-    return _degree_centrality(self, degree="degree", nbunch=nbunch)
+    return _degree_centrality(TG, degree="degree", nbunch=nbunch)
 
 
-def in_degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int]:
+def in_degree_centrality(
+    TG: Union[TemporalGraph, StaticGraph],
+    nbunch: Optional[Any] = None,
+) -> Union[dict, int]:
     """
     Returns temporal node in-degree centralities.
     Defined as the fraction of connected nodes, i.e.,
@@ -51,10 +57,13 @@ def in_degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int]
 
     :param nbunch: One or more nodes to return. Optional.
     """
-    return _degree_centrality(self, degree="in_degree", nbunch=nbunch)
+    return _degree_centrality(TG, degree="in_degree", nbunch=nbunch)
 
 
-def out_degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int]:
+def out_degree_centrality(
+    TG: Union[TemporalGraph, StaticGraph],
+    nbunch: Optional[Any] = None,
+) -> Union[dict, int]:
     """
     Returns temporal node out-degree centralities.
     Defined as the fraction of connected nodes, i.e.,
@@ -75,7 +84,7 @@ def out_degree_centrality(self, nbunch: Optional[Any] = None) -> Union[dict, int
 
     :param nbunch: One or more nodes to return. Optional.
     """
-    return _degree_centrality(self, degree="out_degree", nbunch=nbunch)
+    return _degree_centrality(TG, degree="out_degree", nbunch=nbunch)
 
 
 def _degree_centrality(
@@ -84,8 +93,6 @@ def _degree_centrality(
     nbunch: Optional[Any] = None,
 ) -> Union[dict, float]:
 
-    assert type(degree) == str,\
-        f"Invalid `degree` type ({type(degree)}): expects a string: 'degree', 'in_degree', or 'out_degree'."
     assert degree in ("degree", "in_degree", "out_degree"), \
         f"Invalid `degree`: expects 'degree', 'in_degree', or 'out_degree'."
 

@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import networkx as nx
 
@@ -98,6 +98,98 @@ def is_temporal_graph(obj: Any) -> bool:
     """
     from ..graph import TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph
     return isinstance(obj, (TemporalABC, TemporalGraph, TemporalDiGraph, TemporalMultiGraph, TemporalMultiDiGraph))
+
+
+def partitions(
+    G: Union[TemporalGraph, StaticGraph],
+    attr: Union[str, list, dict],
+    index: Optional[dict] = None,
+) -> Union[list, dict]:
+    """
+    Returns node partitions sharing the same attribute value.
+
+    The ``attr`` argument can be a node attribute key, a dictionary, or a list:
+
+    - a ``str``, corresponding to the node attribute key to use for partitioning;
+    - a ``dict``, where each key is a node and each value is the attribute value
+        for that node,
+    - a ``list``, where each value corresponds to an attribute value for each node,
+    - a sequence of ``dict`` or ``list``, one per snapshot, if the graph is temporal.
+
+    If ``index`` is ``True``, the node indices are returned instead of the node labels.
+    If ``index`` is a dictionary, the node labels are mapped to the indices in the graph.
+
+    The function returns a list of dictionaries, one per snapshot, where each dictionary
+    contains the attribute values as keys and the corresponding nodes as values, or a single
+    dictionary if the graph is static.
+
+    .. rubric:: Examples
+
+    .. code-block:: python
+
+       >>> import networkx_temporal as tx
+       >>>
+       >>> TG = tx.TemporalGraph()
+       >>> TG.add_nodes_from(["a", "b", "c"], community=0)
+       >>> TG.add_nodes_from(["d", "e", "f"], community=1)
+       >>>
+       >>> tx.partitions(TG, "community")
+
+       [{0: ['a', 'b', 'c'], 1: ['d', 'e', 'f']}]
+
+       >>> tx.partitions(TG, "community", index=True)
+
+       [{0: [0, 1, 2], 1: [3, 4, 5]}]
+
+    :param object TG: :class:`~networkx_temporal.graph.TemporalGraph`
+        or static NetworkX graph object.
+    :param attr: Dictionary, list, or node attribute key for patitioning.
+        Passing a sequence of lists or dictionaries is accepted for temporal graphs.
+    :param index: Node index mapping. If ``True``, maps nodes to indices matching their ordering
+        in the graph. Optional.
+    """
+    assert type(attr) in (str, list, dict), \
+        f"Argument `attr` must be one of (str, list, dict), received: {type(attr)}."
+    assert index is None or type(index) in (dict, bool),\
+        f"Argument `index` must be a boolean or dictionary, received: {type(index)}."
+
+    if is_static_graph(G) and type(attr) == list:
+        assert len(attr) == G.order(),\
+            f"Length of list `attr` ({len(attr)}) must match number of nodes ({G.order()})."
+
+    elif is_temporal_graph(G) and type(attr) == list:
+        assert len(attr) == len(G),\
+            f"Argument `attr` sequence length ({len(attr)}) must match number of snapshots ({len(G)})."
+        assert type(attr[0]) in (list, dict),\
+            f"Argument `attr` sequence must be one of (list, dict), received: {type(attr[0])}."
+        assert all(len(attr[i]) == G[i].order() for i in range(len(attr))),\
+            f"Argument `attr` sequence of lists must each match the number of nodes in each snapshot."
+
+    partitions = []
+
+    for i, G in enumerate([G] if is_static_graph(G) else G):
+        attr_ = attr[i] if is_temporal_graph(G) and type(attr) == list else attr
+
+        if type(attr) == str:
+            values = [value for node, value in G.nodes(data=attr)]
+        if type(attr) == dict:
+            values = [attr_[node] for node in G.nodes(data=attr)]
+        if type(attr) == list:
+            values = attr_
+
+        partition = {v: [] for v in set(values)}
+        mapping = dict(zip(range(G.order()), G.nodes()))
+
+        if index:
+            for i, key in enumerate(values):
+                partition[key].append(index[mapping[i]])
+        else:
+            for i, key in enumerate(values):
+                partition[key].append(mapping[i])
+
+        partitions.append(partition)
+
+    return partitions[0] if is_static_graph(G) else partitions
 
 
 def to_multigraph(G: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:

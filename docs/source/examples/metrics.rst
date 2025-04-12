@@ -89,23 +89,34 @@ number of edge interactions :math:`|\mathcal{E}|` (including copies).
 Centralization
 --------------
 
-Centralization [1]_ is a graph-level metric that compares node centralities in a graph against the
-maximum theoretical scores for a graph with the same properties: order, size, and directedness.
+Centralization [1]_ is a graph-level metric that compares the observed node centralities against the
+maximum possible score for a graph with the same properties, e.g., order, size, and directedness.
 
-The :func:`~networkx_temporal.algorithms.centralization` function returns the score
-considering the given node centrality measures and an optional ``scalar`` value,
-corresponding to the maximum possible node centrality score:
+The :func:`~networkx_temporal.algorithms.centralization` function receives the node centrality
+values for a static or temporal graph, plus an optional ``scalar`` value corresponding to the
+maximum possible sum of node centrality differences in a theoretical likewise graph, and returns
+the centralization score for the graph:
 
 .. code-block:: python
 
    >>> G = TG[-1]
-   >>> degree = G.degree()
-   >>> maximum = G.order() - 1
-   >>> minimum = 1
+   >>>
+   >>> centrality = G.degree()  # Node degree values.
+   >>> maximum = G.order() - 1  # Highest possible degree.
+   >>> minimum = 1              # Minimum possible degree.
+   >>>
+   >>> # Highest theoretical sum of values in a simple star-like graph.
    >>> scalar = sum(maximum - minimum for n in range(G.order()-1))
-   >>> tx.centralization(G, centrality=degree, scalar=scalar)
+   >>>
+   >>> tx.centralization(centrality=centrality, scalar=scalar)
 
    1.0
+
+.. note::
+
+   The example above considers the node degrees as the centrality measure and is equivalent to
+   :func:`~networkx_temporal.algorithms.degree_centralization` for a simple graph without parallel
+   edges, self-loops, or node isolates.
 
 Much like the example above using :func:`~networkx_temporal.algorithms.degree`, the
 function can be used to calculate the

@@ -67,10 +67,10 @@ Inspecting the resulting object's properties can be achieved using some familiar
 .. code-block:: python
 
    >>> print(f"t = {len(TG)} time steps\n"
-   >>>       f"V = {TG.order()} nodes "
-   >>>       f"({TG.order(copies=False)} unique, {TG.order(copies=True)} total)\n"
-   >>>       f"E = {TG.size()} edges "
-   >>>       f"({TG.size(copies=False)} unique, {TG.size(copies=True)} total)")
+   ...       f"V = {TG.order()} nodes "
+   ...       f"({TG.order(copies=False)} unique, {TG.order(copies=True)} total)\n"
+   ...       f"E = {TG.size()} edges "
+   ...       f"({TG.size(copies=False)} unique, {TG.size(copies=True)} total)")
 
    t = 4 time steps
    V = [2, 2, 4, 4] nodes (6 unique, 12 total)
@@ -152,9 +152,9 @@ This is useful to obtain an arbitrary number of subgraphs, independent of their 
 
 .. note::
 
-   In some cases, :func:`~networkx_temporal.graph.TemporalGraph.slice` may not be able to split the
-   graph into the number specified by ``bins`` (e.g., due to insufficient data), in
-   which case the maximum possible number is returned instead.
+   In cases, :func:`~networkx_temporal.graph.TemporalGraph.slice` is not able to split the
+   graph into the number specified by ``bins`` (e.g., due to insufficient data),
+   the maximum possible number of snapshots is returned instead.
 
 
 Import static graphs
@@ -272,7 +272,7 @@ Save and load data
 ==================
 
 Temporal graphs may be read from or written to a file using
-:func:`~networkx_temporal.readwrite.read_graph` and :func:`~networkx_temporal.readwrite.write_graph`:
+:func:`~networkx_temporal.io.read_graph` and :func:`~networkx_temporal.io.write_graph`:
 
 .. code-block:: python
 
