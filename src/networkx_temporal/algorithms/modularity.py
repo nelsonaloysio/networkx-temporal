@@ -91,7 +91,7 @@ def modularity(
 
 def longitudinal_modularity(
     TG: TemporalGraph,
-    communities: Union[str, list, dict],
+    membership: Union[str, list, dict],
     time: Optional[str] = None,
     weight: Optional[str] = "weight",
     resolution: float = 1,
@@ -134,6 +134,8 @@ def longitudinal_modularity(
     :param omega: The interlayer edge weight. Default is ``1``.
     """
     assert is_temporal_graph(TG), "Graph must be a temporal graph."
+
+    communities = list(partitions(G, attr=membership).values())
 
     # m = TG.size()
     # Q = 0
