@@ -5,17 +5,17 @@ References
 This package interacts with or is built on top of the following libraries:
 
 - `Deep Graph Library <https://www.dgl.ai>`_ [1]_
-- `DyNetX <https://dynetx.readthedocs.io>`_ [2]_
+- `DyNetX <https://dynetx.readthedocs.readwrite>`_ [2]_
 - `graph-tool <https://graph-tool.skewed.de>`_ [3]_
 - `igraph <https://igraph.org/python/>`_ [4]_
 - `matplotlib <https://matplotlib.org>`_ [5]_
-- `NetworKit <https://networkit.github.io>`_ [6]_
+- `NetworKit <https://networkit.github.readwrite>`_ [6]_
 - `NetworkX <https://networx.org>`_ [7]_
 - `Pandas <https://pandas.pydata.org/>`_ [8]_
-- `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`_ [9]_
+- `PyTorch Geometric <https://pytorch-geometric.readthedocs.readwrite>`_ [9]_
 - `Stanford Network Analysis Platform <https://snap.stanford.edu/snap/>`_ [10]_
-- `StellarGraph <https://stellargraph.readthedocs.io>`_ [11]_
-- `Teneto <https://teneto.readthedocs.io>`_ [12]_
+- `StellarGraph <https://stellargraph.readthedocs.readwrite>`_ [11]_
+- `Teneto <https://teneto.readthedocs.readwrite>`_ [12]_
 
 For more information on specific packages, please refer to their respective documentation.
 

@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
@@ -8,7 +8,7 @@ def to_dgl(G: Union[TemporalGraph, StaticGraph, list], *args, **kwargs):
     """
     Convert from NetworkX to `Deep Graph Library <https://www.dgl.ai/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.

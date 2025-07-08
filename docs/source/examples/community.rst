@@ -87,12 +87,10 @@ We see that all snapshots are generated with the same community structure, but v
 assortativity. Let's try to retrieve the ground truths using a simple community detection algorithm.
 
 
------
-
 Modularity optimization
 =======================
 
-The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
+The `leidenalg <https://leidenalg.readthedocs.readwrite>`__ [1]_ package implements optimization algorithms
 for community detection that may be applied on snapshot-based temporal graphs, allowing to better
 capture their underlying structure.
 
@@ -110,7 +108,7 @@ On the static graph
 Let's start by considering the network as a single static graph, ignoring its temporal information.
 
 We can observe that, depending on the initial node community assignments (e.g., with ``seed=0`` below),
-`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
+`modularity <https://leidenalg.readthedocs.readwrite/en/stable/reference.html#modularityvertexpartition>`__ [3]_
 fails to retrieve the true communities (ground truths) in the network:
 
 .. code-block:: python
@@ -183,7 +181,7 @@ On the temporal graph
 ---------------------
 
 Considering snapshots as layers (slices) of a multiplex graph, with `interslice edges coupling
-temporal node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
+temporal node copies <https://leidenalg.readthedocs.readwrite/en/stable/multiplex.html#slices-to-layers)>`__,
 is one way of employing modularity optimization on dynamic graphs, which may help to better capture
 their mesoscale structures [4]_. This example uses the same algorithm as before:
 

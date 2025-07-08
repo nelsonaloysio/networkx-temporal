@@ -9,6 +9,18 @@
 ### Removed
 -->
 
+
+## \[1.3\] - 2025-04-27
+
+### Added
+- Module `algorithms`.
+- Module `generators`.
+
+### Changed
+- Module `classes` renamed from `graph`.
+- Module `readwrite` renamed from `io`.
+
+
 ## \[1.2.1\] - 2025-03-10
 
 ### Fixed

@@ -1,6 +1,6 @@
 from typing import Any, Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
@@ -30,7 +30,7 @@ def to_graph_tool(
     """
     Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.

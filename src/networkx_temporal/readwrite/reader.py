@@ -5,7 +5,7 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
-from .io import _get_filepath, _get_filename, _get_format, _get_function
+from .readwrite import _get_filepath, _get_filename, _get_format, _get_function
 from ..transform import from_snapshots, from_static
 from ..typing import TemporalGraph
 
@@ -16,16 +16,17 @@ def read_graph(
     **kwargs,
 ) -> TemporalGraph:
     """
-    Returns a :class:`~networkx_temporal.graph.TemporalGraph` from a compressed
-    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__.
+    Returns a :class:`~networkx_temporal.classes.TemporalGraph` from file or binary object.
 
-    Graph files within the compressed ZIP file must be named as ``{name}_{t}.{ext}``,
-    where ``t`` is their snapshot index and ``ext`` is their extension format.
-    See :func:`~networkx_temporal.io.write_graph` for details.
+    If ``file`` is a compressed
+    `ZipFile <https://docs.python.org/3/library/zipfile.html#zipfile.ZipFile>`__,
+    it must contain one or more graphs named ``{name}_{t}.{ext}``,
+    where ``t`` is their snapshot index and ``ext`` is the extension format.
+    See: :func:`~networkx_temporal.readwrite.write_graph`.
 
     .. rubric:: Example
 
-    Reading a temporal graph from a compressed ZIP file:
+    Reading a temporal graph from a compressed file:
 
     .. code-block:: python
 
@@ -36,7 +37,7 @@ def read_graph(
     .. seealso::
 
         The latest `read and write documentation
-        <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
+        <https://networkx.org/documentation/stable/reference/io/index.html>`__
         from NetworkX for a list of supported formats.
 
     :param object file: Binary file-like object or string containing path to ZIP file.

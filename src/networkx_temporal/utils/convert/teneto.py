@@ -1,14 +1,14 @@
 from typing import Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ..utils import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
 def to_teneto(G: Union[TemporalGraph, StaticGraph, list], attr: str = "time"):
     """
-    Convert from NetworkX to `Teneto <https://teneto.readthedocs.io>`__.
+    Convert from NetworkX to `Teneto <https://teneto.readthedocs.readwrite>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param attr: Attribute name for the temporal edges. Default is ``'time'``.
 

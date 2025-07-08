@@ -1,7 +1,7 @@
 """
-Classes and functions for handling temporal graphs.
+Classes and functions for temporal graph objects.
 
-.. rubric:: Summary
+.. rubric:: Classes - Summary
 
 .. autosummary::
 
@@ -9,32 +9,43 @@ Classes and functions for handling temporal graphs.
    TemporalDiGraph
    TemporalMultiGraph
    TemporalMultiDiGraph
-   TemporalBase
+   TemporalABC
+
+.. rubric:: Functions - Summary
+
+.. autosummary::
+
+   all_neighbors
+   neighbors
    temporal_graph
 
 .. rubric:: Classes
 
-.. autoclass:: networkx_temporal.graph.TemporalGraph
+.. autoclass:: networkx_temporal.classes.TemporalGraph
    :members:
    :inherited-members: Graph
 
-.. autoclass:: networkx_temporal.graph.TemporalDiGraph
+.. autoclass:: networkx_temporal.classes.TemporalDiGraph
    :members:
 
-.. autoclass:: networkx_temporal.graph.TemporalMultiGraph
+.. autoclass:: networkx_temporal.classes.TemporalMultiGraph
    :members:
 
-.. autoclass:: networkx_temporal.graph.TemporalMultiDiGraph
+.. autoclass:: networkx_temporal.classes.TemporalMultiDiGraph
    :members:
 
-.. autoclass:: TemporalBase
+.. autoclass:: TemporalABC
 
 .. rubric:: Functions
 """
 
-from .base import TemporalBase
+from .abc import TemporalABC
 from .digraph import TemporalDiGraph
 from .factory import temporal_graph
+from .functions import (
+    all_neighbors,
+    neighbors,
+)
 from .graph import TemporalGraph
 from .multidigraph import TemporalMultiDiGraph
 from .multigraph import TemporalMultiGraph
@@ -44,6 +55,8 @@ __all__ = (
     "TemporalDiGraph",
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
-    "TemporalBase",
+    "TemporalABC",
+    "all_neighbors",
+    "neighbors",
     "temporal_graph",
 )
