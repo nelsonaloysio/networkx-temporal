@@ -4,6 +4,7 @@ dynetx
 leidenalg
 matplotlib
 networkit
+nx_hif
 python-igraph
 scipy
 snap-stanford
