@@ -11,7 +11,9 @@ Drawing functions for temporal graphs.
    draw_networkx_edges
    draw_networkx_labels
    draw_networkx_edge_labels
+   draw_unrolled
    layout
+   unrolled_layout
 
 .. rubric:: Functions
 """
@@ -25,6 +27,10 @@ from .networkx import (
     draw_networkx_labels,
     draw_networkx_edge_labels
 )
+from .unrolled import (
+    draw_unrolled,
+    unrolled_layout
+)
 
 __all__ = (
     "draw",
@@ -33,5 +39,7 @@ __all__ = (
     "draw_networkx_edges",
     "draw_networkx_labels",
     "draw_networkx_edge_labels",
+    "draw_unrolled",
     "layout",
+    "unrolled_layout",
 )

@@ -4,20 +4,34 @@ import logging as log
 from argparse import ArgumentParser
 from io import BytesIO
 from os import remove
-from typing import Optional
 
 import networkx_temporal as tx
-from networkx_temporal.typing import Literal
+from networkx_temporal.typing import Literal, TemporalGraph
 from networkx_temporal.utils.convert import FORMATS
 
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-LOG_LEVELS = Literal["debug", "info", "warning", "error", "critical"]
+LOG_LEVELS = Literal
 
 
-def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) -> None:
-    if log_level is not None:
-        log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
+def test_networkx_temporal(*args, **kwargs) -> None:
+    test_convert = kwargs.pop("test_convert", False)
 
+    TG = test_temporal_graph()
+    test_copy_graph(TG)
+    test_write_graph(TG)
+    test_transform_graph(TG)
+    test_stochastic_block_model()
+
+    if test_convert:
+        for pkg in test_convert:
+            assert pkg in FORMATS.__args__, f"Unsupported package: '{pkg}' not in {FORMATS.__name__}"
+            test_convert_graph(TG, pkg)
+
+    print("All tests passed!")
+
+
+def test_temporal_graph() -> TemporalGraph:
+    # temporal_graph
     TG = tx.temporal_graph(directed=True, multigraph=True)
     assert TG.is_directed()
     assert TG.is_multigraph()
@@ -25,7 +39,6 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     assert not tx.from_multigraph(TG).is_multigraph()
     assert tx.to_multigraph(tx.from_multigraph(TG)).is_multigraph()
     assert type(TG) == tx.TemporalMultiDiGraph
-
     TG.add_edges_from([
         ("a", "b", {"time": 0}),
         ("a", "b", {"time": 1}),
@@ -37,27 +50,43 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
         ("f", "a", {"time": 3}),
         ("f", "b", {"time": 3}),
     ])
-
-    # TG
     log.info("TG")
     TG = TG.slice(attr="time")
     order = TG.order()
     size = TG.size()
+    assert len(TG.flatten()) == 1
     assert len(TG) == 4
     assert len(TG.slice(bins=2)) == 2
     assert TG.order() == [2, 3, 4, 4]
     assert TG.size() == [1, 2, 3, 3]
-    assert TG.temporal_order() == 6
-    assert TG.total_order() == 13
-    assert TG.temporal_size() == TG.total_size() == 9
-    assert TG.temporal_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
-    assert TG.temporal_degree("a") == 4
-    assert TG.temporal_neighbors("c") == ["b"]
-    assert not TG.to_undirected().is_directed()
+    assert TG.temporal_order() == TG.order(copies=False) == 6
+    assert TG.temporal_size() == TG.size(copies=False) == 8
+    assert TG.total_order() == TG.order(copies=True) == 13
+    assert TG.total_size() == TG.size(copies=True) == 9
+    assert TG.total_degree() == {"a": 4, "b": 4, "c": 3, "d": 2, "e": 2, "f": 3}
+    assert TG.total_degree("a") == 4
+    assert TG.total_in_degree("a") == 1
+    assert TG.total_out_degree("a") == 3
+    assert tx.degree_centrality(TG, "a") == 0.8
+    assert tx.degree_centralization(TG) == [0, 1.0, 0.3333333333333333, 1.0]
+    assert list(TG.neighbors("c")) == [[], ['b'], [], []]
+    assert list(tx.neighbors(TG, "c")) == ["b"]
     assert TG.to_directed().is_directed()
+    assert not TG.to_undirected().is_directed()
     assert order == TG.order()
     assert size == TG.size()
+    return TG
 
+
+def test_copy_graph(TG) -> None:
+    # copy
+    TG_ = TG.copy()
+    TG_[-1].add_edge("g", "h")
+    assert TG_.order()[-1] == TG.order()[-1] + 2
+    assert TG_.size()[-1] == TG.size()[-1] + 1
+
+
+def test_write_graph(TG) -> None:
     # TG -> path -> TG
     log.info("TG -> path -> TG")
     tx.write_graph(TG, "temporal-graph.graphml.zip")
@@ -73,6 +102,7 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
         TG_ = tx.read_graph(f)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
+    remove("temporal-graph.graphml.zip")
 
     # TG -> buffer -> TG
     log.info("TG -> buffer -> TG")
@@ -89,6 +119,8 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
 
+
+def test_transform_graph(TG) -> None:
     # TG -> G -> TG
     log.info("TG -> G -> TG")
     G = TG.to_static()
@@ -109,46 +141,65 @@ def test_networkx_temporal(log_level: Optional[str] = None, convert: list = []) 
     TG_ = tx.from_events(ETG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
-    ETG = TG.copy().to_events(eps=int)
+    ETG = TG.copy().to_events(delta=int)
     TG_ = tx.from_events(ETG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
-    ETG = TG.copy().to_events(eps=float)
+    ETG = TG.copy().to_events(delta=float)
     TG_ = tx.from_events(ETG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
 
     # TG -> UTG -> TG
     log.info("TG -> UTG -> TG")
-    UTG = TG.to_unified()
-    TG_ = tx.from_unified(UTG)
+    UTG = TG.to_unrolled()
+    TG_ = tx.from_unrolled(UTG)
     assert TG.order() == TG_.order()
     assert TG.size() == TG_.size()
 
-    # {TG,G} -> pkg
-    for pkg in [pkg for pkg in FORMATS.__args__ if pkg in convert or "all" in convert]:
-        log.info("TG -> %s", pkg)
-        tx.convert(TG, to=pkg)
-        log.info("G -> %s", pkg)
-        tx.convert(G, to=pkg)
 
-    print("All tests passed!")
-    remove("temporal-graph.graphml.zip")
+def test_stochastic_block_model() -> None:
+    # stochastic_block_model
+    sbm = tx.generators.stochastic_block_model(
+        block_matrix=tx.generators.generate_block_matrix(5, p=.01, q=.005),
+        transition_matrix=tx.generators.generate_transition_matrix(5),
+        community_vector=tx.generators.generate_community_vector(100, 5),
+        snapshots=8,
+        seed=0,
+    )
+    assert sbm.order(copies=False) == 500
+    assert sbm.size(copies=True) == 6212
+    assert sbm.size(copies=False) == 1519
+
+
+def test_convert_graph(TG, pkg) -> None:
+    # TG -> graph
+    log.info("TG -> %s", pkg)
+    tx.convert(TG, to=pkg)
+    G = tx.to_static(TG)
+    log.info("G -> %s", pkg)
+    tx.convert(G, to=pkg)
 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument("--log-level",
-                        choices=LOG_LEVELS.__args__,
+                        choices=["debug", "info", "warning", "error", "critical"],
+                        default="info",
                         help="Set the logging level.")
 
     parser.add_argument("--convert",
-                        default=[],
-                        dest="convert",
-                        nargs="+",
-                        help="Perform conversion tests for specified (or 'all') packages.")
+                        choices=FORMATS.__args__,
+                        default=False,
+                        dest="test_convert",
+                        help="Perform conversion tests to other packages.",
+                        nargs="+")
 
     args = parser.parse_args()
+    log_level = args.__dict__.pop("log_level")
+
+    if log_level is not None:
+        log.basicConfig(format=LOG_FORMAT, level=getattr(log, log_level.upper()))
 
     test_networkx_temporal(**vars(args))

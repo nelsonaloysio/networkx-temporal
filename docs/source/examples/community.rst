@@ -81,21 +81,19 @@ Let's plot the graphs, with node colors representing communities and within-comm
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Ground truths")
 
-.. image:: ../../assets/figure/fig-9.png
+.. image:: ../../assets/figure/fig-11.png
+   :align: center
 
 We see that all snapshots are generated with the same community structure, but varying degrees of
 assortativity. Let's try to retrieve the ground truths using a simple community detection algorithm.
 
 
------
-
 Modularity optimization
 =======================
 
-The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
+The `leidenalg <https://leidenalg.readthedocs.readwrite>`__ [1]_ package implements optimization algorithms
 for community detection that may be applied on snapshot-based temporal graphs, allowing to better
 capture their underlying structure.
-
 
 .. attention ::
 
@@ -110,7 +108,7 @@ On the static graph
 Let's start by considering the network as a single static graph, ignoring its temporal information.
 
 We can observe that, depending on the initial node community assignments (e.g., with ``seed=0`` below),
-`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__ [3]_
+`modularity <https://leidenalg.readthedocs.readwrite/en/stable/reference.html#modularityvertexpartition>`__
 fails to retrieve the true communities (ground truths) in the network:
 
 .. code-block:: python
@@ -137,7 +135,8 @@ fails to retrieve the true communities (ground truths) in the network:
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on static graph")
 
-.. image:: ../../assets/figure/fig-10.png
+.. image:: ../../assets/figure/fig-12.png
+   :align: center
 
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
@@ -172,7 +171,8 @@ colors) are not fixed over snapshots, which makes it harder to track their mesos
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on graph snapshots")
 
-.. image:: ../../assets/figure/fig-11.png
+.. image:: ../../assets/figure/fig-13.png
+   :align: center
 
 This is partly due to modularity optimization expecting an assortative community structure, while
 the network grew more disassortative over time. Not only the results of later snapshots are here
@@ -183,9 +183,9 @@ On the temporal graph
 ---------------------
 
 Considering snapshots as layers (slices) of a multiplex graph, with `interslice edges coupling
-temporal node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers)>`__,
+temporal node copies <https://leidenalg.readthedocs.io/en/stable/multiplex.html#slices-to-layers>`__,
 is one way of employing modularity optimization on dynamic graphs, which may help to better capture
-their mesoscale structures [4]_. This example uses the same algorithm as before:
+their mesoscale structures [3]_. This example uses the same algorithm as before:
 
 .. code-block:: python
 
@@ -215,7 +215,8 @@ their mesoscale structures [4]_. This example uses the same algorithm as before:
    >>>     connectionstyle="arc3,rad=0.1",
    >>>     suptitle="Modularity optimization on multislice graph")
 
-.. image:: ../../assets/figure/fig-12.png
+.. image:: ../../assets/figure/fig-14.png
+   :align: center
 
 As observed in this particular example, considering the network's temporal information allowed the
 algorithm to correctly retrieve the ground truths, as well as to maintain the same community
@@ -236,7 +237,5 @@ for which this package provides a flexible framework to work with, especially in
    Pitfalls, Myths and Half-Truths''. Elements in the Structure and Dynamics of Complex Networks,
    Cambridge University Press.
 
-.. [3] Mark Newman (2018). ''Networks''. Oxford University Press, 2nd ed., pp. 498--514.
-
-.. [4] P. J. Mucha et al (2010). ''Community Structure in Time-Dependent,
+.. [3] P. J. Mucha et al (2010). ''Community Structure in Time-Dependent,
    Multiscale, and Multiplex Networks''. Science, 328, 876--878.

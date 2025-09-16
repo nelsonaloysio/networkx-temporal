@@ -8,17 +8,17 @@ import networkx as nx
 import networkx_temporal as tx
 import pandas as pd
 
-FILE = "collegemsg.csv.gz"
+DATA_PATH = "data/collegemsg.csv.gz"
 
 
 def test_collegemsg():
-    """ Test for College Message dataset. """
+    # College Message dataset
     # https://stackoverflow.com/questions/72976127/how-to-create-a-temporal-network-using-networkx
 
     # First two lines from file:
     # Source,Target,Timestamp
     # 1,2,4/15/04 2:56 PM
-    with gzip.open(FILE, "r") as f:
+    with gzip.open(DATA_PATH, "r") as f:
         G = nx.read_edgelist(f.readlines()[1:],
                              create_using=nx.MultiDiGraph,
                              data=[("Timestamp", str)],

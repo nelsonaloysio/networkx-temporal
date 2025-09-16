@@ -2,12 +2,17 @@ from typing import Callable, Union
 
 import networkx as nx
 
+from .unrolled import unrolled_layout
 from ..typing import StaticGraph, TemporalGraph
-from ..utils import is_temporal_graph
+from ..utils import is_static_graph
+
+LAYOUTS = {
+    "unrolled_layout": unrolled_layout
+}
 
 
 def layout(
-    TG: Union[TemporalGraph, StaticGraph, list],
+    TG: Union[TemporalGraph, StaticGraph],
     *args,
     layout: Union[str, Callable] = "random",
     **kwargs
@@ -15,22 +20,25 @@ def layout(
     """
     Compute temporal node positions with algorithm.
 
-    :param object TG: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        static graph, or a list of static graphs from NetworkX as input.
-    :param layout: A callable or string with a `layout algorithm
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static graph object.
+    :param layout: A callable or string, e.g., with a `layout algorithm
         <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
         from NetworkX to calculate node positions with. Default is ``'random'``.
     :param kwargs: Keyword arguments to pass to the layout function.
     """
     if not callable(layout):
-        layout = getattr(nx, f"{(layout or 'random').replace('_layout', '')}_layout", None)
+        layout = f"{(layout or 'random').replace('_layout', '')}_layout"
+
+    if layout in LAYOUTS:
+        layout = LAYOUTS[layout]
+    elif type(layout) == str:
+        layout = getattr(nx, layout)
 
     assert layout is not None,\
         "Argument `layout` must be a string with a valid NetworkX layout algorithm."\
         f"Available choices: {[f for f in dir(nx) if f.endswith('_layout')]}"
 
-    # Allow a single graph to be passed as input.
-    if not is_temporal_graph(TG):
+    if is_static_graph(TG):
         return layout(TG, **kwargs)
 
     return [layout(G, *args, **kwargs) for G in TG]

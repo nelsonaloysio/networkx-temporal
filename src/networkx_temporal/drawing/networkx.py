@@ -31,17 +31,18 @@ EDGE_LABEL_OPTS = {
 
 
 def draw_networkx(
-    TG: Union[TemporalGraph, StaticGraph, list],
+    TG: Union[TemporalGraph, StaticGraph],
     pos: Optional[Union[list, dict]] = None,
     layout: Optional[Union[str, Callable]] = 'random',
     nrows: Optional[int] = None,
     ncols: Optional[int] = None,
     fig: Optional[Figure] = None,
+    ax: Optional[int] = None,
     figsize: tuple = (3, 3),
     constrained_layout: bool = True,
     border: bool = False,
+    title: Optional[Union[str, list, bool]] = None,
     suptitle: Optional[Union[str, bool]] = None,
-    names: Optional[Union[list, bool]] = None,
     labels: Optional[Union[str, dict, bool]] = True,
     edge_labels: Optional[Union[str, dict, bool]] = False,
     node_opts: Optional[Union[list, dict]] = None,
@@ -85,7 +86,6 @@ def draw_networkx(
     .. code-block:: python
 
         >>> import networkx_temporal as tx
-        >>>
         >>> import matplotlib.pyplot as plt
         >>> import matplotlib.patches as mpatches
         >>>
@@ -155,8 +155,7 @@ def draw_networkx(
           :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
           functions for drawing specific graph elements.
 
-    :param object TG: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
-        static graph, or a list of static graphs from NetworkX as input.
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static graph object.
     :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values, e.g.,
         ``{'node': (0.19813, 0.74631), ...}``.
     :param layout: A callable or string with a `layout algorithm
@@ -173,21 +172,22 @@ def draw_networkx(
     :param suptitle: Centered figure's `super title <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.suptitle.html>`__.
         Default is ``None``.
 
-        * If ``True``, use the graph's :attr:`~networkx_temporal.graph.TemporalGraph.name` property or its string representation.
+        * If ``True``, use the graph's :attr:`~networkx_temporal.classes.TemporalGraph.name` property or its string representation.
 
         * If ``False`` or ``None``, does not show a super title.
 
         * If a ``str``, use it as the super title.
-    :param names: Whether to show the graph :attr:`~networkx_temporal.graph.TemporalGraph.names` property
-        as titles. Default is ``None``.
+    :param title: Centered figure's title. Default is ``None``.
 
         * If ``None``, show the snapshot index as title.
 
-        * If ``True``, show the graph names as title.
+        * If ``True``, show the graph ``name`` as title.
 
         * If ``False``, does not show titles.
 
         * If a ``list``, passed values are used as titles.
+
+        * If a ``str``, passed value is used as title.
     :param labels: A string, dictionary, or boolean to control node labels. Default is ``True``.
 
         * If a ``str``, use it as the attribute name to show as labels.
@@ -253,7 +253,7 @@ def draw_networkx(
                                figsize=figsize,
                                constrained_layout=constrained_layout)
     else:
-        ax = fig.axes[0] if len(fig.axes) == len(TG) == 1 else fig.axes
+        ax = fig.axes[ax] if type(ax) == int else fig.axes[0] if len(TG) == 1 else ax
 
     i, j = 0, 0
     for t in range(len(TG)):
@@ -301,15 +301,17 @@ def draw_networkx(
             ax_.set_axis_off()
 
         # Set graph titles.
-        if names is False:
-            title = None
-        elif names is None:
-            title = f"$t$ = {t}" if len(TG) > 1 else None
-        elif names is True:
-            title = TG.names[t] if hasattr(TG, "names") else TG[t].name
-        elif type(names) == list:
-            title = names[t]
-        ax_.set_title(title)
+        if title is False:
+            title_ = None
+        elif title is None:
+            title_ = f"$t$ = {t}" if len(TG) > 1 else None
+        elif title is True:
+            title_ = TG.names[t] if hasattr(TG, "names") else TG[t].name
+        elif type(title) == str:
+            title_ = title
+        elif type(title) == list:
+            title_ = title[t]
+        ax_.set_title(title_)
 
         j += 1
         if ncols and j % ncols == 0:
@@ -326,7 +328,7 @@ def draw_networkx(
 
 def draw_networkx_nodes(*args, **kwargs):
     """
-    Plot temporal nodes from a :class:`~networkx_temporal.graph.TemporalGraph`.
+    Plot temporal nodes from a :class:`~networkx_temporal.classes.TemporalGraph`.
 
     .. seealso::
 
@@ -346,7 +348,7 @@ def draw_networkx_nodes(*args, **kwargs):
 
 def draw_networkx_edges(*args, **kwargs):
     """
-    Plot temporal edges from a :class:`~networkx_temporal.graph.TemporalGraph`.
+    Plot temporal edges from a :class:`~networkx_temporal.classes.TemporalGraph`.
 
     .. seealso::
 
@@ -366,7 +368,7 @@ def draw_networkx_edges(*args, **kwargs):
 
 def draw_networkx_labels(*args, **kwargs):
     """
-    Plot temporal node labels from a :class:`~networkx_temporal.graph.TemporalGraph`.
+    Plot temporal node labels from a :class:`~networkx_temporal.classes.TemporalGraph`.
 
     .. seealso::
 
@@ -386,7 +388,7 @@ def draw_networkx_labels(*args, **kwargs):
 
 def draw_networkx_edge_labels(*args, **kwargs):
     """
-    Plot temporal edge labels from a :class:`~networkx_temporal.graph.TemporalGraph`.
+    Plot temporal edge labels from a :class:`~networkx_temporal.classes.TemporalGraph`.
 
     .. seealso::
 
@@ -408,7 +410,8 @@ def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "lab
     """
     Helper function to get node attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.classes.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or node attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'labels'``.
     """
@@ -425,7 +428,8 @@ def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edg
     """
     Helper function to get edge attributes in a graph.
 
-    :param G: NetworkX graph object.
+    :param object G: :class:`~networkx_temporal.classes.TemporalGraph`
+        or static NetworkX graph object.
     :param str attr: Dictionary or edge attribute to use as label. Optional.
     :param key: Dictionary key name. Default is ``'edge_labels'``.
     """
