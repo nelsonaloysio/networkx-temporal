@@ -107,6 +107,27 @@ implemented in the current installed version of NetworkX.
    for an and updated list of supported reading and writing formats.
 
 
+Graph readers
+-------------
+
+Additional support is currently implemented for reading
+`Hypergraph Interchange Format (HIF) <https://github.com/pszufe/HIF-standard>`__ files.
+This format enables the seamless integration and exchange of hypergraph and bipartite data across
+different platforms and tools, such as the
+`Hypergraph Analysis Toolbox (HAT) <https://hypergraph-analysis-toolbox.readthedocs.io>`__.
+
++----------------------------------------------------------------------------+----------------------------+-------------------------------------------------------------+
+| Format                                                                     | Format (Extension)         | Calls (Function)                                            |
++============================================================================+============================+=============================================================+
+| `Hypergraph Interchange Format <https://github.com/pszufe/HIF-standard>`__ | .. centered:: ``hif.json`` | .. centered:: :func:`~networkx_temporal.readwrite.read_hif` |
++----------------------------------------------------------------------------+----------------------------+-------------------------------------------------------------+
+
+.. code-block:: python
+
+   >>> TG = tx.read_hif("/path/to/file.hif.json")
+   >>> # TG = tx.read_graph("/path/to/file.hif.json")
+
+
 Graph libraries
 ===============
 

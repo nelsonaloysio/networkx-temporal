@@ -11,11 +11,12 @@ This package interacts with or is built on top of the following libraries:
 - `matplotlib <https://matplotlib.org>`_ [5]_
 - `NetworKit <https://networkit.github.readwrite>`_ [6]_
 - `NetworkX <https://networx.org>`_ [7]_
-- `Pandas <https://pandas.pydata.org/>`_ [8]_
-- `PyTorch Geometric <https://pytorch-geometric.readthedocs.readwrite>`_ [9]_
-- `Stanford Network Analysis Platform <https://snap.stanford.edu/snap/>`_ [10]_
-- `StellarGraph <https://stellargraph.readthedocs.readwrite>`_ [11]_
-- `Teneto <https://teneto.readthedocs.readwrite>`_ [12]_
+- `nx_hif <https://pypi.org/project/nx-hif/>`_ [8]_
+- `Pandas <https://pandas.pydata.org/>`_ [9]_
+- `PyTorch Geometric <https://pytorch-geometric.readthedocs.readwrite>`_ [10]_
+- `Stanford Network Analysis Platform <https://snap.stanford.edu/snap/>`_ [11]_
+- `StellarGraph <https://stellargraph.readthedocs.readwrite>`_ [12]_
+- `Teneto <https://teneto.readthedocs.readwrite>`_ [13]_
 
 For more information on specific packages, please refer to their respective documentation.
 
@@ -54,27 +55,32 @@ For more information on specific packages, please refer to their respective docu
    In Proceedings of the 7th Python in Science Conference (SciPy2008), pp. 11-15.
    doi: `10.25080/TCWV9851 <https://doi.org/10.25080/TCWV9851>`__
 
-.. [8] Wes McKinney (2010).
+.. [8] Martín Coll et al. (2025).
+   ''Hypergraph Interchange Format (HIF).''
+   Zenodo.
+   doi: `10.5281/zenodo.15802759 <https://doi.org/10.5281/zenodo.15802759>`__.
+
+.. [9] Wes McKinney (2010).
    ''Data Structures for Statistical Computing in Python''.
    In Proceedings of the 9th Python in Science Conference, 445.
    doi: `10.25080/Majora-92bf1922-00a <https://doi.org/10.25080/Majora-92bf1922-00a>`__
 
-.. [9] Matthias Fey, Jan E. Lenssen, F. Weichert (2019).
+.. [10] Matthias Fey, Jan E. Lenssen, F. Weichert (2019).
    ''Fast Graph Representation Learning with PyTorch Geometric''.
    In ICLR Workshop on Representation Learning on Graphs, Manifolds.
    doi: `10.48550/arXiv.1903.02428 <https://doi.org/10.48550/arXiv.1903.02428>`__
 
-.. [10] Jure C. Leskovec, Rok Sosič (2016).
+.. [11] Jure C. Leskovec, Rok Sosič (2016).
    ''SNAP: A General-Purpose Network Analysis, Graph-Mining Library''.
    In ACM Transactions on Intelligent Systems, Technology (TIST), 8(1), 1, pp. 1-20.
    doi: `10.1145/2898361 <https://doi.org/10.1145/2898361>`__
 
-.. [11] CSIRO's Data61 (2018).
+.. [12] CSIRO's Data61 (2018).
    ''StellarGraph Machine Learning Library.''
    GitHub repository.
    `https://github.com/stellargraph/stellargraph <https://github.com/stellargraph/stellargraph>`__
 
-.. [12] William H. Thompson, Per Brantefors, Peter Fransson (2017).
+.. [13] William H. Thompson, Per Brantefors, Peter Fransson (2017).
    ''From static to temporal network theory applications to functional brain connectivity''.
    Network Neuroscience, 2(1), pp. 69-99.
    doi: `10.1162/NETN_a_00011 <https://doi.org/10.1162/NETN_a_00011>`__

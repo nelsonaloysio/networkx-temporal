@@ -5,6 +5,7 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
+from .hif import read_hif
 from .readwrite import _get_filepath, _get_filename, _get_format, _get_function
 from ..transform import from_snapshots, from_static
 from ..typing import TemporalGraph

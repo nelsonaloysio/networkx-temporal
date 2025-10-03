@@ -4,8 +4,12 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
+from .hif import read_hif
 from ..typing import Literal
 
+READER = {
+    "hif": read_hif,
+}
 
 def _get_filepath(
     file: Optional[Union[str, BufferedReader, BufferedWriter, BytesIO]]
@@ -36,6 +40,9 @@ def _get_format(
     if callable(frmt):
         return frmt
     elif type(path) == str:
+        if path.lower().endswith(".hif.json"):
+            # filename.hif.json
+            return "hif"
         frmt = osp.splitext(path[:-4] if path.endswith(".zip") else path)[-1]
         frmt = frmt.lower().lstrip(".")
         return frmt
@@ -47,7 +54,10 @@ def _get_format_ext(frmt: Optional[str]) -> str:
     Returns file format extension, if available.
     """
     ext = ""
-    if type(frmt) == str:
+    if frmt == "hif":
+        # filename.hif.json
+        ext = ".hif.json"
+    elif type(frmt) == str:
         ext = f".{frmt}"
     elif callable(frmt) and any(frmt.__name__.startswith(_) for _ in ("generate_", "write_")):
         ext = f".{frmt.__name__.split('_', 1)[-1]}"
@@ -64,5 +74,7 @@ def _get_function(
     if callable(frmt):
         return frmt
     if type(frmt) == str:
+        if frmt in READER and prefix == "read":
+            return READER[frmt]
         return getattr(nx, f"{prefix}_{frmt}", None)
     return None
