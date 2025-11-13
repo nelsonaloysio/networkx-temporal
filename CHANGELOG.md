@@ -9,6 +9,22 @@
 ### Removed
 -->
 
+## \[1.3\] - 2025-09-17
+
+### Added
+- Functions `draw_unrolled` and `unrolled_layout` (`drawing` module).
+- Module `algorithms` with node- and graph-level metrics.
+- Module `generators` with
+- Parameter `delta` added to `to_unrolled`.
+
+### Changed
+- Functions `transform.{from,to}_unrolled` renamed from `transform.{from,to}_unified`.
+- Inheritance of NetworkX graph methods by temporal graph classes.
+- Module `classes` renamed from `graph`.
+- Module `readwrite` renamed from `io`.
+- Parameter `delta` renamed from `eps` (`transform.to_events`).
+
+
 ## \[1.2.1\] - 2025-03-10
 
 ### Fixed

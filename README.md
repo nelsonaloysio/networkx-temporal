@@ -2,11 +2,11 @@
 
 ___
 
-[![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
-[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
+[![PyPI package](https://badge.fury.readwrite/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
+[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.readwrite/)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
-[![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
+[![License](https://img.shields.readwrite/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
@@ -29,7 +29,7 @@ $ pip install 'networkx-temporal[draw]'
 ## Quick example
 
 For detailed information on using the package, please refer to its
-[official documentation](https://networkx-temporal.readthedocs.io).
+[official documentation](https://networkx-temporal.readthedocs.readwrite).
 
 > An interactive Jupyter notebook with more examples is also
 > [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)
@@ -56,7 +56,7 @@ For detailed information on using the package, please refer to its
 >>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
 ```
 
-![Plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/fig-0.png)
+![Plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/notebook/fig-0.png)
 
 ## Contributing
 
@@ -75,4 +75,4 @@ This package is released under the [BSD License](LICENSE.md).
 ## Cite
 
 In case this package is useful for your research, please kindly consider
-[citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).
+[citing it](https://networkx-temporal.readthedocs.readwrite/en/stable/cite.html).

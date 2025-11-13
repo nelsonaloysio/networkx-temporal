@@ -4,10 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "networkx-temporal"
-version = "1.2.1"
+version = "1.3.0"
 description = "Python package to build and manipulate dynamic NetworkX graphs."
 requires-python = ">=3.7"
 readme = {file = "README.md", content-type = "text/markdown"}
+# license = "BSD-2-Clause"
+# license-files = ["LICENSE.md"]
 keywords = ["Network", "Graph", "Dynamic Graph", "Temporal Network"]
 authors = [
     {name = "Nelson Aloysio Reis de Almeida Passos", email = "nelson.reis@phd.unipi.it"}
@@ -23,17 +25,32 @@ classifiers = [
 ]
 dependencies = [
     "networkx >=2.1",
+    "numpy >=1.17.3",
     "pandas >=1.1.0",
+    "scipy >=1.7.3",
 ]
 
 [project.urls]
 Homepage = "https://pypi.org/p/networkx-temporal/"
-Documentation = "https://networkx-temporal.readthedocs.io"
+Documentation = "https://networkx-temporal.readthedocs.readwrite"
 Repository = "https://github.com/nelsonaloysio/networkx-temporal"
 Issues = "https://github.com/nelsonaloysio/networkx-temporal/issues"
 Changelog = "https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
+all = [
+    "dgl",
+    "dynetx",
+    "graph-tool",  # conda install -c conda-forge graph-tool
+    "leidenalg",
+    "matplotlib",
+    "networkit",
+    "python-igraph",
+    "snap-stanford",  # conda install -c conda-forge python-snap
+    "stellargraph",  # conda install -c stellargraph stellargraph
+    "teneto",
+    "torch_geometric",
+]
 docs = [
     "sphinx-autodoc-typehints >=1.23.0",
     "sphinx-rtd-theme >=2.0.0",
@@ -41,28 +58,12 @@ docs = [
 ]
 draw = [
     "matplotlib",
-    "scipy",
 ]
 ipynb = [
     "ipykernel",
     "leidenalg",
     "matplotlib",
     "python-igraph",
-    "scipy",
-]
-test = [
-    "dgl",
-    "dynetx",
-    # "graph-tool",  # conda install -c conda-forge graph-tool
-    "leidenalg",
-    "matplotlib",
-    "networkit",
-    "python-igraph",
-    "scipy",
-    "snap-stanford",
-    "stellargraph",
-    "teneto",
-    "torch_geometric",
 ]
 
 [tool.setuptools.packages.find]
