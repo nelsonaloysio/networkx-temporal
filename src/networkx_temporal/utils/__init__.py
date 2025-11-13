@@ -5,13 +5,17 @@ Utility functions for NetworkX static and temporal graphs.
 
 .. autosummary::
 
-   from_multigraph
-   is_frozen
-   is_static_graph
-   is_temporal_graph
-   to_multigraph
+   combine_snapshots
+   edge_attributes_from_nodes
+   get_edge_attributes
+   get_node_attributes
+   get_unique_edge_attributes
+   get_unique_node_attributes
+   node_attributes_from_edges
+   partitions
+   propagate_snapshots
 
-.. rubric:: Summary - Converters
+.. rubric:: Converters - Summary
 
 .. autosummary::
 
@@ -29,18 +33,26 @@ Utility functions for NetworkX static and temporal graphs.
 .. rubric:: Functions
 """
 
-from .networkx import (
-    from_multigraph,
-    is_frozen,
-    is_static_graph,
-    is_temporal_graph,
-    to_multigraph,
+from .utils import (
+    combine_snapshots,
+    edge_attributes_from_nodes,
+    get_edge_attributes,
+    get_node_attributes,
+    get_unique_edge_attributes,
+    get_unique_node_attributes,
+    node_attributes_from_edges,
+    partitions,
+    propagate_snapshots,
 )
 
 __all__ = (
-    "from_multigraph",
-    "is_frozen",
-    "is_static_graph",
-    "is_temporal_graph",
-    "to_multigraph",
+    "combine_snapshots",
+    "edge_attributes_from_nodes",
+    "get_edge_attributes",
+    "get_node_attributes",
+    "get_unique_edge_attributes",
+    "get_unique_node_attributes",
+    "node_attributes_from_edges",
+    "partitions",
+    "propagate_snapshots",
 )

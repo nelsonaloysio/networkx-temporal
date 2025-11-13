@@ -2,15 +2,16 @@
 Cite
 ####
 
-At present, we do not have a published article about **NetworkX-Temporal**.
-For the time being, if you use it in your research, we kindly ask you to
-consider citing it by referencing the software itself:
+If this software is useful in your research, please kindly
+consider citing its corresponding paper:
 
-   Nelson A. R. A. Passos, Emanuele Carlini, Salvatore Trani (2024).
+   Nelson A. R. A. Passos, Emanuele Carlini, Salvatore Trani (2025).
    ''NetworkX-Temporal: Building, manipulating, and analyzing dynamic graph structures''.
-   doi: `10.5281/zenodo.13956069 <https://doi.org/10.5281/zenodo.13956069>`_
+   SoftwareX, 31, 2025. 102277. ISSN 2352-7110.
+   doi: `10.1016/j.softx.2025.102277 <https://doi.org/10.1016/j.softx.2025.102277>`_
 
-.. include:: bib/networkxtemporal2024.rst
+
+.. include:: bib/networkxtemporal2025.rst
 
 Please also consider citing the corresponding paper to the NetworkX library:
 

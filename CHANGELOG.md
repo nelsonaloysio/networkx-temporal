@@ -9,6 +9,36 @@
 ### Removed
 -->
 
+## \[1.3\] - 2025-11-26
+
+### Added
+- Drawing function `unrolled_layout`.
+- Improved NetworkX graph functions to `classes` module.
+- Module `algorithms` with centrality, centralization, and community metrics.
+- Module `generators` with example datasets and generative functions.
+- Parameter `delta` added to `to_unrolled` (previously `unified`).
+- Parameter `intervals` added to `slice` method of temporal graphs.
+- Quality of life functions to temporal graph objects, for example, `from_multigraph`.
+- Type objects `TemporalDiGraph`, `TemporalMultiGraph`, `TemporalMultiDiGraph`.
+- Utility functions for snapshots, node and edge attributes, and partitions.
+
+### Changed
+- Functions `transform.{from,to}_unrolled` renamed from `transform.{from,to}_unified`.
+- Module `classes` renamed from `graph`.
+- Module `readwrite` renamed from `io`.
+- Parameter `copies` added to `order`, `number_of_nodes`, `size`, `number_of_edges` methods.
+- Parameter `delta` renamed from `eps` (`transform.to_events`).
+- Type object `TemporalGraph` now refers to undirected, non-multigraph temporal graphs.
+- Wrapping methods of inherited NetworkX static graph classes by temporal graph classes.
+
+### Deprecated
+- Alias parameters for package conversion, for example, `'nk'` for `'networkit'`.
+
+### Fixed
+- Node-level slices on empty graphs (without edges) are now supported.
+- Slicing a graph with `slice` when specifying `attr` but not `bins` now returns unique points.
+
+
 ## \[1.2.1\] - 2025-03-10
 
 ### Fixed
