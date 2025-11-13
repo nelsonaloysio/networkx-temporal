@@ -9,11 +9,14 @@ Type hints exclusively used in function definitions.
    Figure
    StaticGraph
    TemporalGraph
+   TemporalDiGraph
+   TemporalMultiGraph
+   TemporalMultiDiGraph
 
 .. rubric:: Note
 
-Type hints are used to specify the type of arguments and return values in function definitions only,
-and may not be used to check an object type at runtime, as the following example demonstrates:
+Type hints are used to specify the type of arguments and return values in function definitions
+only, and may not be used to check an object type at runtime, as demonstrated in the example below.
 
 .. code-block:: python
 
@@ -21,16 +24,16 @@ and may not be used to check an object type at runtime, as the following example
     >>> from networkx_temporal.typing import TemporalGraph as TemporalGraphType
     >>>
     >>> TG = TemporalGraph()
-    >>> type(TG) == TemporalGraph, type(TG) == TemporalGraphType
+    >>> isinstance(TG, TemporalGraph), isinstance(TG, TemporalGraphType)
 
     (True, False)
 
 .. note::
 
-   The convenience functions :func:`~networkx_temporal.utils.is_temporal_graph`
-   and :func:`~networkx_temporal.utils.is_static_graph`
-   may also be used to check if an object is an instance of a temporal or
-   static NetworkX graph, respectively.
+   The convenience functions :func:`~networkx_temporal.classes.is_temporal_graph`
+   and :func:`~networkx_temporal.classes.is_static_graph`
+   may be used instead to check if an object is an instance of a temporal or
+   static NetworkX graph.
 """
 
 from .typing import (
@@ -38,4 +41,7 @@ from .typing import (
     Figure,
     StaticGraph,
     TemporalGraph,
+    TemporalDiGraph,
+    TemporalMultiGraph,
+    TemporalMultiDiGraph,
 )

@@ -13,12 +13,11 @@ lib/
 lib64/
 *.manifest
 MANIFEST
-notebook/
-!notebook/networkx-temporal.ipynb
 parts/
 pip-delete-this-directory.txt
 pip-log.txt
 pip-wheel-metadata/
+pubmed-features.csv.gz
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -29,5 +28,6 @@ share/python-wheels/
 *.spec
 target/
 test/
+tests/
 var/
 wheels/

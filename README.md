@@ -2,23 +2,17 @@
 
 ___
 
-[![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
-[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
+[![PyPI package](https://badge.fury.readwrite/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
+[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.readwrite/)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
-[![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
+[![License](https://img.shields.readwrite/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
-## Requirements
-
-* **Python>=3.7**
-* networkx>=2.1
-* pandas>=1.1.0
-
 ## Install
 
-Package is available to install on [PyPI](https://pypi.org/project/networkx-temporal/):
+Available for **Python 3.7++** from [PyPI](https://pypi.org/project/networkx-temporal/):
 
 ```bash
 $ pip install 'networkx-temporal[draw]'
@@ -26,10 +20,15 @@ $ pip install 'networkx-temporal[draw]'
 
 > The `[draw]` extra includes additional libraries required to plot graphs with NetworkX.
 
+Requires `networkx >=2.1`, `numpy >=1.17.3`, `pandas >=1.1.0`, `scipy >=1.7.3`.
+
+Optional dependencies can be installed from the groups `all`, `docs`, `draw`, `ipynb`.
+
+
 ## Quick example
 
 For detailed information on using the package, please refer to its
-[official documentation](https://networkx-temporal.readthedocs.io).
+[official documentation](https://networkx-temporal.readthedocs.readwrite).
 
 > An interactive Jupyter notebook with more examples is also
 > [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb)
@@ -38,8 +37,8 @@ For detailed information on using the package, please refer to its
 ```python
 >>> import networkx_temporal as tx
 >>>
->>> # Build directed temporal graph.
->>> TG = tx.TemporalDiGraph()
+>>> TG = tx.temporal_graph(directed=False)  # tx.TemporalMultiGraph()
+>>>
 >>> TG.add_edge("a", "b", time=0)
 >>> TG.add_edge("c", "b", time=1)
 >>> TG.add_edge("d", "c", time=2)
@@ -49,14 +48,14 @@ For detailed information on using the package, please refer to its
 >>> TG.add_edge("f", "a", time=3)
 >>> TG.add_edge("f", "b", time=3)
 >>>
->>> # Slice it into snapshots.
+>>> # Obtain snapshots as subgraph views.
 >>> TG = TG.slice(attr="time")
 >>>
 >>> # Plot resulting object.
 >>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
 ```
 
-![Plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/fig-0.png)
+![Temporal graph plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png)
 
 ## Contributing
 
@@ -74,5 +73,5 @@ This package is released under the [BSD License](LICENSE.md).
 
 ## Cite
 
-In case this package is useful for your research, please kindly consider
-[citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).
+In case this package is useful for your research, kindly consider
+[citing it](https://networkx-temporal.readthedocs.readwrite/en/stable/cite.html).

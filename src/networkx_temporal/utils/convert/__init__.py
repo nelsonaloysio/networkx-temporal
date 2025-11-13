@@ -8,6 +8,8 @@ from .dynetx import to_dynetx
 from .graph_tool import to_graph_tool
 from .igraph import to_igraph
 from .networkit import to_networkit
+from .numpy import to_numpy
+from .scipy import to_scipy
 from .snap import to_snap
 from .stellargraph import to_stellargraph
 from .teneto import to_teneto
@@ -20,6 +22,8 @@ __all__ = (
     "to_graph_tool",
     "to_igraph",
     "to_networkit",
+    "to_numpy",
+    "to_scipy",
     "to_snap",
     "to_stellargraph",
     "to_teneto",

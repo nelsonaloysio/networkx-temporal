@@ -21,10 +21,10 @@ for _ in ["-", "a", "b", "post", "rc"]:
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.viewcode",
     "sphinx_rtd_theme",
     "sphinxemoji.sphinxemoji",
 ]
@@ -36,7 +36,6 @@ autosummary_imported_members = True
 
 # -- AutoDoc configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
-
 autodoc_mock_imports = [
     "dgl",
     "dynetx",
@@ -56,7 +55,6 @@ autodoc_typehints = "both"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_static_path = ["../_static"]
 html_logo = "../assets/logo-text.png"
 html_theme = "sphinx_rtd_theme"
@@ -75,3 +73,13 @@ html_css_files = [
     "css/custom.css",
 ]
 html_favicon = "../assets/favicon/favicon.ico"
+
+# -- Options for Edit on GitHub links ----------------------------------------
+# https://docs.readthedocs.com/platform/latest/guides/edit-source-links-sphinx.html
+html_context = {
+    "display_github": True, # Integrate GitHub
+    "github_user": "nelsonaloysio", # Username
+    "github_repo": "networkx-temporal", # Repo name
+    "github_version": "development", # Version
+    "conf_py_path": "/docs/source/", # Path in the checkout to the docs root
+}

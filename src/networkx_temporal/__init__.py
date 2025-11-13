@@ -5,10 +5,11 @@ Top-level module for the package.
 
 .. autosummary::
 
+   algorithms
+   classes
    drawing
-   graph
-   io
-   metrics
+   generators
+   readwrite
    transform
    typing
    utils
@@ -16,47 +17,28 @@ Top-level module for the package.
 .. rubric:: Note
 
 Some classes and functions are exposed at the top level for convenience and may also be accessed via the
-individual modules. For example, the :class:`~networkx_temporal.graph.TemporalGraph` class
+individual modules. For example, the :class:`~networkx_temporal.classes.TemporalGraph` class
 can be imported by running:
 
 .. code-block:: python
 
     >>> from networkx_temporal import TemporalGraph
 
-Or, alternatively, from the :mod:`~networkx_temporal.graph` module in which it is defined:
+Or, alternatively, from the :mod:`~networkx_temporal.classes` module in which it is defined:
 
 .. code-block:: python
 
-    >>> from networkx_temporal.graph import TemporalGraph
+    >>> from networkx_temporal.classes import TemporalGraph
 
 For detailed information on each class and function, please refer to the individual modules.
 """
 
 from .__version__ import __version__
+from .algorithms import *
+from .classes import *
 from .drawing import *
-from .graph import *
-from .io import *
+from .generators import *
+from .readwrite import *
 from .transform import *
 from .utils import *
 from .utils.convert import *
-
-__all__ = (
-    "TemporalGraph",
-    "TemporalDiGraph",
-    "TemporalMultiGraph",
-    "TemporalMultiDiGraph",
-    "convert",
-    "draw",
-    "from_events",
-    "from_multigraph",
-    "from_snapshots",
-    "from_static",
-    "from_unified",
-    "is_frozen",
-    "is_static_graph",
-    "is_temporal_graph",
-    "read_graph",
-    "temporal_graph",
-    "to_multigraph",
-    "write_graph",
-)

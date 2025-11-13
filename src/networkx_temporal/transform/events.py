@@ -3,10 +3,11 @@ from typing import Optional, Union
 
 import networkx as nx
 
+from ..classes.factory import temporal_graph
+from ..classes.types import is_static_graph
 from ..typing import Literal, StaticGraph, TemporalGraph
-from ..utils import is_static_graph
 
-EPSILON = {"int": int, "float": float}
+DELTA = {"int": int, "float": float}
 
 
 def from_events(
@@ -15,14 +16,13 @@ def from_events(
     multigraph: bool = None,
     as_view: bool = True,
 ) -> TemporalGraph:
-    """
-    Returns :class:`~networkx_temporal.graph.TemporalGraph` from a list of 3-tuples or
-    4-tuples representing edge-level events.
+    """ Returns :class:`~networkx_temporal.classes.TemporalGraph` from edge-level events.
+    Events are:
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;
 
-    - **4-tuples** (:math:`u, v, t, \\varepsilon`), where :math:`\\varepsilon` is either an
+    - **4-tuples** (:math:`u, v, t, \\delta`), where :math:`\\delta` is either an
       integer for edge addition (``1``) or deletion (``-1``) event, or a float defining the
       duration of the pairwise interaction (zero for a single snapshot).
 
@@ -36,29 +36,28 @@ def from_events(
     :param bool directed: If ``True``, returns a
         `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
         Default is ``False``.
-    :param bool multigraph: If ``True``, returns a
-        `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
+    :param bool multigraph: If ``True``, returns a `MultiGraph
+        <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
         Automatically set to ``False`` if parallel edges are not found, ``True`` otherwise.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
     """
-    from ..graph import temporal_graph
+    if len(events) == 0:
+        raise ValueError("Argument `events` must be a non-empty list of 3 or 4-tuples.")
+    if len(events[0]) not in (3, 4):
+        raise ValueError(f"Each event must have 3 or 4 elements, received: {len(events[0])}.")
+    if len(events[0]) == 4 and type(events[0][-1]) not in (int, float):
+        raise ValueError("The fourth element of each event must be either an integer or a float.")
 
-    assert events,\
-        "Argument `events` must be a non-empty list."
-    assert len(events[0]) in (3, 4),\
-        f"Each event must have 3 or 4 elements, received: {len(events[0])}."
-    assert len(events[0]) == 3 or type(events[0][-1]) in (int, float),\
-        "The last element of each event must be either an integer (1, -1) or a float."
-
+    # (u, v, t)
     if len(events[0]) == 3:
-
         if multigraph is None:
-            multigraph = 1 != max(Counter((e[:2] for e in events)).values())
+            multigraph = 1 != max(Counter((tuple(e[:2]) for e in events)).values())
 
         TG = temporal_graph(directed=directed, multigraph=multigraph)
         list(TG.add_edge(u, v, time=t) for u, v, t in events)
 
+    # (u, v, t, e), where e is an integer in (-1, 1)
     elif len(events[0]) == 4 and type(events[0][-1]) == int:
         t_max = 1 + max(events, key=lambda x: x[2])[2]
         temporal_edges = {}
@@ -77,15 +76,15 @@ def from_events(
         TG = temporal_graph(directed=directed, multigraph=multigraph)
         list(TG.add_edge(u, v, time=t) for (u, v), ranges in temporal_edges.items() for r in ranges for t in r)
 
+    # (u, v, t, e), where e is a (positive) float defining the duration of the interaction
     elif len(events[0]) == 4 and type(events[0][-1]) == float:
 
         if multigraph is None:
             multigraph = any(e[-1] > 0 for e in events) or 1 != max(Counter((e[:2] for e in events)).values())
 
         TG = temporal_graph(directed=directed, multigraph=multigraph)
-
-        for u, v, t, e in events:
-            for i in range(t, t + 1 + int(e)):
+        for u, v, t, delta in events:
+            for i in range(t, t + 1 + int(delta)):
                 TG.add_edge(u, v, time=i)
 
     TG = TG.slice(attr="time")
@@ -94,16 +93,15 @@ def from_events(
 
 def to_events(
     TG: Union[TemporalGraph, StaticGraph],
-    eps: Optional[Literal["int", "float"]] = None,
+    delta: Optional[Literal["int", "float"]] = None,
     attr: Optional[str] = None,
 ) -> list:
-    """
-    Returns a list of 3-tuples or 4-tuples representing edge-level events.
+    """ Returns a list of edge-level events.
 
     - **3-tuples** (:math:`u, v, t`), where elements are the source node, target node, and time
       attribute;
 
-    - **4-tuples** (:math:`u, v, t, \\varepsilon`), where :math:`\\varepsilon` is either an
+    - **4-tuples** (:math:`u, v, t, \\delta`), where :math:`\\delta` is either an
       integer for edge addition (``1``) or deletion (``-1``) event, or a float defining the
       duration of the interaction (zero for a single snapshot).
 
@@ -112,7 +110,7 @@ def to_events(
         As events are edge-based, node isolates without self-loops are not preserved.
 
     :param TemporalGraph TG: Temporal graph object.
-    :param eps: Defines which additional parameter :math:`\\varepsilon` should be returned.
+    :param delta: Defines which additional parameter :math:`\\delta` should be returned.
 
         * If ``None``, returns events as 3-tuples. Default.
 
@@ -122,64 +120,62 @@ def to_events(
         * If ``'float'``, returns events as 4-tuples with an additional parameter representing
           the duration of the pairwise interaction.
 
-    :param str attr: Edge attribute to consider when ``eps`` is ``'float'``. If provided, the
-        duration of the pairwise interaction is calculated based on the attribute value
-        instead of the number of time steps. Optional.
+    :param attr: Edge attribute to consider when ``delta`` is ``'float'``. If provided,
+        the attribute value is used for ``delta`` instead of the time difference between
+        the start and end of the interaction.
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
-    eps = EPSILON.get(eps, eps)
+    delta = DELTA.get(delta, delta)
 
     if is_static_graph(TG):
         TG = [TG]  # Allows a single graph to be passed as input.
 
-    assert eps in (None, int, float),\
-        f"Argument `eps` must be either `int` or `float` if provided."
-    assert attr is None or type(attr) == str,\
-        f"Argument `attr` must be a string if provided."
-    assert attr is None or not any(TG.is_multigraph(on_each=True)),\
-        "Edge attributes are not supported when converting multigraphs to events; " \
-        "consider calling the `slice` method or converting it with `from_multigraph` beforehand."
+    if delta not in (None, int, float):
+        raise TypeError(f"Argument `delta` must be either `int` or `float` if provided.")
+    if attr is not None and type(attr) != str:
+        raise TypeError(f"Argument `attr` must be a string if provided.")
+    # FIXME: Multigraph edge indices are not supported.
+    if attr is not None and any(TG.is_multigraph()):
+        raise ValueError(
+            "Edge attributes are not supported when converting multigraphs to events; "
+            "consider calling the `slice` method or `from_multigraph` beforehand."
+        )
     # Filtered (frozen) multigraphs produce inconsistent results. [networkx/networkx#7724]
-    assert not any(G.is_multigraph() and nx.is_frozen(G) for G in TG),\
-        "Frozen multigraphs are not supported; consider calling the `copy` method beforehand."
+    if any(G.is_multigraph() and nx.is_frozen(G) for G in TG):
+        raise ValueError("Frozen multigraphs are not supported; consider calling the `copy` method beforehand.")
 
     # 3-tuples of format: (u, v, t).
-    if not eps:
+    if not delta:
         return [(e[0], e[1], t) for t, G in enumerate(TG) for e in G.edges()]
 
     # 4-tuples of format: (u, v, t, int_edge_addition_or_deletion).
-    if eps == int:
-        events = []
-        for t in range(len(TG)):
-            if t == 0:
-                for edge in TG[0].edges():
+    if delta == int:
+        events = [(*edge, 0, 1) for edge in TG[0].edges()]
+        for t in range(1, len(TG)):
+            for edge in TG[t].edges():
+                if not TG[t-1].has_edge(*edge):
                     events.append((*edge, t, 1))
-            else:
-                for edge in TG[t].edges():
-                    if not TG[t-1].has_edge(*edge):
-                        events.append((*edge, t, 1))
-                for edge in TG[t-1].edges():
-                    if not TG[t].has_edge(*edge):
-                        events.append((*edge, t, -1))
+            for edge in TG[t-1].edges():
+                if not TG[t].has_edge(*edge):
+                    events.append((*edge, t, -1))
 
     # 4-tuples of format: (u, v, t, float_edge_duration).
-    if eps == float:
+    if delta == float:
         events = []
 
         for i in range(len(TG)):
-            for u, v, start in TG[i].edges(data=attr, default=i):
+            for u, v in TG[i].edges():
                 if i == 0 or not TG[i-1].has_edge(u, v):
                     for j in range(i+1, len(TG)):
                         if not TG[j].has_edge(u, v):
-                            end = TG[j-1].edges[u, v].get(attr, j) if attr else j
-                            events.append((u, v, start, float(end - start - 1)))
+                            events.append((u, v, i, float(j - i - 1)))
                             break
                         if j == len(TG) - 1:
-                            end = TG[j-1].edges[u, v].get(attr, j) if attr else j
-                            events.append((u, v, start, float(end - start)))
+                            events.append((u, v, i, float(j - i)))
                             break
                     if i == len(TG) - 1:
-                        events.append((u, v, start, 0.0))
+                        events.append((u, v, i, 0.0))
 
     return events

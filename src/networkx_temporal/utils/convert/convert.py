@@ -9,8 +9,10 @@ ALIASES = {
     "gt": "graph_tool",
     "ig": "igraph",
     "nk": "networkit",
+    "np": "numpy",
     "pyg": "torch_geometric",
     "sg": "stellargraph",
+    "sp": "scipy",
     "tn": "teneto",
 }
 
@@ -20,6 +22,8 @@ FORMATS = Literal[
     "graph_tool",
     "igraph",
     "networkit",
+    "numpy",
+    "scipy",
     "snap",
     "stellargraph",
     "torch_geometric",
@@ -27,10 +31,9 @@ FORMATS = Literal[
 ]
 
 
-def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kwargs) -> Any:
-    """
-    High-level conversion function to other libraries. Calls the appropriate function based on the
-    received ``to`` parameter. The following graph libraries are currently supported for conversion:
+def convert(G: Union[StaticGraph, TemporalGraph, list], to: FORMATS, *args, **kwargs) -> Any:
+    """ High-level conversion function to other libraries. Calls the appropriate function based on the
+    received ``to`` parameter. The following libraries are currently supported for conversion:
 
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                            |
@@ -45,7 +48,11 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `NetworKit <https://networkit.github.io>`__                       | .. centered:: ``'networkit'``        | .. centered:: :func:`~networkx_temporal.utils.convert.to_networkit`       |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+    | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_numpy`           |
+    +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.convert.to_torch_geometric` |
+    +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+    | `SciPy <https://scipy.org>`__                                     | .. centered:: ``'scipy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_scipy`           |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `SNAP <https://https://snap.stanford.edu>`__                      | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
@@ -63,8 +70,8 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
 
     Convert the `Karate Club
     <https://networkx.org/documentation/stable/auto_examples/graph/plot_karate_club.html>`__
-    graph dataset from NetworkX into a PyTorch Geometric `Data
-    <https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.data.Data.html>`__
+    dataset from NetworkX into a PyTorch Geometric `Data
+    <https://pytorch-geometric.readthedocs.readwrite/en/latest/generated/torch_geometric.data.Data.html>`__
     object:
 
     .. code-block:: python
@@ -73,7 +80,7 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
         >>> import networkx_temporal as tx
         >>>
         >>> G = nx.karate_club_graph()
-        >>> data = tx.convert(G, "pyg")
+        >>> data = tx.convert(G, "torch_geometric")
         >>>
         >>> print(G)
         >>> print(data)
@@ -81,7 +88,7 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
         Graph named "Zachary's Karate Club" with 34 nodes and 78 edges
         Data(edge_index=[2, 156], club=[34], weight=[156], name='Zachary's Karate Club', num_nodes=34)
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param str to: Package name or alias to convert the graph object.
     :param args: Additional positional arguments for the conversion function.
@@ -89,7 +96,8 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
 
     :rtype: Any
 
-    :note: Available both as a function and as a method from :class:`~networkx_temporal.graph.TemporalGraph` objects.
+    :note: Available both as a function and as a method from
+        :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
     pkg = ALIASES.get(to, to)
     func = ALIASES.get(pkg, pkg)
@@ -100,8 +108,10 @@ def convert(G: Union[TemporalGraph, StaticGraph, list], to: FORMATS, *args, **kw
             category=FutureWarning
         )
 
-    assert pkg in FORMATS.__args__,\
-        f"Argument `to` must be among {list(FORMATS.__args__)} or aliases {list(ALIASES)}."
+    if pkg not in FORMATS.__args__:
+        raise ValueError(
+            f"Argument `to` must be among {list(FORMATS.__args__)} or aliases {list(ALIASES)}."
+        )
 
     func = import_module(f".", package=__package__).__dict__["to_%s" % func]
     return func(G, *args, **kwargs)
