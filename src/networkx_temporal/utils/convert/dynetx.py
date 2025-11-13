@@ -1,14 +1,13 @@
 from typing import Optional, Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ...classes.types import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
 def to_dynetx(G: Union[TemporalGraph, StaticGraph, list], attr: Optional[str] = None, **kwargs):
-    """
-    Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.io/>`__.
+    """ Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.readwrite/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param attr: Attribute name for the temporal edges. Optional.
     :param kwargs: Keyword arguments for the DyNetX graph object.
@@ -17,11 +16,11 @@ def to_dynetx(G: Union[TemporalGraph, StaticGraph, list], attr: Optional[str] = 
     """
     import dynetx as dn
 
-    assert attr is None or isinstance(attr, str),\
-        "Attribute name must be a string."
+    if attr is not None and type(attr) != str:
+        raise TypeError("Attribute name must be a string.")
 
-    assert is_temporal_graph(G) or is_static_graph(G),\
-        "Input must be a temporal or static NetworkX graph."
+    if not (is_temporal_graph(G) or is_static_graph(G)):
+        raise TypeError("Input must be a temporal or static NetworkX graph.")
 
     dnG = getattr(dn, f"Dyn{'Di' if G.is_directed() else ''}Graph")(**kwargs)
 

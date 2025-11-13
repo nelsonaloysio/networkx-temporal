@@ -1,6 +1,6 @@
 from typing import Any, Union
 
-from ..networkx import is_static_graph, is_temporal_graph
+from ...classes.types import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
@@ -27,10 +27,9 @@ def to_graph_tool(
     encoding: str = "ascii",
     errors: str = "strict",
 ):
-    """
-    Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
+    """ Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.graph.TemporalGraph`, a
+    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.
@@ -47,8 +46,8 @@ def to_graph_tool(
     """
     import graph_tool as gt
 
-    assert is_temporal_graph(G) or is_static_graph(G),\
-        "Input must be a temporal or static NetworkX graph."
+    if not (is_temporal_graph(G) or is_static_graph(G)):
+        raise TypeError("Input must be a temporal or static NetworkX graph.")
 
     if is_temporal_graph(G) or type(G) == list:
         return [to_graph_tool(H, index=index, encoding=encoding, errors=errors) for H in G]
@@ -73,7 +72,8 @@ def to_graph_tool(
     # Verify numeric type and ensure each property has a single type.
     for key, types in vp.items():
         types_ = _get_types(types)
-        assert len(types_) == 1, f"Multiple types for node property '{key}': {types}."
+        if len(types_) != 1:
+            raise TypeError(f"Multiple types for node property '{key}': {types}.")
         gtG.vp[key] = gtG.new_vertex_property(types_[0])
 
     # Add nodes and their properties.
@@ -95,7 +95,8 @@ def to_graph_tool(
     # Verify numeric type and ensure each property has a single type.
     for key, types in ep.items():
         types_ = _get_types(types)
-        assert len(types_) == 1, f"Multiple types for edge property '{key}': {types}."
+        if len(types_) != 1:
+            raise TypeError(f"Multiple types for edge property '{key}': {types}.")
         gtG.ep[key] = gtG.new_edge_property(types_[0])
 
     # Add edges and their properties.
@@ -108,8 +109,7 @@ def to_graph_tool(
 
 
 def _get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "strict") -> tuple:
-    """
-    Performs typing and key/value conversion for graph-tool's `PropertyMap` class.
+    """ Performs typing and key/value conversion for graph-tool's `PropertyMap` class.
 
     :param key: Attribute key.
     :param value: Attribute value.
@@ -138,8 +138,7 @@ def _get_prop(key: Any, value: Any, encoding: str = "ascii", errors: str = "stri
 
 
 def _get_types(types: list) -> list:
-    """
-    Returns the type of a property based on list of observed types.
+    """ Returns the type of a property based on list of observed types.
 
     :param types: List of types.
     """
