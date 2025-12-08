@@ -5,7 +5,7 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_networkit(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
-    """ Convert from NetworkX to `Networkit <https://networkit.github.readwrite/>`__.
+    """ Convert from NetworkX to `Networkit <https://networkit.github.io/>`__.
 
     :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
@@ -16,7 +16,7 @@ def to_networkit(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
 
     :note: Wrapper function for
         `networkit.nxadapter.nx2nk
-        <https://networkit.github.readwrite/dev-docs/python_api/nxadapter.html#networkit.nxadapter.nx2nk>`__.
+        <https://networkit.github.io/dev-docs/python_api/nxadapter.html#networkit.nxadapter.nx2nk>`__.
     """
     import networkit as nk
 

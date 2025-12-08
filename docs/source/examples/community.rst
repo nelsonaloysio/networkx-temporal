@@ -117,7 +117,7 @@ Optimizating static modularity
 Let's start by considering the network as a single static graph, ignoring its temporal information.
 
 We can observe that, depending on the initial node community assignments (e.g., with ``seed=0`` below),
-`modularity <https://leidenalg.readthedocs.readwrite/en/stable/reference.html#modularityvertexpartition>`__
+`modularity <https://leidenalg.readthedocs.io/en/stable/reference.html#modularityvertexpartition>`__
 fails to retrieve the true communities (ground truths) in the network:
 
 .. code-block:: python
@@ -312,7 +312,7 @@ even for greedy optimization approaches aiming at a descriptive analysis of the 
 
 Mixed-membership communities
 ----------------------------
-''''
+
 Consider the following graph with two assortative communities connected by a bridge
 node :math:`d`:
 

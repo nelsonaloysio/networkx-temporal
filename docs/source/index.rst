@@ -44,12 +44,12 @@
 NetworkX-Temporal
 #################
 
-.. image:: https://badge.fury.readwrite/py/networkx-temporal.svg
+.. image:: https://badge.fury.io/py/networkx-temporal.svg
    :target: https://pypi.org/project/networkx-temporal/
    :alt: PyPI version
 
 .. image:: https://readthedocs.org/projects/networkx-temporal/badge/?version=latest
-   :target: https://networkx-temporal.readthedocs.readwrite/en/latest/?badge=latest
+   :target: https://networkx-temporal.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://static.pepy.tech/badge/networkx-temporal
@@ -60,7 +60,7 @@ NetworkX-Temporal
    :target: https://pepy.tech/project/networkx-temporal?versions=*
    :alt: Downloads
 
-.. image:: https://img.shields.readwrite/pypi/l/networkx-temporal
+.. image:: https://img.shields.io/pypi/l/networkx-temporal
    :target: https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md
    :alt: License
 
@@ -99,9 +99,9 @@ Quick start
 The following is a quick example of the package in action, covering its basic functionality.
 More examples are accessible via the sidebar and also available as a
 `Jupyter notebook
-<https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__
+<https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__
 (`open on Colab
-<https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal.ipynb>`__).
+<https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__).
 
 
 Build and slice temporal graph
@@ -159,7 +159,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: (https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png)
+.. image:: https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png
    :alt: Temporal graph plot
    :align: center
 

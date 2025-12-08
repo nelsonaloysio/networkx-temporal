@@ -5,7 +5,7 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_dynetx(G: Union[StaticGraph, TemporalGraph, list], attr: Optional[str] = None, **kwargs):
-    """ Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.readwrite/>`__.
+    """ Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.io/>`__.
 
     :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.
