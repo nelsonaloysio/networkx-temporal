@@ -155,6 +155,7 @@ def from_multigraph(G: Union[StaticGraph, TemporalGraph]) -> Union[TemporalGraph
 
     if is_static_graph(G):
         H = nx.DiGraph() if G.is_directed() else nx.Graph()
+        H.graph = G.graph.copy()
         H.add_nodes_from(G.nodes(data=True))
         H.add_edges_from(G.edges(data=True))
         # Aggregate weights of parallel edges.
@@ -167,6 +168,7 @@ def from_multigraph(G: Union[StaticGraph, TemporalGraph]) -> Union[TemporalGraph
 
     TG = TemporalDiGraph(t=0) if G.is_directed() else TemporalGraph(t=0)
     TG.add_snapshots_from([from_multigraph(H) for H in G])
+    TG.name = G.name
     TG.names = G.names
     return TG
 
@@ -194,12 +196,14 @@ def to_multigraph(G: Union[StaticGraph, TemporalGraph]) -> Union[TemporalGraph, 
 
     if is_static_graph(G):
         H = nx.MultiDiGraph() if G.is_directed() else nx.MultiGraph()
+        H.graph = G.graph.copy()
         H.add_nodes_from(G.nodes(data=True))
         H.add_edges_from(G.edges(data=True))
         return H
 
     TG = TemporalMultiDiGraph(t=0) if G.is_directed() else TemporalMultiGraph(t=0)
     TG.add_snapshots_from([to_multigraph(H) for H in G])
+    TG.name = G.name
     TG.names = G.names
     return TG
 
