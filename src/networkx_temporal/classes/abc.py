@@ -346,14 +346,18 @@ class TemporalABC(metaclass=ABCMeta):
         """
         return {t: G.nodes[node] for t, G in self.items() if G.has_node(node)}
 
-    def add_snapshot(self, G: StaticGraph) -> None:
+    def add_snapshot(self, G: StaticGraph = None) -> StaticGraph:
         """ Adds a snapshot to the temporal graph.
 
         If ``G`` is ``None``, adds an empty graph with the same properties as the temporal graph.
+        Returns the added snapshot (i.e., the parameter ``G`` if not ``None``, or an empty graph).
 
         :param G: NetworkX graph object to add as snapshot.
         """
+        if G is None:
+            G = self.new_snapshot()
         self.insert(len(self), G)
+        return G
 
     def add_snapshots_from(self, graphs: List[StaticGraph]) -> None:
         """ Adds multiple snapshots to the temporal graph.

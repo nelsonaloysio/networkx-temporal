@@ -12,6 +12,7 @@
 ## \[1.3.1\] - 2026-04-14
 
 ### Changed
+- Class method `add_snapshot` now returns graph object for variable assignment (empty by default).
 - Parameter `delta` now explicitly stored as a graph attribute in `to_unrolled` graphs.
 - Refactored `neighbors`, `all_neighbors` generators from functions and methods avoiding `reduce`.
 - Refactored node and edge iteration from `temporal_{order,size}` and `degree_centrality`.
