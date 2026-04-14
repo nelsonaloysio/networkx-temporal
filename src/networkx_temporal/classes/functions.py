@@ -1,5 +1,3 @@
-from functools import reduce
-from operator import or_
 from typing import Any, List, Union
 
 import networkx as nx
@@ -18,10 +16,12 @@ def all_neighbors(TG: TemporalGraph, node: Any) -> iter:
     :note: Available both as a function and as a method from
         :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
-    yield from reduce(
-        or_,  # lambda x, y: x.union(y),
-        iter(set(nx.all_neighbors(G, node)) if G.has_node(node) else set() for G in TG)
-    )
+    yield from {
+        nbr
+        for G in TG
+        if G.has_node(node)
+        for nbr in nx.all_neighbors(G, node)
+    }
 
 def neighbors(TG: TemporalGraph, node: Any) -> iter:
     """ Returns iterator of node neighbors in each snapshot. Considers edge direction.
@@ -32,10 +32,12 @@ def neighbors(TG: TemporalGraph, node: Any) -> iter:
     :note: Available both as a function and as a method from
         :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
-    yield from reduce(
-        or_,  # lambda x, y: x.union(y),
-        iter(set(nx.neighbors(G, node)) if G.has_node(node) else set() for G in TG)
-    )
+    yield from {
+        nbr
+        for G in TG
+        if G.has_node(node)
+        for nbr in G.neighbors(node)
+    }
 
 
 def compose(

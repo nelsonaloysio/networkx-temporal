@@ -1,6 +1,5 @@
 from ..typing import TemporalGraph
-from functools import reduce, wraps
-from operator import or_
+from functools import wraps
 from typing import Any, Callable, Optional, Union
 
 import networkx as nx
@@ -34,15 +33,17 @@ def wrapper(TG: TemporalGraph, G: StaticGraph, name: str) -> Callable:
 
 @wraps(nx.all_neighbors)
 def all_neighbors(self: TemporalGraph, node: Any) -> iter:
-    yield from iter(
-        list(set(nx.all_neighbors(G, node))) if G.has_node(node) else [] for G in self
+    yield from (
+        list(nx.all_neighbors(G, node)) if G.has_node(node) else []
+        for G in self
     )
 all_neighbors.__doc__ += "\n:meta private:"
 
 @wraps(nx.Graph.neighbors)
 def neighbors(self: TemporalGraph, node: Any) -> iter:
-    yield from iter(
-        list(set(nx.neighbors(G, node))) if G.has_node(node) else [] for G in self
+    yield from (
+        list(nx.neighbors(G, node)) if G.has_node(node) else []
+        for G in self
     )
 neighbors.__doc__ += "\n:meta private:"
 

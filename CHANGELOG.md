@@ -9,6 +9,16 @@
 ### Removed
 -->
 
+## \[1.3.1\] - 2026-04-14
+
+### Changed
+- Refactored `neighbors`, `all_neighbors` generators from functions and methods avoiding `reduce`.
+- Refactored node and edge iteration from `temporal_{order,size}` and `degree_centrality`.
+
+### Fixed
+- Calling `temporal_{nodes,edges}` with `copies=False` and `data=True` raised `TypeError`.
+
+
 ## \[1.3\] - 2025-11-26
 
 ### Added

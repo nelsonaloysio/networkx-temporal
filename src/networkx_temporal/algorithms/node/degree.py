@@ -215,12 +215,11 @@ def _degree_centrality(
 
     degrees = _degree(TG, degree=degree, nbunch=nbunch, weight=weight)
 
-    order = len(
-        reduce(
-            lambda x, y: x.union(y),
-            iter(set(G.nodes()) for G in ([TG] if is_static_graph(TG) else TG))
-        )
-    )
+    order = len({
+        node
+        for G in ([TG] if is_static_graph(TG) else TG)
+        for node in G.nodes()
+    })
 
     if type(degrees) == int:
         return degrees / (order - 1)

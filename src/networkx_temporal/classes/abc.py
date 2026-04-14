@@ -1,6 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from functools import reduce, wraps
-from platform import node
+from functools import wraps
 from typing import Any, List, Optional, Union
 from warnings import warn
 
@@ -527,34 +526,39 @@ class TemporalABC(metaclass=ABCMeta):
         """
         return self.graphs
 
-    def temporal_edges(self, copies: Optional[bool] = None, *args, **kwargs) -> list:
-        """ Returns single list of edges (interactions) in all snapshots.
+    def temporal_edges(self, copies: Optional[bool] = None, *args, **kwargs) -> Union[list, dict]:
+        """ Returns sequence of edges (interactions) in all snapshots.
 
         :param copies: If ``True``, consider multiple instances of the same edge in different
             snapshots. Default is ``True``.
         :param args: Additional arguments to pass to the NetworkX graph method.
         :param kwargs: Additional keyword arguments to pass to the NetworkX graph method.
         """
+        copies = True if copies is None else copies
         if len(self) == 0:
             return []
         if copies is False:
-            return reduce(lambda x, y: x.union(y), [set(G.edges(*args, **kwargs)) for G in self])
+            if kwargs.get("data", None):
+                return {k: v for G in self for k, v in G.edges(*args, **kwargs)}
+            return {e for G in self for e in G.edges(*args, **kwargs)}
         return list(e for G in self for e in G.edges(*args, **kwargs))
 
-    def temporal_nodes(self, copies: Optional[bool] = None, *args, **kwargs) -> list:
-        """ Returns single list of nodes in all snapshots.
+    def temporal_nodes(self, copies: Optional[bool] = None, *args, **kwargs) -> Union[dict, list]:
+        """ Returns sequence of nodes in all snapshots.
 
         :param copies: If ``True``, consider multiple instances of the same node in different
             snapshots. Default is ``False``.
         :param args: Additional arguments to pass to the NetworkX graph method.
         :param kwargs: Additional keyword arguments to pass to the NetworkX graph method.
         """
+        copies = False if copies is None else copies
         if len(self) == 0:
             return []
-        copies = False if copies is None else copies
         if copies is False:
-            return reduce(lambda x, y: x.union(y), [set(G.nodes(*args, **kwargs)) for G in self])
-        return list(e for G in self for e in G.nodes(*args, **kwargs))
+            if kwargs.get("data", None):
+                return {k: v for G in self for k, v in G.nodes(*args, **kwargs)}
+            return {n for G in self for n in G.nodes(*args, **kwargs)}
+        return list(n for G in self for n in G.nodes(*args, **kwargs))
 
     def temporal_neighbors(self, node: Any) -> list:
         """ Returns single list of neighbors for a given node across all snapshots.
