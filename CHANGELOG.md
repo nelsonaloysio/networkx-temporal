@@ -12,6 +12,7 @@
 ## \[1.3.1\] - 2026-04-14
 
 ### Changed
+- Parameter `delta` now explicitly stored as a graph attribute in `to_unrolled` graphs.
 - Refactored `neighbors`, `all_neighbors` generators from functions and methods avoiding `reduce`.
 - Refactored node and edge iteration from `temporal_{order,size}` and `degree_centrality`.
 
@@ -27,7 +28,7 @@
 - Improved NetworkX graph functions to `classes` module.
 - Module `algorithms` with centrality, centralization, and community metrics.
 - Module `generators` with example datasets and generative functions.
-- Parameter `delta` added to `to_unrolled` (previously `unified`).
+- Parameter `delta` added to `to_unrolled` (previously `to_unified`).
 - Parameter `intervals` added to `slice` method of temporal graphs.
 - Quality of life functions to temporal graph objects, for example, `from_multigraph`.
 - Type objects `TemporalDiGraph`, `TemporalMultiGraph`, `TemporalMultiDiGraph`.

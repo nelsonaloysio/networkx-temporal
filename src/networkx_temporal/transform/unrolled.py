@@ -60,11 +60,13 @@ def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGrap
     :param UTG: Unrolled temporal graph.
     :param delta: Time step between temporal nodes. Optional.
     """
-    delta = getattr(UTG, "delta", 0)
-
     temporal_nodes = {}
     temporal_edges = {}
 
+    # Use `delta` attribute from graph if not provided as argument.
+    delta = UTG.graph.get("delta", None) or getattr(UTG, "delta", 0)
+
+    # Use `keys` argument if graph is a multigraph, to preserve edge keys in the mapping.
     edge_kwargs = {"data": True, **({"keys": True} if UTG.is_multigraph() else {})}
 
     for edge in UTG.edges(**edge_kwargs):
