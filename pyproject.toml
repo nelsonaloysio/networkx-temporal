@@ -70,3 +70,6 @@ ipynb = [
 where = ["src"]
 include = ["networkx_temporal*"]
 exclude = ["networkx_temporal.tests*"]
+
+[tool.setuptools.package-data]
+"networkx_temporal" = ["generators/datasets/*/*.gz"]

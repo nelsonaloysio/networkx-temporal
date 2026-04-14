@@ -24,6 +24,7 @@ def test_networkx_temporal(*args, **kwargs) -> None:
     test_degree_vectors()
     test_dynamic_sbm()
     test_generators()
+    test_datasets()
 
     if test_convert:
         for pkg in test_convert:
@@ -178,7 +179,7 @@ def test_degree_vectors() -> None:
 def test_dynamic_sbm() -> None:
     log.info("test_dynamic_sbm")
     n, k = 5, 2
-    TG = tx.generators.dynamic_sbm(
+    TG = tx.generators.dynamic_stochastic_block_model(
         B=tx.generators.generate_block_matrix(k),
         z=tx.generators.generate_community_vector(n, k),
         d=tx.generators.generate_degree_vector(n*k, seed=0),
@@ -219,6 +220,19 @@ def test_generators() -> None:
     assert z_.tolist() == [0, 1, 1, 0, 0, 0, 0, 1, 1, 0]
     Z_ = tx.generators.transition_node_memberships(Z, tau, seed=0)
     assert Z_.tolist() == [0, 1, 1, 0, 0, 0]
+
+
+def test_datasets() -> None:
+    log.info("test_datasets")
+    TG = tx.generators.collegemsg_graph().flatten()
+    assert TG.order() == [1899]
+    assert TG.size() == [59835]
+    TG = tx.generators.pubmed_graph().flatten()
+    assert TG.order() == [19717]
+    assert TG.size() == [44335]
+    TG = tx.generators.pubmed_graph(features=True).flatten()
+    assert TG.order() == [19717]
+    assert TG.size() == [44335]
 
 
 def test_convert_graph(TG, pkg) -> None:
