@@ -1,6 +1,6 @@
 import gzip
 import os.path as osp
-import urllib
+import urllib.request
 from pathlib import Path
 from typing import Optional, Union
 import zipfile
@@ -40,7 +40,6 @@ def pubmed_graph(features: Optional[Union[bool, str]] = False) -> TemporalDiGrap
         >>> import networkx_temporal as tx
         >>>
         >>> TG = tx.generators.pubmed_graph()
-        >>>
         >>> print(TG)
 
         TemporalDiGraph (t=42) with 19717 nodes and 44335 edges
@@ -60,7 +59,7 @@ def pubmed_graph(features: Optional[Union[bool, str]] = False) -> TemporalDiGrap
 
     :param features: If ``True``, loads additional node features from file.
         Allows passing a string pointing to the directory where the `pubmed-features.csv.gz
-        <https://github.com/nelsonaloysio/networkx-temporal/raw/refs/heads/development/extra/data/pubmed-features.csv.gz>`__
+        <https://zenodo.org/records/17860933/files/pubmed-features.csv.zip>`__
         file is located. If the file is not found, it will be downloaded automatically.
         Default is ``False``.
 

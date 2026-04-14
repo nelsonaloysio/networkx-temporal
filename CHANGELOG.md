@@ -20,6 +20,7 @@
 ### Fixed
 - Calling `temporal_{nodes,edges}` with `copies=False` and `data=True` raised `TypeError`.
 - Graph parameters (e.g., `name`) now preserved when converting from/to multigraphs.
+- Import submodule `urllib.request` for external file downloading, not `urllib`.
 
 
 ## \[1.3\] - 2025-11-26
