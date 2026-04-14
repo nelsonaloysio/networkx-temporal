@@ -94,10 +94,14 @@ def get_edge_attributes(
     :param index: Whether to return a dictionary with edges as keys.
     """
     if is_static_graph(TG):
-        return nx.get_edge_attributes(TG, attr, default=default)
-    edge_attr = [nx.get_edge_attributes(G, attr, default=default) for G in TG]
-    if not index:
-        edge_attr = [list(edge_attr.values()) for edge_attr in edge_attr]
+        edge_attr = nx.get_edge_attributes(TG, attr, default=default)
+        if not index:
+            edge_attr = list(edge_attr.values())
+    else:
+        edge_attr = [nx.get_edge_attributes(G, attr, default=default) for G in TG]
+        if not index:
+            edge_attr = [list(attrs.values()) for attrs in edge_attr]
+
     return edge_attr
 
 
@@ -138,11 +142,14 @@ def get_node_attributes(
     :param index: Whether to return a dictionary with nodes as keys.
     """
     if is_static_graph(TG):
-        return nx.get_node_attributes(TG, attr, default=default)
-    node_attr = [nx.get_node_attributes(G, attr, default=default) for G in TG]
-    if not index:
-        node_attr = [list(node_attr.values()) for node_attr in node_attr]
-    return node_attr
+        node_attrs = nx.get_node_attributes(TG, attr, default=default)
+        if not index:
+            node_attrs = list(node_attrs.values())
+    else:
+        node_attrs = [nx.get_node_attributes(G, attr, default=default) for G in TG]
+        if not index:
+            node_attrs = [list(attrs.values()) for attrs in node_attrs]
+    return node_attrs
 
 
 def get_unique_edge_attributes(
