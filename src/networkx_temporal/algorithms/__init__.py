@@ -1,6 +1,13 @@
 """
 Algorithms and metrics for temporal graphs.
 
+.. rubric:: Community detection - Summary
+
+.. autosummary::
+
+   leiden_partition
+   leiden_temporal_partition
+
 .. rubric:: Node-level metrics - Summary
 
 .. autosummary::

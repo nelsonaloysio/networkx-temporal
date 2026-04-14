@@ -9,6 +9,29 @@
 ### Removed
 -->
 
+## \[1.4\] - Roadmap
+
+### Added
+- Class method `get_edge_data` to temporal graphs.
+- Class methods `nodes` and `edges` with `copies` support, previously `temporal_{nodes,edges}`.
+- Community detection optimization algorithm for temporal graphs from `leidenalg`.
+- Support for Fediverse temporal graph dataset from `fedivertex`.
+- Support for GDF extension format from `networkx-gdf`.
+- [WIP] Functions for splitting a graph into temporal train/val/test sets.
+- [WIP] Longitudinal modularity implementation.
+- [WIP] Support for HIF format from `nx_hif`.
+
+### Deprecated
+- Class methods `temporal_{nodes,edges}` now raise a `FutureWarning` category warning.
+
+### Changed
+- SBM edge sampling from a Poisson distribution for multigraphs, Bernoulli otherwise.
+- Utility functions split in `edges`, `nodes`, `time` submodules.
+
+### Fixed
+- SBM edge sampling output matches sparse and dense matrix methods (`sparse={True,False}`).
+
+
 ## \[1.3.1\] - 2026-04-14
 
 ### Changed
