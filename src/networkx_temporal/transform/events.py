@@ -4,6 +4,7 @@ from typing import Optional, Union
 import networkx as nx
 
 from ..classes.factory import temporal_graph
+from ..classes.functions import from_multigraph
 from ..classes.types import is_static_graph
 from ..typing import Literal, StaticGraph, TemporalGraph
 
@@ -33,35 +34,33 @@ def from_events(
         page for details and examples.
 
     :param list events: List of 3-tuple or 4-tuple edge-level events.
-    :param bool directed: If ``True``, returns a
-        `DiGraph <https://networkx.org/documentation/stable/reference/classes/digraph.html>`_.
-        Default is ``False``.
-    :param bool multigraph: If ``True``, returns a `MultiGraph
+    :param bool directed: If ``True``, returns as
+        :class:`~networkx_temporal.classes.TemporalDiGraph` object.
+    :param bool multigraph: If ``True`` (default), returns a `MultiGraph
         <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
-        Automatically set to ``False`` if parallel edges are not found, ``True`` otherwise.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
     """
+    multigraph = True if multigraph is None else multigraph
+
     if len(events) == 0:
-        raise ValueError("Argument `events` must be a non-empty list of 3 or 4-tuples.")
+        raise ValueError("Events must be a non-empty list of 3 or 4-tuples.")
     if len(events[0]) not in (3, 4):
         raise ValueError(f"Each event must have 3 or 4 elements, received: {len(events[0])}.")
     if len(events[0]) == 4 and type(events[0][-1]) not in (int, float):
         raise ValueError("The fourth element of each event must be either an integer or a float.")
 
+    G = getattr(nx, f"Multi{'Di' if directed else ''}Graph")()
+
     # (u, v, t)
     if len(events[0]) == 3:
-        if multigraph is None:
-            multigraph = 1 != max(Counter((tuple(e[:2]) for e in events)).values())
-
-        TG = temporal_graph(directed=directed, multigraph=multigraph)
-        list(TG.add_edge(u, v, time=t) for u, v, t in events)
+        G.add_edges_from((u, v, {"time": t}) for u, v, t in events)
 
     # (u, v, t, e), where e is an integer in (-1, 1)
     elif len(events[0]) == 4 and type(events[0][-1]) == int:
         t_max = 1 + max(events, key=lambda x: x[2])[2]
+        # Dictionary {(u, v) -> [range(t_start, t_end), ...]}
         temporal_edges = {}
-
         for u, v, t, e in events:
             if e == 1:
                 temporal_edges[(u, v)] = temporal_edges.get((u, v), []) + [range(t, t_max)]
@@ -69,26 +68,36 @@ def from_events(
                 temporal_edges[(u, v)][-1] = range(temporal_edges[(u, v)][-1].start, t)
             else:
                 raise ValueError(f"Expected edge events to be either 1 or -1, received: {e}.")
+        # Add edges from temporal_edges dictionary as (u, v, t) tuples.
+        G.add_edges_from(
+            (u, v, {"time": t})
+            for (u, v), ranges in temporal_edges.items() for r in ranges for t in r
+        )
 
-        if multigraph is None:
-            multigraph = any(len(ranges) > 1 or len(ranges[0]) > 1 for ranges in temporal_edges.values())
-
-        TG = temporal_graph(directed=directed, multigraph=multigraph)
-        list(TG.add_edge(u, v, time=t) for (u, v), ranges in temporal_edges.items() for r in ranges for t in r)
-
-    # (u, v, t, e), where e is a (positive) float defining the duration of the interaction
+    # (u, v, t, e), where e is a (non-negative) float defining the duration of the interaction
     elif len(events[0]) == 4 and type(events[0][-1]) == float:
-
-        if multigraph is None:
-            multigraph = any(e[-1] > 0 for e in events) or 1 != max(Counter((e[:2] for e in events)).values())
-
-        TG = temporal_graph(directed=directed, multigraph=multigraph)
         for u, v, t, delta in events:
-            for i in range(t, t + 1 + int(delta)):
-                TG.add_edge(u, v, time=i)
+            G.add_edges_from(
+                (u, v, {"time": i}) for i in range(t, t + 1 + int(delta))
+            )
 
+    TG = temporal_graph(directed=directed)
+    TG.add_snapshot(G)
     TG = TG.slice(attr="time")
-    return TG if as_view else TG.copy()
+
+    if multigraph is False:
+        # Check for duplicate edges before converting from multigraph to avoid data loss.
+        TG = from_multigraph(TG)
+        if G.size() != TG.size(copies=True):
+            raise ValueError(
+                "Events contain parallel edges, but `multigraph=False` was specified; please "
+                "consider setting `multigraph=True` or removing duplicate events beforehand."
+            )
+
+    if not as_view:
+        TG = TG.copy()
+
+    return TG
 
 
 def to_events(
@@ -144,7 +153,9 @@ def to_events(
         )
     # Filtered (frozen) multigraphs produce inconsistent results. [networkx/networkx#7724]
     if any(G.is_multigraph() and nx.is_frozen(G) for G in TG):
-        raise ValueError("Frozen multigraphs are not supported; consider calling the `copy` method beforehand.")
+        raise ValueError(
+            "Frozen multigraphs are not supported; consider calling the `copy` method beforehand."
+        )
 
     # 3-tuples of format: (u, v, t).
     if not delta:

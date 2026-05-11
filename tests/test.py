@@ -24,6 +24,7 @@ def test_networkx_temporal(*args, **kwargs) -> None:
     test_degree_vectors()
     test_dynamic_sbm()
     test_generators()
+    test_events_multigraph()
     test_datasets()
 
     if test_convert:
@@ -220,6 +221,15 @@ def test_generators() -> None:
     assert z_.tolist() == [0, 1, 1, 0, 0, 0, 0, 1, 1, 0]
     Z_ = tx.generators.transition_node_memberships(Z, tau, seed=0)
     assert Z_.tolist() == [0, 1, 1, 0, 0, 0]
+
+
+def test_events_multigraph() -> None:
+    log.info("test_events_multigraph")
+    ETG = [(1,2,0,1), (2,3,1,1), (1,2,2,-1)]
+    TG = tx.from_events(ETG, multigraph=False)
+    TG_multi = tx.from_events(ETG, multigraph=True)
+    assert TG.order() == TG_multi.order() == [2, 3, 2]
+    assert TG.size() == TG_multi.size() == [1, 2, 1]
 
 
 def test_datasets() -> None:
