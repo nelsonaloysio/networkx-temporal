@@ -9,6 +9,11 @@
 ### Removed
 -->
 
+## \[1.3.2\] - 2026-05-11
+
+### Fixed
+- Calling `from_events` on event list with parallel edges caused data loss if `multigraph=False`. [#5]
+
 ## \[1.3.1\] - 2026-04-14
 
 ### Changed
