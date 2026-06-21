@@ -1,7 +1,3 @@
-.. note::
-
-   This documentation was generated on |today| for package release |release|.
-
 .. toctree::
    :hidden:
    :caption: Introduction
@@ -46,19 +42,19 @@ NetworkX-Temporal
 
 .. image:: https://badge.fury.io/py/networkx-temporal.svg
    :target: https://pypi.org/project/networkx-temporal/
-   :alt: PyPI version
+   :alt: PyPI
 
 .. image:: https://readthedocs.org/projects/networkx-temporal/badge/?version=latest
    :target: https://networkx-temporal.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation Status
-
-.. image:: https://static.pepy.tech/badge/networkx-temporal
-   :target: https://pepy.tech/project/networkx-temporal?versions=*
-   :alt: Downloads
+   :alt: Documentation
 
 .. image:: https://static.pepy.tech/badge/networkx-temporal/month
    :target: https://pepy.tech/project/networkx-temporal?versions=*
    :alt: Downloads
+
+.. image:: https://img.shields.io/static/v1?label=doi&message=10.1016%2Fj.softx.2025.102277&color=blue
+   :target: https://doi.org/10.1016/j.softx.2025.102277
+   :alt: DOI
 
 .. image:: https://img.shields.io/pypi/l/networkx-temporal
    :target: https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md
@@ -75,6 +71,9 @@ ways to :func:`~networkx_temporal.classes.TemporalGraph.slice` a graph into snap
 :mod:`~networkx_temporal.transform` or :mod:`~networkx_temporal.utils.convert` it
 to other libraries and formats.
 
+.. note::
+
+   This documentation was generated on |today| for package release |release|.
 
 Install
 =======
@@ -176,7 +175,7 @@ functions accept compressed temporal graphs:
    >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
 
 Both functions support the same `extension formats
-<https://networkx.org/documentation/stable/reference/io/index.html>`__
+<https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
 as in the installed NetworkX library version.
 
 
@@ -206,16 +205,16 @@ In addition, both static and temporal graphs may be converted to the following
 `graph formats <examples/convert.html#graph-formats>`__:
 
 - `Deep Graph Library <https://www.dgl.ai>`__
-- `DyNetX <https://dynetx.readthedocs.readwrite>`__
+- `DyNetX <https://dynetx.readthedocs.io>`__
 - `graph-tool <https://graph-tool.skewed.de>`__
 - `igraph <https://igraph.org/python/>`__
-- `NetworKit <https://networkit.github.readwrite>`__
+- `NetworKit <https://networkit.github.io>`__
 - `NumPy <https://numpy.org/>`__
-- `PyTorch Geometric <https://pytorch-geometric.readthedocs.readwrite>`__
+- `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__
 - `Stanford Network Analysis Platform <https://snap.stanford.edu>`__
 - `SciPy <https://scipy.org>`__
-- `StellarGraph <https://stellargraph.readthedocs.readwrite>`__
-- `Teneto <https://teneto.readthedocs.readwrite>`__
+- `StellarGraph <https://stellargraph.readthedocs.io>`__
+- `Teneto <https://teneto.readthedocs.io>`__
 
 .. code-block:: python
 
@@ -233,10 +232,14 @@ For more information on using this package, please refer to the following sectio
 
 - `Examples <examples/basics.html>`__ covering some of its main functionalities and most common use cases.
 
+- `Index <genindex.html>`__ for a complete list of all functions, classes, and methods implemented.
+
 .. seealso::
 
    The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__
    for the latest updates and issues. Contributions are welcome!
 
-If you have any questions or feedback to share, please also feel free to
+If you have any questions or feedback to share, feel free to
+`open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
+or
 `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|

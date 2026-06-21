@@ -2,17 +2,17 @@
 
 ___
 
-[![PyPI package](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
-[![Documentation Status](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
-[![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
+[![PyPI](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
+[![Documentation](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
 [![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
+[![DOI](https://img.shields.io/static/v1?label=doi&message=10.1016%2Fj.softx.2025.102277&color=blue)](https://doi.org/10.1016/j.softx.2025.102277)
 [![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
 ## Install
 
-Available for **Python 3.7++** from [PyPI](https://pypi.org/project/networkx-temporal/):
+Available for **Python 3.7+** from [PyPI](https://pypi.org/project/networkx-temporal/):
 
 ```bash
 $ pip install 'networkx-temporal[draw]'
@@ -28,7 +28,7 @@ Optional dependencies can be installed from the groups `all`, `docs`, `draw`, `i
 ## Quick example
 
 For detailed information on using the package, please refer to its
-[official documentation](https://networkx-temporal.readthedocs.readwrite).
+[official documentation](https://networkx-temporal.readthedocs.io).
 
 > An interactive Jupyter notebook with more examples is also
 > [available here](https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb)

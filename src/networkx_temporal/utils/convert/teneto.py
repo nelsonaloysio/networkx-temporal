@@ -5,7 +5,7 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_teneto(G: Union[StaticGraph, TemporalGraph, list], attr: str = "time"):
-    """ Convert from NetworkX to `Teneto <https://teneto.readthedocs.readwrite>`__.
+    """ Convert from NetworkX to `Teneto <https://teneto.readthedocs.io>`__.
 
     :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
         single static NetworkX graph, or a list of static NetworkX graphs as input.

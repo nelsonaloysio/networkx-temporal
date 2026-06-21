@@ -1,24 +1,25 @@
-.. seealso::
-
-    All examples in this guide are also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__).
-
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb
+   :alt: Open on Colab
+   :align: right
 
 ######################
 Algorithms and metrics
 ######################
 
-This section showcases how to compute common graph metrics and run algorithms on
-:class:`~networkx_temporal.classes.TemporalGraph` objects. Algorithms implemented by NetworkX can
-be called on graph snapshots, while
-`NetworkX graph <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-methods are inherited by :class:`~networkx_temporal.classes.TemporalGraph` objects.
-The last section includes examples on applying these techniques to analyze the evolution of a
-temporal graph over time.
+This section showcases static and temporal graph analysis techniques, including inherited functions
+from `NetworkX <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
+available for :class:`~networkx_temporal.classes.TemporalGraph` objects.
+The `last section <#temporal-dynamics>`__  includes a practical example on analyzing the temporal
+dynamics of a real-world dataset of message exchanges among students.
 
+.. seealso::
+
+   All examples in this guide are also available as an interactive
+   `Jupyter notebook
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__
+   (`open in Colab
+   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__).
 
 Graph properties
 ================
@@ -685,11 +686,12 @@ There is also an anomalous period where very few nodes intersect with any other 
 Edge set intersections (left) show instead that most message exchanges were short-lived,
 with few edges persisting for more than a couple of weeks. The edge set similarity (right)
 also reflects this trend, with most intervals sharing few edges in common, except for
-those closer in time.
+sequential weekly intervals.
 
-This initial exploration offers initial insight into the temporal dimension of the data.
-Among others, next steps may seek to explore specific intervals of interest, different
-aggregation strategies, and node-and community-level metrics.
+This initial exploration offers insight into the temporal dynamics of the network. Further analysis
+may seek to explore specific intervals of interest, e.g., the anomalous period in Week 25, identify
+the most active students, or `detect communities <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
+to explore the evolution of social groups in time.
 
 
 -----

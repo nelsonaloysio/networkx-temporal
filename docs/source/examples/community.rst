@@ -1,11 +1,7 @@
-.. seealso::
-
-    All examples in this guide are also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-04-community.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-04-community.ipynb>`__).
-
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-04-community.ipynb
+   :alt: Open on Colab
+   :align: right
 
 ###################
 Community detection
@@ -14,6 +10,13 @@ Community detection
 Community detection is a fundamental task in network analysis. This simple example demonstrates how
 a network's temporal dynamics can overall benefit the detection of its mesoscale structures.
 
+.. seealso::
+
+   All examples in this guide are also available as an interactive
+   `Jupyter notebook
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-04-community.ipynb>`__
+   (`open in Colab
+   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-04-community.ipynb>`__).
 
 Generate graph
 ==============
@@ -96,7 +99,7 @@ assortativity. Let's try to retrieve the ground truths using a simple community 
 Modularity optimization
 =======================
 
-The `leidenalg <https://leidenalg.readthedocs.readwrite>`__ [1]_ package implements optimization algorithms
+The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
 for community detection that may be applied on snapshot-based temporal graphs, allowing to better
 capture their underlying structure.
 
