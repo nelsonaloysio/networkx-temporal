@@ -53,7 +53,7 @@ def write_graph(
     .. seealso::
 
         The latest `read and write documentation
-        <https://networkx.org/documentation/stable/reference/io/index.html>`__
+        <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
         from NetworkX for a list of supported formats.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object.

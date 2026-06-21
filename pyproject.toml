@@ -32,7 +32,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://pypi.org/p/networkx-temporal/"
-Documentation = "https://networkx-temporal.readthedocs.readwrite"
+Documentation = "https://networkx-temporal.readthedocs.io"
 Repository = "https://github.com/nelsonaloysio/networkx-temporal"
 Issues = "https://github.com/nelsonaloysio/networkx-temporal/issues"
 Changelog = "https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md"

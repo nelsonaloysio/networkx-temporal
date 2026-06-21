@@ -1,11 +1,7 @@
-.. seealso::
-
-    All examples in this guide are also available as an interactive
-    `Jupyter notebook
-    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__
-    (`open on Colab
-    <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__).
-
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb
+   :alt: Open on Colab
+   :align: right
 
 #####################
 Convert and transform
@@ -17,6 +13,13 @@ e.g., `igraph <https://igraph.org/python>`__, and :mod:`~networkx_temporal.trans
 underlying data structure used to store object relations, e.g.,
 `event-based temporal graphs <#event-based-temporal-graph>`__.
 
+.. seealso::
+
+   All examples in this guide are also available as an interactive
+   `Jupyter notebook
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__
+   (`open in Colab
+   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__).
 
 Graph types and classes
 =======================
