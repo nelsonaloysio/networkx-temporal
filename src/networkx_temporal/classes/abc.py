@@ -447,15 +447,17 @@ class TemporalABC(metaclass=ABCMeta):
         fnc = f"{'Multi' if self.is_multigraph() else ''}{'Di' if self.is_directed() else ''}Graph"
         return getattr(nx, fnc)()
 
-    def number_of_edges(self, copies: Optional[bool] = None) -> int:
+    def number_of_edges(self, weight: Optional[bool] = None, copies: Optional[bool] = None) -> int:
         """ Returns number of edges in the temporal graph.
 
+        :param weight: The edge attribute that holds the numerical value used as a weight.
+            If ``None`` (default), then each edge has weight 1.
         :param copies: If ``True``, consider multiple instances of the same edge in different
             snapshots. If ``False``, consider unique edges. Optional.
 
         :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.size`.
         """
-        return self.size(copies=copies)
+        return self.size(weight=weight, copies=copies)
 
     def number_of_neighbors(self, node: Any) -> list:
         """ Returns number of neighbors for each snapshot.
@@ -507,18 +509,20 @@ class TemporalABC(metaclass=ABCMeta):
             raise TypeError(f"Argument `G` must be a valid NetworkX graph, received: {type(G)}.")
         self.graphs.remove(G)
 
-    def size(self, copies: Optional[bool] = None) -> int:
+    def size(self, weight: Optional[bool] = None, copies: Optional[bool] = None) -> int:
         """ Returns number of edges in the temporal graph.
 
+        param weight: The edge attribute that holds the numerical value used as a weight.
+            If ``None`` (default), then each edge has weight 1.
         :param copies: If ``True``, consider multiple instances of the same edge in different
             snapshots. If ``False``, consider unique edges. Optional.
         """
         if len(self) == 0:
             return 0
         if copies is None:
-            return [G.size() for G in self]
+            return [G.size(weight=weight) for G in self]
         if copies is True:
-            return sum(G.size() for G in self)
+            return sum(G.size(weight=weight) for G in self)
         if copies is False:
             return len(set(self.temporal_edges()))
         raise TypeError(f"Argument `copies` must be of type bool, received: {type(copies)}.")
