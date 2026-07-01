@@ -1,7 +1,3 @@
-.. note::
-
-   This documentation was generated on |today| for package release |release|.
-
 .. toctree::
    :hidden:
    :caption: Introduction
@@ -75,6 +71,9 @@ ways to :func:`~networkx_temporal.classes.TemporalGraph.slice` a graph into snap
 :mod:`~networkx_temporal.transform` or :mod:`~networkx_temporal.utils.convert` it
 to other libraries and formats.
 
+.. note::
+
+   This documentation was generated on |today| for package release |release|.
 
 Install
 =======
@@ -240,5 +239,7 @@ For more information on using this package, please refer to the following sectio
    The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__
    for the latest updates and issues. Contributions are welcome!
 
-If you have any questions or feedback to share, please also feel free to
+If you have any questions or feedback to share, feel free to
+`open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
+or
 `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|
