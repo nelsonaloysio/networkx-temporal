@@ -226,6 +226,7 @@ def generate_degree_vector(
     min_degree: Optional[int] = None,
     max_degree: Optional[int] = None,
     alpha: Optional[float] = None,
+    mu: Optional[float] = None,
     phi: Optional[float] = None,
     shuffle: Optional[bool] = True,
     seed: Optional[int] = None,
@@ -265,7 +266,7 @@ def generate_degree_vector(
 
         \\mathbf{d} = \\big[
         d_{1}, \\cdots, d_{n} \\, | \\,
-        p(d) = \\frac{d^{-(\\alpha + 1)}}{\\sum_{d_{min}}^{d_{max}} d^{-(\\alpha + 1)}}, \\,
+        p(d) = \\frac{d^{-(\\alpha)}}{\\sum_{d_{min}}^{d_{max}} d^{-(\\alpha)}}, \\,
         d_{min} \\leq d \\leq d_{max}
         \\big],\\\\
 
@@ -302,6 +303,8 @@ def generate_degree_vector(
     :param min_degree: Minimum node degree. Defaults to ``1``.
     :param max_degree: Maximum node degree. Defaults to ``nodes - 1``.
     :param alpha: Exponent of the power-law degree distribution.
+    :param mu: Mean of the normal distribution. Optional.
+        Defaults to :math:`(d_{min} + d_{max})/2` if unset.
     :param phi: Standard deviation factor of the normal distribution.
     :param shuffle: If ``True``, vector elements are shuffled. Default.
     :param seed: Random seed for reproducibility. Optional.
@@ -319,6 +322,8 @@ def generate_degree_vector(
         raise ValueError("Arguments `alpha` and `phi` are mutually exclusive.")
     if alpha is not None and alpha <= 0:
         raise ValueError("Argument `alpha` must be a positive integer or float.")
+    if mu is not None and phi is None:
+        raise ValueError("Argument `mu` can only be set if `phi` is also set.")
     if shuffle is not None and type(shuffle) != bool:
         raise ValueError("Argument `shuffle` must be a boolean.")
     if seed is not None and not (type(seed) == int):
@@ -339,7 +344,7 @@ def generate_degree_vector(
             d = np.array(d, dtype=int)
         elif phi:
             # Sample from a normal distribution.
-            mean = (d_min + d_max) / 2
+            mean = mu or (d_min + d_max) / 2
             std_dev = (d_max - d_min) / phi
             d = np.random.normal(mean, std_dev, num)
             d = np.clip(d, d_min, d_max).astype(int)
