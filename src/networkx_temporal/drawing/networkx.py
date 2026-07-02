@@ -45,7 +45,7 @@ def draw_networkx(
     suptitle: Optional[Union[str, bool]] = None,
     nodes: Optional[bool] = True,
     edges: Optional[bool] = True,
-    labels: Optional[Union[str, dict, bool]] = True,
+    labels: Optional[Union[str, dict, bool]] = False,
     edge_labels: Optional[Union[str, dict, bool]] = False,
     node_opts: Optional[Union[list, dict]] = None,
     edge_opts: Optional[Union[list, dict]] = None,
@@ -279,11 +279,13 @@ def draw_networkx(
         ncols = len(TG) if nrows == 1 else 1
 
     # Create figure and axes if not provided.
-    if fig is None:
-        fig, ax = plt.subplots(nrows=nrows,
-                               ncols=ncols,
-                               figsize=figsize,
+    if fig is None and ax is not None:
+        fig = ax.figure
+    elif fig is None:
+        fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=figsize,
                                constrained_layout=constrained_layout)
+    elif ax is None:
+        ax = fig.axes[0] if len(TG) == 1 else fig.axes
     else:
         ax = fig.axes[ax] if type(ax) == int else fig.axes[0] if len(TG) == 1 else ax
 
@@ -367,7 +369,7 @@ def draw_networkx_nodes(*args, **kwargs):
     :note: This function acts as a wrapper to the :func:`~draw_networkx` function.
     """
     kwargs.update(kwargs.pop("node_opts", {}))
-    kwargs.update({"edges": False, "labels": False, "edge_labels": False})
+    kwargs.update({"edges": False, "edge_labels": False})
     return draw_networkx(*args, **kwargs)
 
 
@@ -386,7 +388,7 @@ def draw_networkx_edges(*args, **kwargs):
     :note: This function acts as a wrapper to the :func:`~draw_networkx` function.
     """
     kwargs.update(kwargs.pop("edge_opts", {}))
-    kwargs.update({"nodes": False, "labels": False, "edge_labels": False})
+    kwargs.update({"nodes": False, "labels": False})
     return draw_networkx(*args, **kwargs)
 
 
