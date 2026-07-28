@@ -512,7 +512,7 @@ class TemporalABC(metaclass=ABCMeta):
     def size(self, weight: Optional[bool] = None, copies: Optional[bool] = None) -> int:
         """ Returns number of edges in the temporal graph.
 
-        param weight: The edge attribute that holds the numerical value used as a weight.
+        :param weight: The edge attribute that holds the numerical value used as a weight.
             If ``None`` (default), then each edge has weight 1.
         :param copies: If ``True``, consider multiple instances of the same edge in different
             snapshots. If ``False``, consider unique edges. Optional.
