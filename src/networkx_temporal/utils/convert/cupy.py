@@ -30,8 +30,10 @@ def to_cupy(
     :param interslice_weight: Inter-slice coupling strength for temporal graphs. Default: ``1.0``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
     :param dtype: Data type of the intermediate adjacency matrix. Defaults to ``float32``.
-    :param format: Sparse matrix format. Available choices:
+    :param str format: Sparse matrix format. Available choices:
+
         - ``'csr'``: Compressed Sparse Row (default).
+
         - ``'csc'``: Compressed Sparse Column.
     """
     from ..graph import to_supra_adjacency_matrix

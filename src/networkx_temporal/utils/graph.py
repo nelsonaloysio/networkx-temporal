@@ -89,7 +89,7 @@ def propagate_snapshots(
         <../examples/basics.html#propagate-snapshots>`__  page for an example.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object.
-    :param method: The propagation method. Can be either:
+    :param str method: The propagation method. Can be either:
 
        - ``'ffill'``: propagates nodes and edges forward in time
          (from earlier to later snapshots);
@@ -131,11 +131,14 @@ def to_adjacency_matrix(
 ) -> sp.spmatrix:
     """ Returns sparse adjacency matrix of graph.
 
-    If ``graph`` is a temporal graph, returns the adjacency matrix of each snapshot; if a static
-    graph, returns a single adjacency matrix.
+    If ``graph`` is a :class:`~networkx_temporal.classes.TemporalGraph`, returns a single weighted
+    adjacency matrix combining all snapshots; if a static
+    :class:`~networkx_temporal.typing.StaticGraph`, returns a single adjacency matrix.
 
-    Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default) or
-    ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
+    .. note::
+
+        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
     .. rubric:: Example
 
@@ -165,24 +168,32 @@ def to_adjacency_matrix(
         - Nodes: [0, 2]
         - Edges: [(0, 2)]
 
-        matrix([[0., 1., 1.],
+        matrix([[0., 1., 2.],
                 [1., 0., 1.],
-                [1., 1., 0.]], dtype=float32)
+                [2., 1., 0.]], dtype=float32)
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
             object.
     :param weight: Edge attribute name to use as weight.
         ``None`` treats all weights as 1. Default: ``'weight'``.
-    :param device: Device to use for computation. Available choices:
+    :param str device: Device to use for computation. Available choices:
+
         - ``'cpu'``: Uses NumPy and SciPy (default).
+
         - ``'gpu'``: Uses CuPy and CuPy sparse.
+
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).
-    :param format: Sparse matrix format. Available choices:
+    :param str format: Sparse matrix format. Available choices:
+
         - ``'csr'``: Compressed Sparse Row (default).
+
         - ``'csc'``: Compressed Sparse Column.
+
         - ``'dok'``: Dictionary of Keys (CPU only).
+
         - ``'lil'``: List of Lists (CPU only).
+
     """
     if is_temporal_graph(graph):
         graph = from_multigraph(graph).flatten()
@@ -211,12 +222,26 @@ def to_supra_adjacency_matrix(
 ) -> Union[sp.spmatrix, Tuple[sp.spmatrix, List[int]]]:
     """ Returns sparse supra-adjacency matrix of temporal graph.
 
-    The supra-adjacency matrix is a block matrix with intra-slice adjacency matrices
-    on the diagonal and inter-slice identity matrices on the off-diagonal blocks.
+    The supra-adjacency matrix is a block matrix with intra-slice adjacency matrices on the
+    diagonal and inter-slice identity matrices on the off-diagonal blocks, representing
+    inter-slice couplings:
 
-    Temporal ``interslice_couple`` can be configured to connect ``'all'`` nodes across snapshots,
-    only the ``'first'`` occurrence of each node in a subsequent snapshot, or only ``'shared'``
-    nodes that are present in subsequent snapshots, i.e., :math:`t` and :math:`t+1` (default).
+    .. math::
+
+        \\mathbf{A}^\\mathrm{supra} =
+        \\left(
+        \\begin{array}{cccc}
+            \\mathbf{A}^{(1)} & \\omega \\mathbf{I} & \\cdots & \\mathbf{0} \\\\
+            \\omega \\mathbf{I} & \\mathbf{A}^{(2)} & \\cdots & \\mathbf{0} \\\\
+            \\vdots & \\vdots & \\ddots & \\vdots \\\\
+            \\mathbf{0} & \\mathbf{0} & \\cdots & \\mathbf{A}^{(T)}
+        \\end{array}
+        \\right).
+
+    It is possible to configure ``interslice_couple`` to connect only ``'shared'``
+    nodes present in sequential snapshots, i.e., :math:`t` and :math:`t+1` (default);
+    ``'all'`` temporal node copies across every snapshot; or only the ``'first'`` occurrence of
+    each node in a subsequent snapshot.
 
     Inter-slice couplings are symmetric (undirected) by default; if ``interslice_directed=True``,
     the resulting supra-adjacency matrix is asymmetric (directed) with couplings from earlier to
@@ -228,8 +253,10 @@ def to_supra_adjacency_matrix(
     Setting ``return_offsets=True`` returns a tuple of the supra-adjacency matrix and a list of
     starting indices for each slice, to be used with specialized algorithms for temporal graphs.
 
-    Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default) or
-    ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
+    .. note::
+
+        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
     .. rubric:: Example
 
@@ -276,21 +303,33 @@ def to_supra_adjacency_matrix(
         ``{(0, 1): 1, (0, 2): 0.5}``. Overrides only defined snapshot tuples if provided. Optional.
     :param interslice_couple: Inter-slice coupling type. Default: ``'shared'``.
         Available choices:
+
         - ``'all'``: Connects all nodes across snapshots.
+
         - ``'first'``: Connects each node to its first occurrence in the next snapshot.
+
         - ``'shared'``: Connects only nodes that are present in both snapshots.
+
     :param interslice_directed: If ``True``, inter-slice couplings are unidirectional (from earlier
         to later snapshots). If ``False``, inter-slice couplings are bidirectional (default).
-    :param device: Device to use for computation. Available choices:
+    :param str device: Device to use for computation. Available choices:
+
         - ``'cpu'``: Uses NumPy and SciPy (default).
+
         - ``'gpu'``: Uses CuPy and CuPy sparse.
+
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).
-    :param format: Sparse matrix format. Available choices:
+    :param str format: Sparse matrix format. Available choices:
+
         - ``'csr'``: Compressed Sparse Row (default).
+
         - ``'csc'``: Compressed Sparse Column.
+
         - ``'dok'``: Dictionary of Keys (CPU only).
+
         - ``'lil'``: List of Lists (CPU only).
+
     """
     from .convert.scipy import to_scipy
 

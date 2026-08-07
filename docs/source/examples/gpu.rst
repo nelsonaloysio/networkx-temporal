@@ -19,15 +19,14 @@ on specialized hardware. This guide demonstrates how to enable GPU acceleration 
 and provides some examples of its usage for community detection algorithms.
 
 
-GPU acceleration
-================
+Accelerating temporal graph algorithms
+======================================
 
 Some algorithms for temporal networks can be computationally intensive,
 especially for large-scale networks. To address this, NetworkX-Temporal
 integrates some GPU-accelerated algorithm implementations using the
-open-source libraries CuPy, cuGraph, and cuML, substantially their
-reducing computation time. This guide illustrates some commomn usage
-examples.
+open-source libraries CuPy, cuGraph, and cuML, substantially reducing
+their computation time. This guide illustrates some commomn usage examples.
 
 GPU-accelerated algorithms may require the installation of the following libraries:
 
@@ -37,6 +36,14 @@ GPU-accelerated algorithms may require the installation of the following librari
   Graph computations part of the RAPIDS suite (NVIDIA only);
 - `cuML <https://docs.rapids.ai/api/cuml/stable/install.html>`__:
   Machine learning algorithms in the same ecosystem (NVIDIA only).
+
+.. code-block:: bash
+
+   # Leiden algorithm (AMD/NVIDIA GPUs)
+   conda install -c conda-forge cupy
+
+   # Spectral clustering (NVIDIA GPUs)
+   conda install -c conda-forge -c rapidsai -c nvidia cuml cugraph pylibcugraph nx-cugraph
 
 Once installed, GPU acceleration in NetworkX-Temporal may be enabled by passing the parameter
 ``device="gpu"`` in the relevant functions; or by setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the
@@ -48,7 +55,7 @@ To verify it:
    >>> import networkx_temporal as tx
    >>> tx.is_gpu_enabled
 
-   True / False
+   True
 
 For the time being, only algorithms relevant for temporal community detection
 are implemented with support for GPU acceleration [1]_:
@@ -107,7 +114,7 @@ to compare the results:
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_13_0.png
 
 Instead of clustering the aggregated graph, we may also pass a
-:class:`~networkx_temporal.TemporalDiGraph` instance to the
+:class:`~networkx_temporal.classes.TemporalGraph` instance to the
 :func:`~networkx_temporal.algorithms.spectral_clustering`
 function, which handles the construction of a (supra-)graph
 encoding temporal adjacencies. The predicted communities are
@@ -226,6 +233,8 @@ for smaller graphs due to kernel launch overheads and host-device transfers:
 
    DiGraph named 'PubMed' with 19717 nodes and 44335 edges
 
+.. code-block:: python
+
    >>> y = tx.leiden_communities(G, max_iter=2, device="cpu")
 
    # 1.11 s ± 25.9 ms per loop (mean ± std. dev. of 20 runs, 1 loop each)
@@ -268,7 +277,7 @@ multi-GPU execution by loading the supra-graph into a distributed GPU cluster wi
 .. attention::
 
    This approach optimizes a different objective function than multislice modularity, as the
-   global null model is instead employed for the entire supra-graph, rather than per-slice null models.
+   global null model consider instead the entire supra-graph, rather than per-slice null models.
 
 
 Compare detection accuracy
@@ -381,7 +390,7 @@ by linking nearby slices more strongly than distant ones:
    >>>
    >>> # Build supra-graph connecting nodes across 'all' time slices.
    >>> adj, offsets = tx.to_supra_adjacency_matrix(
-   >>>     TG, interslice_method="all", interslice_weights=w, return_offsets=True)
+   >>>     TG, interslice_couple="all", interslice_weights=w, return_offsets=True)
    >>>
    >>> # Supra-graph (static) modularity optimization.
    >>> G_supra_ = tx.from_scipy(adj)

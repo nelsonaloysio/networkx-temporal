@@ -1,7 +1,7 @@
 """
 Utility functions for NetworkX static and temporal graphs.
 
-.. rubric:: Summary - Temporal Graph utilities
+.. rubric:: Summary - Graph utilities
 
 .. autosummary::
 
@@ -34,6 +34,50 @@ Utility functions for NetworkX static and temporal graphs.
    map_partitions_to_edges
    partition_edges
 
+.. rubric:: Summary - Conversion utilities
+
+.. autosummary::
+
+   from_numpy
+   from_pandas
+   from_scipy
+   to_cugraph
+   to_cupy
+   to_dgl
+   to_dynetx
+   to_graph_tool
+   to_igraph
+   to_networkit
+   to_numpy
+   to_pandas
+   to_scipy
+   to_snap
+   to_stellargraph
+   to_teneto
+   to_torch_geometric
+
+.. rubric:: Note
+
+The :func:`~networkx_temporal.classes.TemporalGraph.convert` wrapper is also available as
+a top-level function and as a :class:`~networkx_temporal.classes.TemporalGraph` method:
+
+.. code-block:: python
+
+   >>> import networkx_temporal as tx
+   >>> TG = tx.example_sbm_graph()
+   >>> TG.convert("igraph")
+
+   [<igraph.Graph at 0x108198950>,
+    <igraph.Graph at 0x168589950>,
+    <igraph.Graph at 0x168589a50>]
+
+.. code-block:: python
+
+   >>> G = TG.to_static()
+   >>> tx.convert(G, "igraph")
+
+   <igraph.Graph at 0x168589150>
+
 .. rubric:: Functions
 """
 
@@ -58,4 +102,22 @@ __all__ = (
    "map_node_attr_to_edges",
    "map_partitions_to_edges",
    "partition_edges",
+   "convert",
+   "from_numpy",
+   "from_pandas",
+   "from_scipy",
+   "to_cugraph",
+   "to_cupy",
+   "to_dgl",
+   "to_dynetx",
+   "to_graph_tool",
+   "to_igraph",
+   "to_networkit",
+   "to_numpy",
+   "to_pandas",
+   "to_scipy",
+   "to_snap",
+   "to_stellargraph",
+   "to_teneto",
+   "to_torch_geometric",
 )

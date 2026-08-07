@@ -22,7 +22,7 @@ def to_cugraph(
     :param use_compat_graph: If ``True`` (default), returns a NetworkX-compatible graph wrapper.
         If ``False``, returns a native CudaGraph object.
 
-    :note: For versioned documentation, see: `NVIDIA <https://docs.nvidia.com/> Documentation Hub`__.
+    :note: For versioned documentation, see: `NVIDIA Documentation Hub <https://docs.nvidia.com/>`__.
     """
     try:
         import nx_cugraph as nxcg
@@ -94,10 +94,14 @@ def to_scipy(
     :param interslice_weight: Inter-slice coupling strength for temporal graphs. Default: ``1.0``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
     :param dtype: Data type of the resulting adjacency matrix. If ``None``, the type is inferred.
-    :param format: Sparse matrix format. Available choices:
+    :param str format: Sparse matrix format. Available choices:
+
         - ``'csr'``: Compressed Sparse Row (default).
+
         - ``'csc'``: Compressed Sparse Column.
+
         - ``'dok'``: Dictionary of Keys (CPU only).
+
         - ``'lil'``: List of Lists (CPU only).
     """
     if not (is_temporal_graph(graph) or is_static_graph(graph)):
@@ -125,7 +129,7 @@ def from_scipy(
     directed: Optional[bool] = False,
     multigraph: Optional[bool] = True,
     edge_attr: Optional[str] = "weight",
-) -> Union[StaticGraph, TemporalGraph]:
+) -> Union[TemporalGraph, StaticGraph]:
     """ Convert from sparse `SciPy <https://scipy.org>`__ matrix to NetworkX.
 
     :param adj: A SciPy sparse matrix or list of matrices representing graph adjacencies.

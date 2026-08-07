@@ -41,4 +41,5 @@ from .generators import *
 from .readwrite import *
 from .transform import *
 from .utils import *
+from .utils.convert.convert import convert
 from .utils.convert import *

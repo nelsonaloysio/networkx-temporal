@@ -60,7 +60,7 @@ def from_numpy(
     directed: Optional[bool] = False,
     multigraph: Optional[bool] = True,
     edge_attribute: Optional[str] = "weight",
-) -> Union[StaticGraph, TemporalGraph]:
+) -> Union[TemporalGraph, StaticGraph]:
     """ Convert from dense `NumPy <https://numpy.org>`__ array to NetworkX.
 
     :param adj: A NumPy array or list of arrays representing graph adjacencies.

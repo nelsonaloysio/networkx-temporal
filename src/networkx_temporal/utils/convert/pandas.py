@@ -53,7 +53,7 @@ def from_pandas(
     target: str = "target",
     directed: Optional[bool] = False,
     multigraph: Optional[bool] = True,
-    create_using: Optional[Union[StaticGraph, TemporalGraph]] = None,
+    create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
     edge_attr: Optional[Union[str, List[str], bool]] = True,
     edge_key: Optional[str] = None,
 ) -> Union[TemporalGraph, StaticGraph]:
@@ -64,6 +64,7 @@ def from_pandas(
     :param target: Column name for the target nodes. Default is ``'target'``.
     :param directed: If ``True``, returns a directed graph. Default is ``False``.
     :param multigraph: If ``True``, returns a multigraph. Default is ``True``.
+    :param create_using: Graph constructor to use.
     :param edge_attr: Edge attribute key or boolean to load into graph. Default is ``True``.
     :param edge_key: Edge key attribute name for multigraphs. Default is ``None``.
     """

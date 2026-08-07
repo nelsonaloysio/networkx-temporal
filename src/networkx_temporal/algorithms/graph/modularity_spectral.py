@@ -12,8 +12,8 @@ def modularity_spectral(
     weight: Optional[Union[str, bool]] = True,
 ) -> float:
     """ Calculates modularity on the graph spectrum. Expects a dense or sparse ``adj``
-    matrix from :func:`~networkx_temporal.utils.convert.to_numpy` or
-    :func:`~networkx_temporal.utils.convert.to_scipy`, respectively.
+    matrix from :func:`~networkx_temporal.utils.to_numpy` or
+    :func:`~networkx_temporal.utils.to_scipy`, respectively.
     Supports mixed-membership (soft) assignments.
 
     The spectral modularity [9]_ for a matrix of community assignments :math:`\\mathbf{C}` is

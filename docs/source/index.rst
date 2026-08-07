@@ -77,7 +77,7 @@ This package provides new :class:`~networkx_temporal.classes.TemporalGraph` clas
 NetworkX's `graph classes <https://networkx.org/documentation/stable/reference/classes/index.html>`_
 and implement additional functions to manipulate temporal data within. Among others, it provides
 ways to :func:`~networkx_temporal.classes.TemporalGraph.slice` a graph into snapshots and
-:mod:`~networkx_temporal.transform` or :mod:`~networkx_temporal.utils.convert` it
+:mod:`~networkx_temporal.transform` or :func:`~networkx_temporal.classes.TemporalGraph.convert` it
 to other libraries and formats.
 
 .. note::
@@ -191,9 +191,9 @@ as in the installed NetworkX library version.
 Detect communities
 ------------------
 
-CPU and GPU implementations of :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering`
-and :func:`~networkx_temporal.algorithms.community.leiden.leiden_communities` are available for both static
-and temporal graphs, with the latter supporting parallelized multislice modularity optimization on GPUs.
+CPU and GPU implementations of :func:`~networkx_temporal.algorithms.spectral_clustering`
+and :func:`~networkx_temporal.algorithms.leiden_communities` are available for both static
+and temporal graphs, with the latter supporting parallelized multislice optimization.
 
 .. code-block:: python
 
@@ -224,7 +224,8 @@ environment variable ``export NX_CUGRAPH_AUTOCONFIG=True`` is set; otherwise, de
 Convert and transform graphs
 ----------------------------
 
-This package allows to transform a :class:`~networkx_temporal.classes.TemporalGraph` between different
+This package allows to :mod:`~networkx_temporal.transform`
+a :class:`~networkx_temporal.classes.TemporalGraph` between different
 `graph representations <examples/convert.html#graph-representations>`__:
 
 * `Static graphs <examples/convert.html#static-graph>`__:
@@ -243,8 +244,8 @@ This package allows to transform a :class:`~networkx_temporal.classes.TemporalGr
    >>> ETG = TG.to_events()      # TG = tx.from_events(EG)
    >>> UTG = TG.to_unrolled()    # TG = tx.from_unrolled(UG)
 
-In addition, both static and temporal graphs may be converted to the following
-`graph formats <examples/convert.html#graph-formats>`__:
+In addition, it allows to :func:`~networkx_temporal.classes.TemporalGraph.convert` both static and
+temporal graphs to the following `library formats <examples/convert.html#external-library-formats>`__:
 `cuGraph <https://docs.nvidia.com/cugraph/latest/>`__,
 `CuPy <https://cupy.dev>`__,
 `Deep Graph Library <https://www.dgl.ai>`__,
@@ -283,7 +284,7 @@ For more information on using this package, please refer to the following sectio
    The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__
    for the latest updates and issues. Contributions are welcome!
 
-If you have any questions or feedback to share, feel free to
+If you have questions or feedback to share, feel free to
 `open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
 or
 `contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|

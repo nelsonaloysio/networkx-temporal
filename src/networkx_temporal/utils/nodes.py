@@ -198,6 +198,7 @@ def map_node_attr_to_edges(
     :param origin: Whether to extract attributes from the ``'source'`` or ``'target'``
         node of each edge. If ``'both'``, returns a list with both source and target
         attributes for each edge.
+    :param unique: Whether to return unique values for each edge when ``origin='both'``.
     """
     if type(attr) != str:
         raise TypeError(f"Argument `attr` must be a string, received: {type(attr)}.")

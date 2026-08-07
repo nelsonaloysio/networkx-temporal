@@ -20,7 +20,7 @@ def to_cugraph(
     :param use_compat_graph: If ``True`` (default), returns a NetworkX-compatible graph wrapper.
         If ``False``, returns a native CudaGraph object.
 
-    :note: For versioned documentation, see: `NVIDIA <https://docs.nvidia.com/> Documentation Hub`__.
+    :note: For versioned documentation, see: `NVIDIA Documentation Hub <https://docs.nvidia.com/>`__.
     """
     try:
         import nx_cugraph as nxcg

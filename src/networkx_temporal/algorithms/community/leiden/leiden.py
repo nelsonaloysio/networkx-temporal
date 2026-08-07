@@ -42,8 +42,8 @@ def leiden_communities(
 
     .. seealso::
 
-       `Examples → GPU acceleration → Leiden communities
-       <../examples/gpu.html#leiden-communities>`__ using this function.
+       The `Examples → GPU acceleration → Leiden communities
+       <../examples/gpu.html#leiden-communities>`__ page for examples.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
@@ -56,9 +56,12 @@ def leiden_communities(
     :param max_iter: Maximum coarsening levels. Default: ``2`` for CPU and ``500`` for GPU.
         If ``-1``, run until convergence (CPU only).
     :param seed: Random seed number for reproducibility.
-    :param device: Device to use for computation. Available choices:
+    :param str device: Device to use for computation. Available choices:
+
         - ``'cpu'``: Uses ``igraph`` and ``leidenalg`` as backends.
+
         - ``'gpu'``: Uses ``pylibcugraph`` and ``nx-cugraph`` as backends (NVIDIA GPUs only).
+
     :param kwargs: Additional keyword arguments to pass to the backend.
 
         - ``device='cpu'``: leidenalg's `find_partition <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__

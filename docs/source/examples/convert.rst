@@ -14,7 +14,7 @@ Convert and transform
    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__.
 
 This package provides a set of functions to manipulate graph classes, formats, and representations.
-In this context, :mod:`~networkx_temporal.utils.convert` refers to different graph-based libraries,
+In this context, :mod:`~networkx_temporal.classes.TemporalGraph.convert` refers to different graph-based libraries,
 e.g., `igraph <https://igraph.org/python>`__, and :mod:`~networkx_temporal.transform` refers to the
 underlying data structure used to store object relations, e.g.,
 `event-based temporal graphs <#event-based-temporal-graph>`__.
@@ -401,7 +401,7 @@ colored in black:
    and the temporal node copies :math:`a_4`, :math:`b_4`, and :math:`e_4`.
 
 Lastly, the additional parameters ``edge_couplings`` and ``node_copies`` allow further control over
-the creation of temporal node copies and edge couplings. A comparison with newly added nodes colored:
+the creation of temporal node copies and edge couplings. A comparison of the newly added nodes:
 
 .. code-block:: python
 
@@ -454,40 +454,40 @@ External library formats
 
 Support for the following external libraries is currently implemented:
 
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                            |
-+===================================================================+======================================+===========================================================================+
-| `CuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.convert.to_cugraph`         |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_cupy`            |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `Deep Graph Library <https://www.dgl.ai>`__                       | .. centered:: ``'dgl'``              | .. centered:: :func:`~networkx_temporal.utils.convert.to_dgl`             |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered:: ``'dynetx'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_dynetx`          |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `graph-tool <https://graph-tool.skewed.de>`__                     | .. centered:: ``'graph_tool'``       | .. centered:: :func:`~networkx_temporal.utils.convert.to_graph_tool`      |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `igraph <https://igraph.org/python>`__                            | .. centered:: ``'igraph'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_igraph`          |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `NetworKit <https://networkit.github.io>`__                       | .. centered:: ``'networkit'``        | .. centered:: :func:`~networkx_temporal.utils.convert.to_networkit`       |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_numpy`           |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_pandas`          |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.convert.to_torch_geometric` |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `SciPy <https://scipy.org>`__                                     | .. centered:: ``'scipy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_scipy`           |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `SNAP <https://snap.stanford.edu>`__                              | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `StellarGraph <https://stellargraph.readthedocs.io>`__            | .. centered:: ``'stellargraph'``     | .. centered:: :func:`~networkx_temporal.utils.convert.to_stellargraph`    |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``'teneto'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_teneto`          |
-+-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                    |
++===================================================================+======================================+===================================================================+
+| `CuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.to_cugraph`         |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.to_cupy`            |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `Deep Graph Library <https://www.dgl.ai>`__                       | .. centered:: ``'dgl'``              | .. centered:: :func:`~networkx_temporal.utils.to_dgl`             |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered:: ``'dynetx'``           | .. centered:: :func:`~networkx_temporal.utils.to_dynetx`          |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `graph-tool <https://graph-tool.skewed.de>`__                     | .. centered:: ``'graph_tool'``       | .. centered:: :func:`~networkx_temporal.utils.to_graph_tool`      |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `igraph <https://igraph.org/python>`__                            | .. centered:: ``'igraph'``           | .. centered:: :func:`~networkx_temporal.utils.to_igraph`          |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `NetworKit <https://networkit.github.io>`__                       | .. centered:: ``'networkit'``        | .. centered:: :func:`~networkx_temporal.utils.to_networkit`       |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.to_numpy`           |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.to_torch_geometric` |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `SciPy <https://scipy.org>`__                                     | .. centered:: ``'scipy'``            | .. centered:: :func:`~networkx_temporal.utils.to_scipy`           |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `SNAP <https://snap.stanford.edu>`__                              | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.to_snap`            |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `StellarGraph <https://stellargraph.readthedocs.io>`__            | .. centered:: ``'stellargraph'``     | .. centered:: :func:`~networkx_temporal.utils.to_stellargraph`    |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
+| `Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``'teneto'``           | .. centered:: :func:`~networkx_temporal.utils.to_teneto`          |
++-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 
 Graphs may be converted to a different library format with the high-level
-:func:`~networkx_temporal.utils.convert.convert` function:
+:func:`~networkx_temporal.utils.convert` function:
 
 .. code-block:: python
 

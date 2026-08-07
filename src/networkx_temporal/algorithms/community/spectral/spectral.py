@@ -40,8 +40,8 @@ def spectral_clustering(
 
     .. seealso::
 
-        The `Examples → GPU acceleration → Spectral clustering
-        <../examples/gpu.html#spectral-clustering>`__ page for examples.
+       The `Examples → GPU acceleration → Spectral clustering
+       <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
     .. hint::
 
@@ -53,7 +53,7 @@ def spectral_clustering(
         ``'laplacian'``, ``'bethe_hessian'``, and ``'modularity'``. Default is ``'laplacian'``.
     :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
     :param interslice_weight: Weight of inter-slice edges connecting node copies across snapshots.
-    :param device: Device to use for computation. Available choices:
+    :param str device: Device to use for computation. Available choices:
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 

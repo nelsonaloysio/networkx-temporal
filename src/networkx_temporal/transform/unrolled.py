@@ -129,7 +129,7 @@ def to_unrolled(
         <https://doi.org/10.1103/PhysRevE.85.026107>`__
 
     :param TemporalGraph TG: Temporal graph object.
-    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert.convert`
+    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert`
         the graph. Optional.
     :param delta: Time step between temporal nodes. Accepts an integer or a string
         with the edge-level attribute key name. Default: ``0``.

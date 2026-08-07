@@ -30,7 +30,7 @@ def dynamic_stochastic_block_model(
     multigraph: Optional[bool] = True,
     isolates: Optional[bool] = True,
     selfloops: Optional[bool] = False,
-    create_using: Optional[Union[StaticGraph, TemporalGraph]] = None,
+    create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
     distribution: DISTRIBUTION = "poisson",
     sparse: Optional[bool] = False,
     seed: Optional[int] = None,

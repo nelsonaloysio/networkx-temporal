@@ -60,9 +60,11 @@ def spectral_clustering_laplacian(
     :param n_init: Number of random initializations for :math:`k`-means.
     :param max_iter: Maximum number of iterations for :math:`k`-means.
     :param seed: Random seed for :math:`k`-means.
-    :param str device: Whether to run on ``'cpu'`` (defalult) or ``'gpu'``.
+    :param str device: Device to use for computation. Available choices:
 
-    :note: GPU acceleration requires the CuPy and RAPIDS cuML libraries.
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and RAPIDS cuML (NVIDIA).
     """
     if device == "cpu":
         import numpy as xp

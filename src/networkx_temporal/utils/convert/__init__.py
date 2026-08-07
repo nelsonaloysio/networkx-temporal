@@ -1,33 +1,3 @@
-"""
-Conversion utilities among different graph libraries and formats.
-Part of the :mod:`~networkx_temporal.utils` module.
-
-.. rubric:: Summary
-
-.. autosummary::
-
-   convert
-   from_numpy
-   from_pandas
-   from_scipy
-   to_cugraph
-   to_cupy
-   to_dgl
-   to_dynetx
-   to_graph_tool
-   to_igraph
-   to_networkit
-   to_numpy
-   to_pandas
-   to_scipy
-   to_snap
-   to_stellargraph
-   to_teneto
-   to_torch_geometric
-
-.. rubric:: Functions
-"""
-
 from .convert import convert, FORMATS
 from .cugraph import to_cugraph
 from .cupy import  to_cupy

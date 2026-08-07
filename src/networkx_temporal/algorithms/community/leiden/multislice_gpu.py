@@ -17,7 +17,7 @@ def leiden_multislice_gpu(
     refine: bool = True,
     random_state: Optional[int] = None,
 ) -> List[List[int]]:
-    """ GPU-accelerated parallelized Leiden optimization. Optimizes multislice modularity via
+    """ GPU-accelerated parallelized Leiden algorithm. Optimizes multislice modularity via
     `CuPy <https://cupy.dev/>`__.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or list of static NetworkX

@@ -21,7 +21,7 @@ _FigureType = _FigureType()
 
 class _StaticGraphType:
     def __repr__(self):
-        return "NetworkXGraph"
+        return "StaticGraph"
 _StaticGraphType = _StaticGraphType()
 
 
