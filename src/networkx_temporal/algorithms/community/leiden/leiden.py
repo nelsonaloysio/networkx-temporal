@@ -67,6 +67,8 @@ def leiden_communities(
         - ``device='gpu'``: pylibcugraph's `leiden <https://docs.rapids.ai/api/libcugraph/stable/api.html#leiden>`__
           for static and :func:`~networkx_temporal.algorithms.leiden_multislice_gpu` for temporal graphs.
     """
+    gamma = 1.0 if gamma is None else gamma
+
     if device == "cpu":
         fnc = _leiden_cpu
         if is_temporal_graph(graph):
@@ -95,20 +97,20 @@ def leiden_communities(
             # Parallelized multislice modularity optimization with cupy backend.
             fnc = leiden_multislice_gpu
             kwargs.update({
-                "resolution": gamma if gamma is not None else 1.0,
+                "gamma": gamma,
                 "weight": weight,
                 "interslice_weight": interslice_weight,
-                "refine": refine,
+                "refine": kwargs.get("refine", True),
                 "max_iter": max_iter or 500,
-                "max_sweeps": max_sweeps or 100,
+                "max_sweeps": kwargs.get("max_sweeps", 100),
                 "random_state": seed,
             })
         else:  # Static modularity optimization with pylibcugraph/nx-cugraph backend.
             fnc = _leiden_static_gpu
             kwargs.update({
-                "resolution": gamma if gamma is not None else 1.0,
+                "resolution": gamma,
                 "weight": weight,
-                "theta": kwargs.get("theta", 1.0) if refine is not False else 0.0,
+                "theta": kwargs.get("theta", 1.0),
                 "max_level": max_iter or 500,
                 "random_state": seed,
                 "do_expensive_check": kwargs.get("do_expensive_check", False),
