@@ -1,8 +1,9 @@
 from typing import Optional, Union
 
-from ..classes.types import is_static_graph
+from ..classes.types import is_static_graph, is_temporal_graph
 from ..typing import TemporalGraph
-from ..utils.convert import convert, FORMATS
+from ..utils.convert import convert
+from ..utils.convert.convert import FORMAT
 
 from networkx import NetworkXError
 
@@ -18,29 +19,27 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
 
     :param graphs: List or dictionary of NetworkX graphs.
     """
-    if type(graphs) not in (dict, list):
-        raise TypeError("Argument `graphs` must be a list or dictionary of NetworkX graphs.")
-    if len(graphs) == 0:
-        raise ValueError("Argument `graphs` must be a non-empty list or dictionary.")
-
     T = list(graphs.keys()) if type(graphs) == dict else range(len(graphs))
-    if not all(is_static_graph(graphs[t]) for t in T):
+
+    if not all(is_static_graph(graphs[t]) or is_temporal_graph(graphs[t]) for t in T):
         raise TypeError("All elements in data must be valid NetworkX graphs.")
 
     directed = graphs[T[0]].is_directed()
-    multigraph = graphs[T[0]].is_multigraph()
-    if any(directed != graphs[T[t]].is_directed() for t in T):
+    if any(directed != graphs[t].is_directed() for t in T):
         raise NetworkXError("Mixed graphs and digraphs are not supported.")
-    if any(multigraph != graphs[T[t]].is_multigraph() for t in T):
+
+    multigraph = graphs[T[0]].is_multigraph()
+    if any(multigraph != graphs[t].is_multigraph() for t in T):
         raise NetworkXError("Mixed graphs and multigraphs are not supported.")
 
     from .. import empty_graph
     TG = empty_graph(directed=directed, multigraph=multigraph)
-    TG.add_snapshots_from(graphs)
+    list(TG.add_snapshot(graphs[t]) if is_static_graph(graphs[t]) else TG.add_snapshots_from(graphs[t]) for t in T)
+    TG.index = list(T) if type(graphs) == dict else None
     return TG
 
 
-def to_snapshots(TG: TemporalGraph, to: Optional[FORMATS] = None, as_view: bool = True) -> list:
+def to_snapshots(TG: TemporalGraph, to: Optional[FORMAT] = None, as_view: bool = True) -> list:
     """ Returns a list of snapshots. Each snapshot is a view of the original graph, which can be
     converted to a different format using the ``to`` argument, if desired.
 

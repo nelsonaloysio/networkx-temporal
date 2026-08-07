@@ -22,15 +22,15 @@ NUM_TYPE = {
 
 
 def to_graph_tool(
-    G: Union[StaticGraph, TemporalGraph, list],
+    graph: Union[StaticGraph, TemporalGraph, list],
     index: str = "id",
     encoding: str = "ascii",
     errors: str = "strict",
 ):
     """ Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
+        a single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.
     :param encoding: Encoding to use for string conversion.
@@ -46,23 +46,23 @@ def to_graph_tool(
     """
     import graph_tool as gt
 
-    if not (is_temporal_graph(G) or is_static_graph(G)):
+    if not (is_temporal_graph(graph) or is_static_graph(graph)):
         raise TypeError("Input must be a temporal or static NetworkX graph.")
 
-    if is_temporal_graph(G) or type(G) == list:
-        return [to_graph_tool(H, index=index, encoding=encoding, errors=errors) for H in G]
+    if is_temporal_graph(graph) or type(graph) == list:
+        return [to_graph_tool(H, index=index, encoding=encoding, errors=errors) for H in graph]
 
-    gtG = gt.Graph(directed=G.is_directed())
+    gtG = gt.Graph(directed=graph.is_directed())
 
     # Map graph properties.
-    for key, value in G.graph.items():
+    for key, value in graph.graph.items():
         type_, key, value = _get_prop(key, value, encoding=encoding, errors=errors)
         gtG.graph_properties[key] = gtG.new_graph_property(type_)
         gtG.graph_properties[key] = value
 
     # Map node properties.
     vs, vp = {}, {}
-    for node, data in G.nodes(data=True):
+    for node, data in graph.nodes(data=True):
         type_, key, value = _get_prop(index, node, encoding=encoding, errors=errors)
         vp[index].add(type_) if index in vp else vp.__setitem__(index, {type_})
         for key, value in data.items():
@@ -78,7 +78,7 @@ def to_graph_tool(
 
     # Add nodes and their properties.
     gtG.vp[index] = gtG.new_vertex_property("string")
-    for node, data in G.nodes(data=True):
+    for node, data in graph.nodes(data=True):
         v = gtG.add_vertex()
         gtG.vp[index][v] = str(node)
         for key, value in data.items():
@@ -87,7 +87,7 @@ def to_graph_tool(
 
     # Map edge properties.
     ep = {}
-    for src, dst, data in G.edges(data=True):
+    for src, dst, data in graph.edges(data=True):
         for key, value in data.items():
             type_, key, value = _get_prop(key, value, encoding=encoding, errors=errors)
             ep[key].add(type_) if key in ep else ep.__setitem__(key, {type_})
@@ -100,7 +100,7 @@ def to_graph_tool(
         gtG.ep[key] = gtG.new_edge_property(types_[0])
 
     # Add edges and their properties.
-    for src, dst, data in G.edges(data=True):
+    for src, dst, data in graph.edges(data=True):
         e = gtG.add_edge(vs[src], vs[dst])
         for key, value in data.items():
             gtG.ep[key][e] = value

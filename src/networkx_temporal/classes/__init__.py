@@ -5,17 +5,12 @@ Classes and functions for temporal graph objects.
 
 .. autosummary::
 
+   temporal_graph
    TemporalGraph
    TemporalDiGraph
    TemporalMultiGraph
    TemporalMultiDiGraph
    TemporalABC
-
-.. rubric:: Factory Functions - Summary
-
-.. autosummary::
-
-   temporal_graph
    empty_graph
 
 .. rubric:: Functions - Summary
@@ -25,13 +20,18 @@ Classes and functions for temporal graph objects.
    all_neighbors
    compose
    compose_all
+   edge_subgraph
    from_multigraph
+   is_events_graph
+   is_events_multigraph
    is_frozen
    is_static_graph
    is_temporal_graph
    is_unrolled_graph
+   isolates
    neighbors
    relabel_nodes
+   subgraph
    to_multigraph
 
 .. rubric:: Classes
@@ -62,9 +62,12 @@ from .functions import (
     compose,
     compose_all,
     create_empty_copy,
+    edge_subgraph,
     from_multigraph,
+    isolates,
     neighbors,
     relabel_nodes,
+    subgraph,
     to_multigraph,
     set_edge_attributes,
     set_node_attributes,
@@ -73,6 +76,8 @@ from .graph import TemporalGraph
 from .multidigraph import TemporalMultiDiGraph
 from .multigraph import TemporalMultiGraph
 from .types import (
+    is_events_graph,
+    is_events_multigraph,
     is_frozen,
     is_static_graph,
     is_temporal_graph,
@@ -80,6 +85,8 @@ from .types import (
 )
 
 __all__ = (
+    "temporal_graph",
+    "empty_graph",
     "TemporalGraph",
     "TemporalDiGraph",
     "TemporalMultiGraph",
@@ -89,16 +96,19 @@ __all__ = (
     "compose",
     "compose_all",
     "create_empty_copy",
-    "empty_graph",
+    "edge_subgraph",
     "from_multigraph",
+    "is_events_graph",
+    "is_events_multigraph",
     "is_frozen",
     "is_static_graph",
     "is_temporal_graph",
     "is_unrolled_graph",
+    "isolates",
     "neighbors",
     "relabel_nodes",
     "set_edge_attributes",
     "set_node_attributes",
-    "temporal_graph",
+    "subgraph",
     "to_multigraph",
 )

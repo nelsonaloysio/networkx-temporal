@@ -1,12 +1,12 @@
-[![NetworkX-Temporal](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/logo-banner.png)]()
+[![NetworkX-Temporal](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/banner-logo.svg)]()
 
 ___
 
 [![PyPI](https://badge.fury.io/py/networkx-temporal.svg)](https://pypi.org/p/networkx-temporal/)
 [![Documentation](https://readthedocs.org/projects/networkx-temporal/badge/?version=latest)](https://networkx-temporal.readthedocs.io/)
-[![Downloads](https://static.pepy.tech/badge/networkx-temporal/month)](https://pepy.tech/project/networkx-temporal?versions=*)
-[![DOI](https://img.shields.io/static/v1?label=doi&message=10.1016%2Fj.softx.2025.102277&color=blue)](https://doi.org/10.1016/j.softx.2025.102277)
+[![Downloads](https://static.pepy.tech/badge/networkx-temporal)](https://pepy.tech/project/networkx-temporal?versions=*)
 [![License](https://img.shields.io/pypi/l/networkx-temporal)](https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md)
+[![DOI](https://img.shields.io/static/v1?label=doi&message=10.1016%2Fj.softx.2025.102277&color=blue)](https://doi.org/10.1016/j.softx.2025.102277)
 
 Python package to build and manipulate temporal graphs using [NetworkX](https://pypi.org/project/networkx/) as backend.
 
@@ -74,4 +74,4 @@ This package is released under the [BSD License](LICENSE.md).
 ## Cite
 
 In case this package is useful for your research, kindly consider
-[citing it](https://networkx-temporal.readthedocs.io/en/stable/cite.html).
+[citing it](https://networkx-temporal.readthedocs.io/en/latest/cite.html).

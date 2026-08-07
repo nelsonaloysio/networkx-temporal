@@ -4,10 +4,10 @@ from pathlib import Path
 
 import networkx as nx
 
-from ...transform import from_static
-from ...typing import TemporalMultiDiGraph
+from ....transform import from_static
+from ....typing import TemporalMultiDiGraph
 
-DATA_PATH = Path(__file__).parent.resolve() / "collegemsg"
+DATA_PATH = Path(__file__).parent.resolve()
 
 
 def collegemsg_graph() -> TemporalMultiDiGraph:
@@ -48,7 +48,6 @@ def collegemsg_graph() -> TemporalMultiDiGraph:
         online community''. Journal of the American Society for Information Science and
         Technology 60.5 (2009): 911-932.
         doi: `10.1002/asi.21015 <https://doi.org/10.1002/asi.21015>`__.
-
     """
     def to_date(x):
         return datetime.strptime(x.strip(), "%m/%d/%y %I:%M %p").strftime("%Y-%m-%d %H:%M")
@@ -68,6 +67,6 @@ def collegemsg_graph() -> TemporalMultiDiGraph:
     )
 
     TG = from_static(G)
-    TG = TG.slice(attr="time", apply_func=lambda x: x.split()[0])
+    TG = TG.slice(attr="time", applymap=lambda x: x.split()[0])
     TG.name = "CollegeMsg"
     return TG

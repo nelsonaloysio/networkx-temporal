@@ -7,15 +7,15 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_snap(
-    G: Union[StaticGraph, TemporalGraph, list],
+    graph: Union[StaticGraph, TemporalGraph, list],
     node_id: Optional[str] = "id",
     node_attrs: Optional[Union[bool, list]] = True,
     edge_attrs: Optional[Union[bool, list]] = True,
 ):
     """ Convert from NetworkX to `SNAP <https://snap.stanford.edu/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
+        a single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param node_id: Attribute key to use as node identifier. Optional. Default is ``'id'``.
     :param node_attrs: Boolean or list of node attributes to include in the conversion.
         Optional. Default is ``True``.
@@ -26,11 +26,12 @@ def to_snap(
     """
     import snap
 
-    if not (is_temporal_graph(G) or is_static_graph(G)):
+    if not (is_temporal_graph(graph) or is_static_graph(graph)):
         raise TypeError("Input must be a temporal or static NetworkX graph.")
 
-    if is_temporal_graph(G) or type(G) == list:
-        return [to_snap(H, node_id=node_id, node_attrs=node_attrs, edge_attrs=edge_attrs) for H in G]
+    if is_temporal_graph(graph) or type(graph) == list:
+        return [to_snap(g, node_id=node_id, node_attrs=node_attrs, edge_attrs=edge_attrs)
+                for g in graph]
 
     if type(node_id) != str:
         raise TypeError(
@@ -49,8 +50,8 @@ def to_snap(
             f"Node identifier ('{node_id}') cannot be included as a node attribute."
         )
 
-    directed = G.is_directed()
-    multigraph = G.is_multigraph()
+    directed = graph.is_directed()
+    multigraph = graph.is_multigraph()
 
     # Create new graph object.
     if node_id or node_attrs or edge_attrs or multigraph:
@@ -61,16 +62,16 @@ def to_snap(
         H = snap.TUNGraph.New()
 
     # Obtain node mapping and add nodes to graph.
-    nodes = {str(n): i for i, n in enumerate(G.nodes(data=False))}
-    list(map(lambda n: H.AddNode(nodes[n]), G.nodes(data=False)))
+    nodes = {str(n): i for i, n in enumerate(graph.nodes(data=False))}
+    list(map(lambda n: H.AddNode(nodes[n]), graph.nodes(data=False)))
 
     # Add edges to graph (and reversed edges if necessary).
-    for i, e in enumerate(G.edges(data=False)):
+    for i, e in enumerate(graph.edges(data=False)):
         H.AddEdge(nodes[e[0]], nodes[e[1]], i)
 
     if not directed and (multigraph or node_attrs or edge_attrs):
-        for i, e in enumerate(G.edges(data=False)):
-            H.AddEdge(nodes[e[1]], nodes[e[0]], i + G.size())
+        for i, e in enumerate(graph.edges(data=False)):
+            H.AddEdge(nodes[e[1]], nodes[e[0]], i + graph.size())
 
     # Add node indices.
     if node_id:
@@ -81,7 +82,7 @@ def to_snap(
     # Add node attributes.
     if node_attrs:
         added_node_attrs = set()
-        for n in G.nodes(data=node_attrs):
+        for n in graph.nodes(data=node_attrs):
             for k, v in n[-1].items():
                 # Add node attribute to the graph.
                 if k not in added_node_attrs:
@@ -103,7 +104,7 @@ def to_snap(
     # Add edge attributes.
     if edge_attrs:
         added_edge_attrs = set()
-        for i, e in enumerate(G.edges(data=edge_attrs)):
+        for i, e in enumerate(graph.edges(data=edge_attrs)):
             for k, v in e[-1].items():
                 # Add edge attribute to the graph.
                 if k not in added_edge_attrs:
@@ -123,12 +124,12 @@ def to_snap(
                     H.AddStrAttrDatE(i, v, k)
         # Add reversed edge attributes.
         if not directed and (multigraph or node_attrs or edge_attrs):
-            for i, e in enumerate(G.edges(data=edge_attrs)):
+            for i, e in enumerate(graph.edges(data=edge_attrs)):
                 if isinstance(v, int):
-                    H.AddIntAttrDatE(i + G.size(), v, k)
+                    H.AddIntAttrDatE(i + graph.size(), v, k)
                 elif isinstance(v, float):
-                    H.AddFltAttrDatE(i + G.size(), v, k)
+                    H.AddFltAttrDatE(i + graph.size(), v, k)
                 else:
-                    H.AddStrAttrDatE(i + G.size(), v, k)
+                    H.AddStrAttrDatE(i + graph.size(), v, k)
 
     return H

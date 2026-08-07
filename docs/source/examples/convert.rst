@@ -1,11 +1,17 @@
-.. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb
-   :alt: Open on Colab
-   :align: right
+.. include:: ../include-template.rst
 
 #####################
 Convert and transform
 #####################
+
+   .. image:: https://colab.research.google.com/assets/colab-badge.svg
+      :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb
+      :alt: Open on Colab
+      :align: right
+
+   Examples in this guide are also available as an interactive
+   `Jupyter notebook
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__.
 
 This package provides a set of functions to manipulate graph classes, formats, and representations.
 In this context, :mod:`~networkx_temporal.utils.convert` refers to different graph-based libraries,
@@ -13,13 +19,6 @@ e.g., `igraph <https://igraph.org/python>`__, and :mod:`~networkx_temporal.trans
 underlying data structure used to store object relations, e.g.,
 `event-based temporal graphs <#event-based-temporal-graph>`__.
 
-.. seealso::
-
-   All examples in this guide are also available as an interactive
-   `Jupyter notebook
-   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__
-   (`open in Colab
-   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__).
 
 Graph types and classes
 =======================
@@ -93,23 +92,23 @@ Graph representations
 Once instantiated, :class:`~networkx_temporal.classes.TemporalGraph` objects may be transformed into
 different representations, depending on the analysis or visualization requirements. Due to the
 nature of temporal graphs, some representations may not preserve all the data, such as dynamic node
-or edge attributes.
+attributes.
 
 Observe that the total number of returned nodes :math:`V` and edges :math:`E`
 after transformation might differ from the number of temporal nodes :math:`V_T` and
 edges :math:`E_T`, depending on the data and method used:
 
-+------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| Representation   | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes            | Dynamic edge attributes             |
-+==================+======================+=====================+====================================+=====================================+
-| |to_static|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:heavy_check_mark:|  |
-+------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_snapshots|_  | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
-+------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_events|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                | .. centered:: |:x:|                 |
-+------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
-| |to_unrolled|_   | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:| | .. centered:: |:heavy_check_mark:|  |
-+------------------+----------------------+---------------------+------------------------------------+-------------------------------------+
++------------------+----------------------+---------------------+-------------------------------------+-------------------------------------+
+| Representation   | .. centered:: Order  | .. centered:: Size  | Dynamic node attributes             | Dynamic edge attributes             |
++==================+======================+=====================+=====================================+=====================================+
+| |to_static|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:x:|                 | .. centered:: |:heavy_check_mark:|  |
++------------------+----------------------+---------------------+-------------------------------------+-------------------------------------+
+| |to_snapshots|_  | :math:`V \ge V_T`    | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:|  | .. centered:: |:heavy_check_mark:|  |
++------------------+----------------------+---------------------+-------------------------------------+-------------------------------------+
+| |to_events|_     | :math:`V = V_T`      | :math:`E = E_T`     | .. centered:: |:heavy_check_mark:|  | .. centered:: |:heavy_check_mark:|  |
++------------------+----------------------+---------------------+-------------------------------------+-------------------------------------+
+| |to_unrolled|_   | :math:`V \ge V_T`    | :math:`E \ge E_T`   | .. centered:: |:heavy_check_mark:|  | .. centered:: |:heavy_check_mark:|  |
++------------------+----------------------+---------------------+-------------------------------------+-------------------------------------+
 
 .. .. |to_static| replace:: :func:`~networkx_temporal.classes.TemporalGraph.to_static`
 .. .. |to_snapshots| replace:: :func:`~networkx_temporal.classes.TemporalGraph.to_snapshots`
@@ -184,8 +183,8 @@ with the :func:`~networkx_temporal.transform.from_static` function:
 Snapshot-based temporal graph
 -----------------------------
 
-A snapshot-based temporal graph :const:`STG` is a sequence of graphs where each element represents a
-snapshot of the original temporal graph. It is the most common representation of temporal graphs.
+A snapshot-based temporal graph :const:`STG` is a sequence of graphs where each element represents
+a snapshot of the original temporal graph. It is the most common representation of temporal graphs.
 
 .. note::
 
@@ -215,8 +214,8 @@ temporal graph with :func:`~networkx_temporal.classes.TemporalGraph.to_snapshots
 :const:`STG` → :const:`TG`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Transforming a snapshot-based temporal graph into a :class:`~networkx_temporal.classes.TemporalGraph` with
-:func:`~networkx_temporal.transform.from_snapshots`:
+Transforming a snapshot-based temporal graph into a :class:`~networkx_temporal.classes.TemporalGraph`
+with :func:`~networkx_temporal.transform.from_snapshots`:
 
 .. code-block:: python
 
@@ -317,10 +316,9 @@ but topological information is retained, allowing to reconstruct its snapshots w
 Unrolled temporal graph
 -----------------------
 
-An unrolled temporal graph :const:`UTG` is a single graph object that contains the original temporal data,
-plus additional time-adjacent node copies (from each snapshot) and edge couplings connecting them.
-It is mainly useful for certain analysis and visualization tasks, e.g., based on
-temporal flows.
+An unrolled temporal graph :const:`UTG` is a single graph object that contains the original temporal
+data, plus additional time-adjacent node copies (from each snapshot) and edge couplings connecting
+them. It is mainly useful for certain analysis and visualization tasks, e.g., based on temporal flows.
 
 .. seealso::
 
@@ -403,7 +401,7 @@ colored in black:
    and the temporal node copies :math:`a_4`, :math:`b_4`, and :math:`e_4`.
 
 Lastly, the additional parameters ``edge_couplings`` and ``node_copies`` allow further control over
-the creation of temporal node copies and edge couplings. A comparison with newly added nodes in red:
+the creation of temporal node copies and edge couplings. A comparison with newly added nodes colored:
 
 .. code-block:: python
 
@@ -421,12 +419,12 @@ the creation of temporal node copies and edge couplings. A comparison with newly
    >>>
    >>> draw_unrolled(
    >>>     UTG_persist,
-   >>>     node_color=["#333" if UTG_fill.has_node(n) else "tab:red" for n in UTG_persist.nodes()],
+   >>>     node_color=["#333" if UTG_fill.has_node(n) else "tab:green" for n in UTG_persist.nodes()],
    >>>     node_size=200, fig=fig, ax=1, title="node_copies='persist'")
    >>>
    >>> draw_unrolled(
    >>>     UTG_all,
-   >>>     node_color=["#333" if UTG_persist.has_node(n) else "tab:red" for n in UTG_all.nodes()],
+   >>>     node_color=["#333" if UTG_persist.has_node(n) else "tab:blue" for n in UTG_all.nodes()],
    >>>     node_size=200, fig=fig, ax=2, title="node_copies='all'")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_43_0.png
@@ -459,6 +457,10 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                            |
 +===================================================================+======================================+===========================================================================+
+| `CuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.convert.to_cugraph`         |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_cupy`            |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `Deep Graph Library <https://www.dgl.ai>`__                       | .. centered:: ``'dgl'``              | .. centered:: :func:`~networkx_temporal.utils.convert.to_dgl`             |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered:: ``'dynetx'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_dynetx`          |
@@ -471,11 +473,13 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_numpy`           |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+| `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_pandas`          |
++-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.convert.to_torch_geometric` |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `SciPy <https://scipy.org>`__                                     | .. centered:: ``'scipy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_scipy`           |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-| `SNAP <https://https://snap.stanford.edu>`__                      | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
+| `SNAP <https://snap.stanford.edu>`__                              | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
 | `StellarGraph <https://stellargraph.readthedocs.io>`__            | .. centered:: ``'stellargraph'``     | .. centered:: :func:`~networkx_temporal.utils.convert.to_stellargraph`    |
 +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
@@ -521,8 +525,9 @@ offer a high-level interface:
 
    TemporalDiGraph (t=4) with 6 nodes and 9 edges
 
-File formats supported by the installed version of NetworkX may be used to read and write temporal graph data,
-including GML, GEXF, GraphML, Pajek, LEDA, and adjacency list formats.
+File formats supported by the installed version of NetworkX may be used to read and write temporal
+graph data, including GML, GEXF, GraphML, Pajek, LEDA, and adjacency list formats.
+Input and output may be omitted or fed directly to the functions as well:
 
 .. code-block:: python
 
@@ -531,6 +536,11 @@ including GML, GEXF, GraphML, Pajek, LEDA, and adjacency list formats.
    >>> print(TG)
 
    TemporalDiGraph (t=4) with 6 nodes and 9 edges
+
+Additional support for the GDF format is provided and requires the
+`networkx-gdf <https://pypi.org/project/networkx-gdf/>`__ package to be installed. The GDF format
+is a legacy tabular format for graphs, where nodes and edges are defined in separate sections,
+still supported by `Gephi <https://gephi.org>`__ and other external tools.
 
 .. seealso::
 

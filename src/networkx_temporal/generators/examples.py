@@ -4,7 +4,6 @@ from .generators import (generate_block_matrix,
                          generate_community_vector,
                          generate_transition_matrix)
 from .sbm import dynamic_stochastic_block_model
-from ..transform import from_snapshots
 from ..typing import TemporalMultiDiGraph
 
 
@@ -51,7 +50,7 @@ def example_sbm_graph() -> TemporalMultiDiGraph:
         ...         figsize=(6, 2),
         ...         layout="spring",
         ...         node_size=50,
-        ...         temporal_node_color=tx.get_node_attributes(TG, "community"),
+        ...         temporal_node_color=tx.get_node_attributes(TG, "community", index=False),
         ...         with_labels=False)
 
     .. image:: ../../assets/figure/generators/example_sbm_graph.png

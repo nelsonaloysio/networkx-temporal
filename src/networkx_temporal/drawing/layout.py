@@ -52,7 +52,8 @@ def unrolled_layout(
 
 
 def _layout_func(layout):
-    """ Returns a layout function from a string or callable. """
+    """ Returns a layout function from a string or callable.
+    """
     if callable(layout):
         return layout
     if type(layout) == str:

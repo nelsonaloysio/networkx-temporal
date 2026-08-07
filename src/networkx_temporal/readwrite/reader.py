@@ -78,6 +78,9 @@ def read_graph(
     if type(file) == bytes:
         file = BytesIO(file)
 
+    if zipfile.is_zipfile(f"{file}.zip") and not zipfile.is_zipfile(file):
+        file += ".zip"
+
     if zipfile.is_zipfile(file):
         with zipfile.ZipFile(file, "r") as zf:
             if len(zf.namelist()) == 0:

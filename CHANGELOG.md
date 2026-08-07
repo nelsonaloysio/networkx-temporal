@@ -9,10 +9,68 @@
 ### Removed
 -->
 
+## \[1.4\] - 07-08-2026
+
+### Added
+- Arguments `node_attrs` and `edge_attrs` to `to_events` function to return node/edge attributes.
+- Class method `get_edge_data` to iterate over temporal graph snapshots.
+- Class methods `nodes` and `edges` with `copies` support, previously `temporal_{nodes,edges}`.
+- Class property `timestamps` to get a list of edge timestamps based on current slicing.
+- Community detection algorithms (Leiden and spectral clustering) for static and temporal graphs.
+- Conversion functions `from_{cupy,numpy,pandas,spacy}` for static and temporal graphs.
+- Conversion functions `to_{cugraph,cupy,pandas}` for static and temporal graphs.
+- Function `isolates` to return a list of node isolates in each snapshot.
+- Function `temporal_split` to split a temporal graph into train/val/test sets.
+- Sparse temporal `to_supra_adjacency_matrix` function with CPU (SciPy) and GPU (CuPy) support.
+- Loader `fediverse_graph` for temporal graph datasets from Fediverse. [networkx_temporal#4]
+- Loader `travian_graph` for temporal graphs from the Travian dataset (attacks, messages, trades).
+- Missing `supra` graph implementation for `to_numpy` conversion function.
+- Support for GDF extension format from `networkx-gdf`.
+- Support for node and edge attributes in `{from_to}_events` functions.
+- Support for supra-adjacency matrix conversion in `to_{cupy,numpy,scipy}` functions.
+
+### Changed
+- All temporal graphs now start empty (`t=0`), with the first snapshot created on demand.
+- Any new nodes and edges added to a temporal graph with zero snapshots create a new snapshot.
+- Calling `pop` from a temporal graph with `index=None` raises `TypeError`.
+- Functions `remove_{edges,nodes}_from` now support a list or list of lists of nodes/edges.
+- Functions `subgraph` and `edge_subgraph` now return a TemporalGraph instead of a list of graphs.
+- Functions `temporal_{node,edge}_matrix` renamed to `temporal_{node,edge}_similarity` for clarity.
+- Item assignment is now permitted from object, not `graphs` attribute (e.g., `TG[0] = G`).
+- Loader `from_snapshots` accepts snapshots from temporal graph objecs.
+- Loader `read_graph` looks for compressed `.zip` extension if the provided file is not found.
+- Passing `weight` to `temporal_size` or `edges` with `copies=False` raises `ValueError`.
+- Review `slice` implementation. [networkx-temporal#3]
+- SBM edge sampling from a Poisson distribution for multi/graphs, with Bernoulli as an option.
+- Styling: variable `graph` used for time-agnostic implementations, `G` or `TG` otherwise.
+- Utility functions `get_{edge,node}_attributes` skips nodes/edges without attributes by default.
+- Utility functions refactored to `edges`, `nodes`, `time` submodules, now always require a graph.
+
+### Deprecated
+- Argument `apply_func` of `slice` deprecated in favor of `applymap`.
+- Property `names` of `TemporalGraph` deprecated in favor of `index`.
+
+### Fixed
+- SBM edge sampling output matches sparse and dense matrix methods.
+
+### Removed
+- Argument `attr` from `to_events` function.
+
+
+## \[1.3.3\] - 2027-07-01
+
+### Added
+- Added optional `mu` (mean) parameter for Gaussian degree vectors.
+
+### Fixed
+- Added missing `weight` argument to `size` and  `number_of_edges`.
+
+
 ## \[1.3.2\] - 2026-05-11
 
 ### Fixed
-- Calling `from_events` on event list with parallel edges caused data loss if `multigraph=False`. [#5]
+- Data loss calling `from_events` on event list with parallel edges if `multigraph=False`. [#5]
+
 
 ## \[1.3.1\] - 2026-04-14
 
@@ -99,7 +157,7 @@
 ## \[1.1\] - 2024-11-21
 
 ### Added
-- Element-specific drawing functions with NetworkX: `draw_networkx_{nodes,edges,labels,edge_labels}`.
+- Element-specific drawing with NetworkX: `draw_networkx_{nodes,edges,labels,edge_labels}`.
 - Event-based representation with `to_events` using floats for interaction duration/interval.
 - Function `is_frozen` to return single boolean value for temporal graph object.
 - High-level `draw` function to support wrapping around possible multiple backends.
@@ -114,8 +172,8 @@
 - Module `utils` renamed from `convert`.
 - Moved `tests` to repository root folder.
 - Number of nodes when calling `str` on a temporal graph object do not consider node copies.
-- Optimized `from_events` function to use ranges to process edge addition/deletion (`1`/`-1`) events.
-- Output of `from_events` is a (frozen) subgraph view if `as_view=True` for reduced memory footprint.
+- Optimized `from_events` function to use ranges for edge addition/deletion (`1`/`-1`) events.
+- Output of `from_events` is a (frozen) subgraph if `as_view=True` for reduced memory footprint.
 - Output of `from_events` is a multigraph if parallel edges are not found and `multigraph=None`.
 - Restructured package reference in documentation.
 

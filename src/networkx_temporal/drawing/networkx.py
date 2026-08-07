@@ -1,13 +1,9 @@
-from typing import Callable, Optional, Sequence, Union
+from typing import Callable, List, Optional, Union
 
 import networkx as nx
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    plt = None
 
 from .layout import _layout_func
-from ..classes.types import is_temporal_graph
+from ..classes.types import is_static_graph
 from ..typing import Figure, StaticGraph, TemporalGraph
 
 NODE_OPTS = {
@@ -31,7 +27,7 @@ EDGE_LABEL_OPTS = {
 
 
 def draw_networkx(
-    TG: Union[TemporalGraph, StaticGraph],
+    TG: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
     pos: Optional[Union[list, dict]] = None,
     layout: Optional[Union[str, Callable]] = 'random',
     nrows: Optional[int] = None,
@@ -45,7 +41,7 @@ def draw_networkx(
     suptitle: Optional[Union[str, bool]] = None,
     nodes: Optional[bool] = True,
     edges: Optional[bool] = True,
-    labels: Optional[Union[str, dict, bool]] = True,
+    labels: Optional[Union[str, dict, bool]] = False,
     edge_labels: Optional[Union[str, dict, bool]] = False,
     node_opts: Optional[Union[list, dict]] = None,
     edge_opts: Optional[Union[list, dict]] = None,
@@ -58,10 +54,11 @@ def draw_networkx(
     Returns a `Matplotlib Figure <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__
     with subplots.
 
-    This function accepts global or specific options for nodes, edges, labels, and layout algorithms.
-    Arguments prefixed with ``temporal_`` expect a dictionary of dictionaries (indexed by snapshot key)
-    to be applied on a per snapshot basis, overriding static options. Element-specific options (e.g.,
-    ``node_opts``) override global ``opts`` and allow greater control over the drawing process.
+    This function accepts global or specific options for nodes, edges, labels, and layout
+    algorithms. Arguments prefixed with ``temporal_`` expect a dictionary of dictionaries (indexed
+    by snapshot index) to be applied per snapshot, overriding static options. Element-specific
+    options (e.g., ``node_opts``) override global ``opts`` and allow greater control over the
+    drawing process.
 
     Requires additional libraries to be installed, available from the ``draw`` extra:
 
@@ -69,27 +66,11 @@ def draw_networkx(
 
         $ pip install 'networkx-temporal[draw]'
 
-    .. important::
-
-        This function simply calls `NetworkX draw
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
-        in the backend and returns a `matplotlib Figure
-        <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__ with
-        temporal graph snapshots as subplots. It does not scale well to large graphs, which usually
-        require more sophisticated approaches or specialized visualization tools.
-
-    .. note::
-
-        While the parameters ``nodes`` and ``edges`` control only the visibility of these elements,
-        the parameters ``labels`` and ``edge_labels`` also allow passing a string, dictionary,
-        or list of such types to control the content of the node and edge labels shown in the plot,
-        respectively.
-
     .. rubric:: Example
 
     Create a temporal directed graph and plot its snapshots using the `Kamada-Kawai
     <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.kamada_kawai_layout.html>`__
-    algorithm, coloring nodes by the time (snapshot index) of their first appearance in the network:
+    algorithm, coloring nodes by the time (snapshot index) of their first appearance in the graph:
 
     .. code-block:: python
 
@@ -145,28 +126,39 @@ def draw_networkx(
 
     .. image:: ../../assets/figure/drawing/draw_networkx.png
 
+    Note that the functions
+    :func:`~networkx_temporal.drawing.draw_networkx_nodes`,
+    :func:`~networkx_temporal.drawing.draw_networkx_edges`,
+    :func:`~networkx_temporal.drawing.draw_networkx_labels`, and
+    :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
+    allow to plot specific temporal graph elements on the same figure.
+
+    .. important::
+
+        This function calls `NetworkX draw
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
+        and returns a `Figure
+        <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__ with
+        graphs as subplots. It does not scale well to large graphs, which usually
+        require more sophisticated approaches or specialized visualization tools.
+
     .. seealso::
 
-        - The drawing `documentation
-          <https://networkx.org/documentation/stable/reference/drawing.html>`__
-          and `gallery
-          <https://networkx.org/documentation/stable/auto_examples/index.html#drawing>`__
-          from NetworkX for more details and examples.
         - The `Examples → Basic operations → Slice temporal graph
           <../examples/basics.html#slice-temporal-graph>`__
           and `Examples → Community detection
           <../examples/community.html>`__
           pages for more examples using this function to plot simple temporal graphs.
-        - The :func:`~networkx_temporal.drawing.draw_networkx_nodes`,
-          :func:`~networkx_temporal.drawing.draw_networkx_edges`,
-          :func:`~networkx_temporal.drawing.draw_networkx_labels`, and
-          :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
-          functions for drawing specific graph elements.
+        - The drawing `documentation
+          <https://networkx.org/documentation/stable/reference/drawing.html>`__
+          and `gallery
+          <https://networkx.org/documentation/stable/auto_examples/index.html#drawing>`__
+          from NetworkX for more details and plot examples.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
-    :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values, e.g.,
-        ``{'node': (0.19813, 0.74631), ...}``.
+    :param pos: Dictionary or list of dictionaries with nodes as keys and positions as values,
+        e.g., ``{'node': (0.19813, 0.74631), ...}``.
     :param layout: A callable or string with a `layout algorithm
         <https://networkx.org/documentation/stable/reference/drawing.html#module-networkx.drawing.layout>`__
         from NetworkX to calculate node positions with. Default is ``'random'``.
@@ -229,17 +221,18 @@ def draw_networkx(
         options to set :func:`~networkx_temporal.draw.networkx.nx.draw_networkx_edge_labels`.
     :param layout_opts: Dictionary or list of dictionaries (one per snapshot) with
         additional options for the ``layout`` algorithm. Optional.
-    :param opts: Additional drawing options passed to each drawing
-        or layout algorithm functions. Optional. Overriden by
-        ``node_opts``, ``edge_opts``, ``node_label_opts``, ``edge_label_opts``,
+    :param opts: Additional drawing options passed to each drawing or layout algorithm functions.
+        Overriden by ``node_opts``, ``edge_opts``, ``node_label_opts``, ``edge_label_opts``,
         and ``layout_opts`` if provided.
     """
-    if plt is None:
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError as e:
         raise ImportError(
             "Matplotlib is required to use the drawing module. "
             "Please install the package with the 'draw' extra: "
             "`pip install 'networkx-temporal[draw]'`"
-        )
+        ) from e
 
     if type(layout) == str:
         layout = _layout_func(layout)
@@ -269,7 +262,7 @@ def draw_networkx(
         raise TypeError("Argument `suptitle` must be a string or a boolean.")
 
     # Allow a single graph to be passed as input.
-    if not is_temporal_graph(TG):
+    if is_static_graph(TG):
         TG = [TG]
 
     # Decide number of columns and rows if not provided.
@@ -279,11 +272,14 @@ def draw_networkx(
         ncols = len(TG) if nrows == 1 else 1
 
     # Create figure and axes if not provided.
-    if fig is None:
-        fig, ax = plt.subplots(nrows=nrows,
-                               ncols=ncols,
-                               figsize=figsize,
-                               constrained_layout=constrained_layout)
+    if fig is None and ax is not None:
+        fig = ax.figure
+    elif fig is None:
+        fig, ax = plt.subplots(
+            nrows=nrows, ncols=ncols, figsize=figsize, constrained_layout=constrained_layout
+        )
+    elif ax is None:
+        ax = fig.axes[0] if len(TG) == 1 else fig.axes
     else:
         ax = fig.axes[ax] if type(ax) == int else fig.axes[0] if len(TG) == 1 else ax
 
@@ -327,10 +323,10 @@ def draw_networkx(
             ax_.set_axis_off()
 
         # Set graph titles.
-        if title is False or opts.get("names", None) is False:
+        if title is False:
             title_ = None
-        elif title is True or opts.get("names", None):
-            title_ = TG.names[t] if TG.names is not None else TG[t].name
+        elif title is True:
+            title_ = TG.index[t] if TG.index is not None else TG[t].name
         elif title is None:
             title_ = f"$t$ = {t}" if len(TG) > 1 else None
         elif type(title) == str:
@@ -367,7 +363,7 @@ def draw_networkx_nodes(*args, **kwargs):
     :note: This function acts as a wrapper to the :func:`~draw_networkx` function.
     """
     kwargs.update(kwargs.pop("node_opts", {}))
-    kwargs.update({"edges": False, "labels": False, "edge_labels": False})
+    kwargs.update({"edges": False, "edge_labels": False})
     return draw_networkx(*args, **kwargs)
 
 
@@ -386,7 +382,7 @@ def draw_networkx_edges(*args, **kwargs):
     :note: This function acts as a wrapper to the :func:`~draw_networkx` function.
     """
     kwargs.update(kwargs.pop("edge_opts", {}))
-    kwargs.update({"nodes": False, "labels": False, "edge_labels": False})
+    kwargs.update({"nodes": False, "labels": False})
     return draw_networkx(*args, **kwargs)
 
 
@@ -429,7 +425,7 @@ def draw_networkx_edge_labels(*args, **kwargs):
 
 
 def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "labels") -> dict:
-    """ Helper function to get node attributes in a graph.
+    """ Helper function to get node labels from attributes in a graph.
 
     :param object G: :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -446,7 +442,7 @@ def _get_node_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "lab
 
 
 def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edge_labels") -> dict:
-    """ Helper function to get edge attributes in a graph.
+    """ Helper function to get edge labels from attributes in a graph.
 
     :param object G: :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -464,7 +460,7 @@ def _get_edge_labels(G, attr: Optional[Union[str, dict]] = None, key: str = "edg
     return {}
 
 
-def _get_opts(*opts: Sequence[Union[dict, list]], t: int, sig: Optional[Callable] = None) -> dict:
+def _get_opts(*opts: List[Union[dict, list]], t: int, sig: Optional[Callable] = None) -> dict:
     """ Helper function to get options per snapshot.
 
     :param dict opts: Dictionary or list of dictionaries with keyword arguments.

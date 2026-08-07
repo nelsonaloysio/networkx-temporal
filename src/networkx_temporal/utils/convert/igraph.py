@@ -4,11 +4,11 @@ from ...classes.types import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
-def to_igraph(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
+def to_igraph(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
     """ Convert from NetworkX to `igraph <https://igraph.org/python>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
+        a single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 
@@ -20,10 +20,10 @@ def to_igraph(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
     """
     import igraph as ig
 
-    if not (is_temporal_graph(G) or is_static_graph(G)):
+    if not (is_temporal_graph(graph) or is_static_graph(graph)):
         raise TypeError("Input must be a temporal or static NetworkX graph.")
 
-    if is_temporal_graph(G) or type(G) == list:
-        return [to_igraph(H, *args, **kwargs) for H in G]
+    if is_temporal_graph(graph) or type(graph) == list:
+        return [to_igraph(H, *args, **kwargs) for H in graph]
 
-    return ig.Graph.from_networkx(G, *args, **kwargs)
+    return ig.Graph.from_networkx(graph, *args, **kwargs)

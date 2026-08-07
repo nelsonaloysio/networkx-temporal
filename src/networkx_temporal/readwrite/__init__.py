@@ -1,6 +1,8 @@
 """
 Input/Output functions for temporal graphs.
 
+.. rubric:: Summary - Graph I/O Functions
+
 .. autosummary::
 
    read_graph

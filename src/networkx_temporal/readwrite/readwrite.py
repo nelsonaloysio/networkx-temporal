@@ -4,7 +4,15 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
+from .gdf import read_gdf, write_gdf
 from ..typing import Literal
+
+READERS = {
+    "gdf": read_gdf,
+}
+WRITERS = {
+    "gdf": write_gdf,
+}
 
 
 def _get_filepath(
@@ -61,5 +69,9 @@ def _get_function(
     if callable(frmt):
         return frmt
     if type(frmt) == str:
+        if prefix == "read" and frmt in READERS:
+            return READERS[frmt]
+        if prefix == "write" and frmt in WRITERS:
+            return WRITERS[frmt]
         return getattr(nx, f"{prefix}_{frmt}", None)
     return None

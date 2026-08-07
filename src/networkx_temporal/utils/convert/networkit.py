@@ -4,11 +4,11 @@ from ...classes.types import is_static_graph, is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
-def to_networkit(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
+def to_networkit(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
     """ Convert from NetworkX to `Networkit <https://networkit.github.io/>`__.
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
+        a single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 
@@ -20,10 +20,10 @@ def to_networkit(G: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
     """
     import networkit as nk
 
-    if not (is_temporal_graph(G) or is_static_graph(G)):
+    if not (is_temporal_graph(graph) or is_static_graph(graph)):
         raise TypeError("Input must be a temporal or static NetworkX graph.")
 
-    if is_temporal_graph(G) or type(G) == list:
-        return [to_networkit(H, *args, **kwargs) for H in G]
+    if is_temporal_graph(graph) or type(graph) == list:
+        return [to_networkit(g, *args, **kwargs) for g in graph]
 
-    return nk.nxadapter.nx2nk(G, *args, **kwargs)
+    return nk.nxadapter.nx2nk(graph, *args, **kwargs)

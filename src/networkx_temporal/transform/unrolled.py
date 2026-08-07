@@ -4,7 +4,8 @@ import networkx as nx
 
 from .snapshots import from_snapshots
 from ..typing import Literal, StaticGraph, TemporalGraph
-from ..utils.convert import convert, FORMATS
+from ..utils.convert import convert
+from ..utils.convert.convert import FORMAT
 
 
 def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGraph:
@@ -102,7 +103,7 @@ def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGrap
 
 def to_unrolled(
     TG: TemporalGraph,
-    to: Optional[FORMATS] = None,
+    to: Optional[FORMAT] = None,
     delta: Optional[Union[int, str]] = 0,
     edge_couplings: bool = True,
     node_copies: Optional[Literal["all", "fill", "persist"]] = None,

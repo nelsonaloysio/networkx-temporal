@@ -1,16 +1,16 @@
 import gzip
 import os.path as osp
 import urllib.request
+import zipfile
 from pathlib import Path
 from typing import Optional, Union
-import zipfile
 
 import networkx as nx
 
-from ...transform import from_static
-from ...typing import TemporalDiGraph
+from ....transform import from_static
+from ....typing import TemporalDiGraph
 
-DATA_PATH = Path(__file__).parent.resolve() / "pubmed"
+DATA_PATH = Path(__file__).parent.resolve()
 
 DATA_URL = "https://zenodo.org/records/17860933/files/pubmed-features.csv.zip"
 
@@ -42,7 +42,7 @@ def pubmed_graph(features: Optional[Union[bool, str]] = False) -> TemporalDiGrap
         >>> TG = tx.generators.pubmed_graph()
         >>> print(TG)
 
-        TemporalDiGraph (t=42) with 19717 nodes and 44335 edges
+        TemporalDiGraph (t=42) named 'PubMed' with 19717 nodes and 44335 edges
 
     .. [13] Namata et al. (2012).
         ''Query-driven Active Surveying for Collective Classification''.

@@ -6,9 +6,11 @@ from warnings import warn
 import networkx as nx
 
 from .functions import (
+    edge_subgraph,
     neighbors as temporal_neighbors,
     from_multigraph,
     to_multigraph,
+    subgraph,
 )
 from .slice import slice
 from .wraps import (
@@ -18,6 +20,8 @@ from .wraps import (
     in_degree,
     out_degree,
     neighbors,
+    remove_edges_from,
+    remove_nodes_from,
     to_directed,
     to_undirected,
     wrapper,
@@ -48,7 +52,11 @@ class TemporalABC(metaclass=ABCMeta):
     """
     convert = convert.convert
     copy = copy
+    edge_subgraph = edge_subgraph
     from_multigraph = from_multigraph
+    remove_edges_from = remove_edges_from
+    remove_nodes_from = remove_nodes_from
+    subgraph = subgraph
     to_directed = to_directed
     to_events = to_events
     to_multigraph = to_multigraph
@@ -68,7 +76,7 @@ class TemporalABC(metaclass=ABCMeta):
 
     @abstractmethod
     def __init__(self, t: int, create_using: StaticGraph):
-        t = 1 if t is None else t  # Default to one snapshot.
+        t = 0 if t is None else t  # Default to empty graph.
 
         if type(t) != int:
             raise TypeError(f"Argument `t` must be an integer, received: {type(t)}.")
@@ -97,13 +105,13 @@ class TemporalABC(metaclass=ABCMeta):
             raise IndexError("Temporal graph is empty (t=0), cannot index snapshots.")
         if type(t) == int and (t >= len(self) or t < -len(self)):
             raise IndexError(f"Received index {t}, but temporal graph has {len(self)} snapshots.")
-        if type(t) == str and not self.names:
-            raise IndexError("Temporal graph `names` property is unset; cannot index by string.")
+        if type(t) == str and not self.index:
+            raise IndexError("Temporal graph `index` property is unset; cannot index by string.")
 
         if type(t) == int:
             return self.graphs[t]
         if type(t) == str:
-            return self.graphs[self.names.index(t)]
+            return self.graphs[self.index.index(t)]
 
         TG = self.__class__(t=0)
         TG.graphs = {t: G for t, G in self.items()}
@@ -112,19 +120,29 @@ class TemporalABC(metaclass=ABCMeta):
     def __iter__(self) -> iter:
         """ Returns iterator over slices in the temporal graph. """
         if len(self.graphs) == 0:
-            raise IndexError("Temporal graph is empty (t=0), cannot iterate snapshots.")
+            self.add_snapshot()  # Ensure at least one snapshot for iteration.
+            # raise IndexError("Temporal graph is empty (t=0), cannot iterate snapshots.")
         return iter(self.graphs)
 
     def __len__(self) -> int:
         """ Returns number of slices in the temporal graph. """
         return len(self.graphs)
 
+    def __setitem__(self, t: Any, G: StaticGraph) -> None:
+        """ Sets snapshot for a given interval. """
+        if type(t) == int:
+            self.graphs[t] = G
+        elif type(t) == str:
+            self.graphs[self.index.index(t)] = G
+
     def __str__(self) -> str:
         """ Returns string representation of the class. """
         return f"Temporal"\
                f"{'Multi' if self.is_multigraph() else ''}"\
                f"{'Di' if self.is_directed() else ''}"\
-               f"Graph (t={len(self)}) "\
+               f"Graph "\
+               f"""{f"named '{self.name}' " if self.name else ''}"""\
+               f"(t={len(self)}) "\
                f"with {self.order(copies=False)} nodes and {self.size(copies=True)} edges"
 
     # -- Properties -- #
@@ -143,15 +161,11 @@ class TemporalABC(metaclass=ABCMeta):
         return len(self)
 
     @property
-    def graph(self) -> list:
-        """ The ``graphs`` property of the temporal graph.
-
-        :getter: Returns temporal graph data.
-        :setter: Sets temporal graph data. Accepts a list, tuple, or dictionary of NetworkX graphs.
-            Passing a dictionary will set the ``names`` property to its keys.
-        :rtype: list
+    def graph(self) -> dict:
+        """ The ``graph`` property of the temporal graph. Preserved on :func:`~networkx_temporal.classes.TemporalGraph.to_static` conversion.
         """
-        return self.__dict__.get("_graphs", None)
+        self._graph = self.__dict__.get("_graph") or {}
+        return self._graph
 
     @property
     def graphs(self) -> list:
@@ -159,7 +173,7 @@ class TemporalABC(metaclass=ABCMeta):
 
         :getter: Returns temporal graph data.
         :setter: Sets temporal graph data. Accepts a list, tuple, or dictionary of NetworkX graphs.
-            Passing a dictionary will set the ``names`` property to its keys.
+            Passing a dictionary will set the ``index`` property to its keys.
         :rtype: list
         """
         return self.__dict__.get("_graphs", None)
@@ -171,7 +185,7 @@ class TemporalABC(metaclass=ABCMeta):
         if type(graphs) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
             graphs = [graphs]
 
-        names = list(graphs.keys()) if type(graphs) == dict else None
+        index = list(graphs.keys()) if type(graphs) == dict else None
         graphs = list(graphs.values() if type(graphs) == dict else graphs)
 
         if not all(
@@ -179,7 +193,7 @@ class TemporalABC(metaclass=ABCMeta):
             for G in graphs
         ):
             raise TypeError(
-                f"Argument `graphs` expects a NetworkX graph or list/tuple/dictionary of graphs."
+                f"Argument `graphs` expects static NetworkX graph objects as input."
             )
         if any(G.is_directed() != self.is_directed() for G in graphs):
             raise ValueError(
@@ -193,17 +207,38 @@ class TemporalABC(metaclass=ABCMeta):
             )
 
         self._graphs = graphs
-        self.names = names
+        self._index = index
 
     @property
-    def graph(self) -> dict:
-        """ The ``graph`` property of the temporal graph.
+    def index(self) -> list:
+        """ The ``index`` property of the temporal graph. Used to store intervals as strings on
+        :func:`~networkx_temporal.classes.TemporalGraph.slice`.
 
-        :getter: Returns temporal graph dictionary.
-        :rtype: dict
+        :getter: Returns index of temporal graph snapshots.
+        :setter: Sets index of temporal graph snapshots.
+        :rtype: list
         """
-        self._graph = self.__dict__.get("_graph", {})
-        return self._graph
+        return self.__dict__.get("_index", range(len(self)))
+
+    @index.setter
+    def index(self, index: List[str]) -> None:
+        """ Setter for the ``index`` property of the temporal graph.
+        """
+        if index is None:
+            self.__dict__.pop("_index", None)
+            return
+        if len(index) != len(self):
+            raise ValueError(
+                f"Length of index ({len(index)}) differs from number of snapshots ({len(self)})."
+            )
+        if not any(all(type(i) == dtype for i in index) for dtype in (str, int)):
+            raise TypeError("All elements in index must be strings or integers.")
+        if type(index[0]) == str and len(index) != len(set(index)):
+            raise ValueError("All elements in index must be unique.")
+
+        # NOTE: Does not work if graphs are views, as setting one view will set all objects.
+        # list(setattr(self[t], "name", index[t]) for t in range(len(self)))
+        self._index = index
 
     @property
     def name(self) -> str:
@@ -228,123 +263,61 @@ class TemporalABC(metaclass=ABCMeta):
 
     @property
     def names(self) -> list:
-        """ The ``names`` property of the temporal graph. Used to store intervals as strings on
-        :func:`~networkx_temporal.classes.TemporalGraph.slice`.
-
-        :getter: Returns names of temporal graph snapshots.
-        :setter: Sets names of temporal graph snapshots.
-        :rtype: list
+        """ The ``names`` property of the temporal graph.\n:meta private:
         """
-        return self.__dict__.get("_names", None)
+        warn("TemporalGraph `names` property is deprecated in favor of `index` and will be removed"
+             "in a future release.", DeprecationWarning)
+        return self.index
 
     @names.setter
     def names(self, names: Optional[List[str]]):
-        """ Setter for the ``names`` property of the temporal graph.
+        """ Setter for the ``names`` property of the temporal graph.\n:meta private:
         """
-        if names is None:
-            self.__dict__.pop("_names", None)
-            return
-        if len(names) != len(self):
-            raise ValueError(
-                f"Length of names ({len(names)}) differs from number of snapshots ({len(self)})."
-            )
-        if any(type(n) not in (int, str) for n in names):
-            raise TypeError("All elements in names must be strings or integers.")
-        if len(names) != len(set(names)):
-            raise ValueError("All elements in names must be unique.")
-
-        # NOTE: Does not work if graphs are views, as setting one view will set all objects.
-        # list(setattr(self[t], "name", names[t]) for t in range(len(self)))
-        self.__dict__.pop("_names", None) if names is None else self.__setattr__("_names", names)
-
-    # -- List-like methods -- #
-
-    def append(self, G: Optional[StaticGraph] = None) -> None:
-        """ Adds a new snapshot ``G`` to the temporal graph.
-        If unset, adds an empty graph.
-
-        :param G: NetworkX graph object to append. Optional.
-        """
-        self.insert(len(self), G)
-
-    def insert(self, index: int, G: Optional[StaticGraph] = None) -> None:
-        """ Inserts a new snapshot to the temporal graph at a given index.
-
-        :param index: Insert graph object before index.
-        :param G: NetworkX graph object to insert. Optional.
-        """
-        directed = self.is_directed()
-        multigraph = self.is_multigraph()
-
-        if G is None:
-            G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
-
-        if type(index) != int:
-            raise TypeError(
-                f"Argument `index` must be an integer, received: {type(index)}."
-            )
-        if not (type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
-            raise TypeError(
-                f"Argument `G` must be a valid NetworkX graph, received: {type(G)}."
-            )
-        if G.is_directed() != directed:
-            raise ValueError(
-                f"Received a{' directed' if G.is_directed() else 'n undirected'} graph, "
-                f"but temporal graph is {'' if directed else 'un'}directed."
-            )
-        if G.is_multigraph() != multigraph:
-            raise ValueError(
-                f"Received a {'multi' if G.is_multigraph() else ''}graph, "
-                f"but temporal graph is {'' if multigraph else 'not '}a multigraph."
-            )
-
-        self.graphs.insert(index, G)
-
-    # -- Dictionary-like methods -- #
-
-    def items(self) -> list:
-        """ Returns list of snapshot name and graph pairs.
-
-        :note: Returns pairs of :func:`~networkx_temporal.classes.TemporalGraph.names` and
-            :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
-        """
-        return list(zip(self.names or range(len(self)), self.graphs))
-
-    def keys(self) -> list:
-        """ Returns list of snapshot names.
-
-        :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.names`.
-        """
-        return list(self.names)
-
-    def pop(self, index: Optional[int] = None) -> StaticGraph:
-        """ Removes and returns graph snapshot at ``index`` (default: last snapshot).
-
-        :param index: Index of snapshot. Default: last snapshot.
-        """
-        self.__getitem__(index or -1)
-        return self.graphs.pop(index or -1)
-
-    def values(self) -> list:
-        """ Returns list of snapshot graphs.
-
-        :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
-        """
-        return list(self.graphs)
+        warn("TemporalGraph `names` setter is deprecated in favor of `index` and will be removed"
+             "in a future release.", DeprecationWarning)
+        self.index = names
 
     # -- Graph-specific methods -- #
 
     def edge(self, *edge) -> Optional[List[str]]:
         """ Returns a dictionary mapping each edge to their temporal attributes,
         with snapshot indices as keys and dictionaries as values.
+
+        :param edge: Edge to get data for.
         """
         return {t: G.edges[edge] for t, G in self.items() if G.has_edge(*edge)}
 
     def node(self, node) -> Optional[List[str]]:
         """ Returns a dictionary mapping each node to their temporal attributes,
         with snapshot indices as keys and dictionaries as values.
+
+        :param node: Node to get data for.
         """
         return {t: G.nodes[node] for t, G in self.items() if G.has_node(node)}
+
+    def edges(self, *args, copies: Optional[bool] = None, **kwargs) -> Optional[List[str]]:
+        """ Returns a mapping of edges and temporal data.
+
+        :param copies: If set, returns a single list of edges across all snapshots,
+            with duplicates if ``True``, and without duplicates if ``False``.
+        """
+        if len(self) == 0:
+            return []
+        if copies is None:
+            return [G.edges(*args, **kwargs) for G in self]
+        return self.temporal_edges(copies=copies, *args, **kwargs)
+
+    def nodes(self, *args, copies: Optional[bool] = None, **kwargs) -> dict:
+        """ Returns a mapping of nodes and temporal data.
+
+        :param copies: If set, returns a single list of nodes across all snapshots,
+            with duplicates if ``True``, and without duplicates if ``False``.
+        """
+        if len(self) == 0:
+            return []
+        if copies is None:
+            return [G.nodes(*args, **kwargs) for G in self]
+        return self.temporal_nodes(copies=copies, *args, **kwargs)
 
     def add_snapshot(self, G: StaticGraph = None) -> StaticGraph:
         """ Adds a snapshot to the temporal graph.
@@ -381,6 +354,14 @@ class TemporalABC(metaclass=ABCMeta):
            Parallel edges from different snapshots are also not preserved, except for multigraphs.
         """
         return self.slice(bins=1)
+
+    def get_edge_data(self, *edge) -> Optional[List[str]]:
+        """ Returns a dictionary mapping each edge to their temporal attributes,
+        with snapshot indices as keys and dictionaries as values.
+
+        :param edge: Edge to get data for.
+        """
+        return [G.get_edge_data(*edge) for G in self if G.has_edge(*edge)]
 
     def get_node_data(self, node: Any) -> list:
         """ Returns a list of all attributes for a given node across all snapshots.
@@ -484,6 +465,18 @@ class TemporalABC(metaclass=ABCMeta):
         """
         return len(self)
 
+    def offsets(self, node: Optional[Any] = None) -> list:
+        """ Returns list of node offsets for each snapshot in the temporal graph.
+
+        :param node: Node to get offsets for. Returns ``None`` for snapshots it is not present in.
+        """
+        if node is not None:
+            return [
+                list(self[t].nodes).index(node) + sum(self[i].order() for i in range(t))
+                if self[t].has_node(node) else None for t in range(len(self))
+            ]
+        return [sum(self[i].order() for i in range(t)) for t in range(len(self))]
+
     def order(self, copies: Optional[bool] = None) -> int:
         """ Returns number of nodes in the temporal graph.
 
@@ -524,6 +517,8 @@ class TemporalABC(metaclass=ABCMeta):
         if copies is True:
             return sum(G.size(weight=weight) for G in self)
         if copies is False:
+            if weight is not None and weight is not False:
+                raise ValueError("Argument `weight` is not compatible with `copies=False`.")
             return len(set(self.temporal_edges()))
         raise TypeError(f"Argument `copies` must be of type bool, received: {type(copies)}.")
 
@@ -551,7 +546,7 @@ class TemporalABC(metaclass=ABCMeta):
             return {e for G in self for e in G.edges(*args, **kwargs)}
         return list(e for G in self for e in G.edges(*args, **kwargs))
 
-    def temporal_nodes(self, copies: Optional[bool] = None, *args, **kwargs) -> Union[dict, list]:
+    def temporal_nodes(self, copies: Optional[bool] = None, *args, **kwargs) -> Union[list, dict]:
         """ Returns sequence of nodes in all snapshots.
 
         :param copies: If ``True``, consider multiple instances of the same node in different
@@ -582,20 +577,31 @@ class TemporalABC(metaclass=ABCMeta):
         .. seealso::
 
             The :func:`~networkx_temporal.classes.TemporalGraph.total_order` method for the sum of
-            the number of nodes in all snapshots.
+            of nodes in all snapshots.
         """
         return self.order(copies=False)
 
     def temporal_size(self) -> int:
-        """ Return number of unique edges.
+        """ Return number of unique interactions.
         Equivalent to :func:`~networkx_temporal.classes.TemporalGraph.size` with ``copies=False``.
 
         .. seealso::
 
-            The :func:`~networkx_temporal.classes.TemporalGraph.total_order` method for the sum of
-            the number of edges in all snapshots.
+            The :func:`~networkx_temporal.classes.TemporalGraph.total_size` method for the sum of
+            edges in all snapshots.
         """
         return self.size(copies=False)
+
+    def timestamps(self, attr: Optional[str] = None, default: Any = None) -> list:
+        """ Returns list of snapshot indices for each edge in the temporal graph.
+
+        :param attr: Edge attribute to use as timestamp. By default, consider current slicing
+            of the temporal graph as timestamps (i.e., snapshot indices). Optional.
+        :param default: Value to use for missing timestamps if ``attr`` is not ``None``.
+        """
+        if attr:
+            return [d for G in self for _, _, d in G.edges(data=attr, default=default)]
+        return [t for t, m in enumerate(self.size()) for _ in range(m)]
 
     def total_order(self) -> int:
         """ Return sum of nodes from all snapshots.
@@ -608,16 +614,95 @@ class TemporalABC(metaclass=ABCMeta):
         """
         return self.order(copies=True)
 
-    def total_size(self) -> int:
+    def total_size(self, weight: Optional[str] = "weight") -> int:
         """ Return sum of edges from all snapshots.
         Equivalent to :func:`~networkx_temporal.classes.TemporalGraph.size` with ``copies=True``.
 
         .. seealso::
 
             The :func:`~networkx_temporal.classes.TemporalGraph.temporal_size` method for the
-            number of unique edges in the temporal graph.
+            number of unique interactions in the temporal graph.
+
+        :param weight: The edge attribute that holds the numerical value used as a weight.
+            If ``None`` (default), then each edge has weight 1.
         """
-        return self.size(copies=True)
+        return self.size(weight=weight, copies=True)
+
+    # -- List-like methods -- #
+
+    def append(self, G: Optional[StaticGraph] = None) -> None:
+        """ Adds a new snapshot ``G`` to the temporal graph.
+        If unset, adds an empty graph.
+
+        :param G: NetworkX graph object to append. Optional.
+        """
+        self.insert(len(self), G)
+
+    def insert(self, index: int, G: Optional[StaticGraph] = None) -> None:
+        """ Inserts a new snapshot to the temporal graph at a given index.
+
+        :param index: Insert graph object before index.
+        :param G: NetworkX graph object to insert. Optional.
+        """
+        directed = self.is_directed()
+        multigraph = self.is_multigraph()
+
+        if G is None:
+            G = getattr(nx, f"{'Multi' if multigraph else ''}{'Di' if directed else ''}Graph")()
+
+        if type(index) != int:
+            raise TypeError(
+                f"Index must be an integer, received: {type(index)}."
+            )
+        if not (type(G) in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)):
+            raise TypeError(
+                (f"Input must be a static NetworkX graph, received: {type(G)}.")
+            )
+        if G.is_directed() != directed:
+            raise ValueError(
+                f"Received a{' directed' if G.is_directed() else 'n undirected'} graph, "
+                f"but temporal graph is {'' if directed else 'un'}directed."
+            )
+        if G.is_multigraph() != multigraph:
+            raise ValueError(
+                f"Received a {'multi' if G.is_multigraph() else ''}graph, "
+                f"but temporal graph is {'' if multigraph else 'not '}a multigraph."
+            )
+        self.graphs.insert(index, G)
+
+    # -- Dictionary-like methods -- #
+
+    def items(self) -> tuple:
+        """ Returns list of snapshot name and graph pairs.
+
+        :note: Returns pairs of :func:`~networkx_temporal.classes.TemporalGraph.index` and
+            :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
+        """
+        return tuple(zip(self.keys(), self.values()))
+
+    def keys(self) -> tuple:
+        """ Returns a tuple of snapshot index.
+
+        :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.index`.
+        """
+        return tuple(self.index) if self.index is not None else tuple(range(len(self)))
+
+    def pop(self, index: Optional[int] = -1) -> StaticGraph:
+        """ Removes and returns graph snapshot at ``index`` (default: last snapshot).
+
+        :param index: Index of snapshot. Default: last snapshot.
+        """
+        self.__getitem__(index)
+        return self.graphs.pop(index)
+
+    def values(self) -> tuple:
+        """ Returns a tuple of snapshot graphs.
+
+        :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
+        """
+        return tuple(self.graphs)
+
+    # -- Wrappers for temporal methods -- #
 
     @wraps(degree)
     def total_degree(self, *args, **kwargs) -> list:

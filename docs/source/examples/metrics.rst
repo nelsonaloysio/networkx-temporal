@@ -1,25 +1,27 @@
-.. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb
-   :alt: Open on Colab
-   :align: right
+.. include:: ../include-template.rst
 
 ######################
 Algorithms and metrics
 ######################
 
-This section showcases static and temporal graph analysis techniques, including inherited functions
-from `NetworkX <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
-available for :class:`~networkx_temporal.classes.TemporalGraph` objects.
-The `last section <#temporal-dynamics>`__  includes a practical example on analyzing the temporal
-dynamics of a real-world dataset of message exchanges among students.
+   .. image:: https://colab.research.google.com/assets/colab-badge.svg
+      :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb
+      :alt: Open on Colab
+      :align: right
 
-.. seealso::
-
-   All examples in this guide are also available as an interactive
+   Examples in this guide are also available as an interactive
    `Jupyter notebook
-   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__
-   (`open in Colab
-   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__).
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-03-metrics.ipynb>`__.
+
+
+This section showcases how to compute common graph metrics and run algorithms on
+:class:`~networkx_temporal.classes.TemporalGraph` objects. Algorithms implemented by NetworkX can
+be called on graph snapshots, while
+`NetworkX graph <https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph>`__
+methods are inherited by :class:`~networkx_temporal.classes.TemporalGraph` objects.
+The last section includes examples on applying these techniques to analyze the evolution of a
+temporal graph over time.
+
 
 Graph properties
 ================
@@ -82,7 +84,7 @@ and edges, including their copies:
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
+   >>> tx.draw(TG, figsize=(8,2), layout="kamada_kawai", labels=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-03-metrics_8_0.png
    :align: center
@@ -415,12 +417,12 @@ The dataset is sliced into :math:`t=193` daily snapshots, spanning a period from
 
 .. code-block:: python
 
-   >>> TG.names[0], TG.names[-1]
+   >>> TG.index[0], TG.index[-1]
 
    ('2004-04-15', '2004-10-26')
 
 Let's define a custom function to convert date timestamps to week-based intervals
-```YYYY, Week W``` (0-indexed), and use it to slice the temporal graph into weekly snapshots:
+```YYYY, Week W``` (0-indexed), and use it to slice the temporal graph into weekly snapshots.
 
 .. code-block:: python
 
@@ -440,7 +442,7 @@ The result is a graph with :math:`t=29` snapshots, spanning the weeks of 15 to 4
 
 .. code-block:: python
 
-   >>> TG.names[0], TG.names[-1]
+   >>> TG.index[0], TG.index[-1]
 
    ('2004, Week 15', '2004, Week 43')
 
@@ -453,9 +455,9 @@ Let's identify the weeks with the maximum number of nodes and edges:
    >>> t_max_size = TG.size().index(max(TG.size()))
    >>>
    >>> print(f"Max nodes at t={t_max_order} "
-             f"({TG.names[t_max_order]}): V={TG[t_max_order].order()} nodes")
+             f"({TG.index[t_max_order]}): V={TG[t_max_order].order()} nodes")
    >>> print(f"Max edges at t={t_max_size} "
-             f"({TG.names[t_max_size]}): E={TG[t_max_size].size()} edges")
+             f"({TG.index[t_max_size]}): E={TG[t_max_size].size()} edges")
 
    Max nodes at t=6 (2004, Week 21): V=904 nodes
    Max edges at t=3 (2004, Week 18): E=10194 edges
@@ -487,34 +489,33 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>>    ax.set_xlabel(xlabel)
    >>>    ax.set_ylabel(ylabel)
    >>>
-   >>> def ins_plot(df, ax, bins, axes, title="", xlabel="", ylabel="", color="#555"):
+   >>> def hist_plot(df, bins, ax, title="", xlabel="", ylabel="", color="#555"):
    >>>    # Plot histogram of degree distribution with log-scaled y-axis.
-   >>>    ins = ax.inset_axes(axes)
    >>>    hist = pd.cut(df, bins=bins)
-   >>>    hist.value_counts().sort_index().plot.bar(ax=ins, logy=True, color=color, width=0.7)
-   >>>    ins.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
-   >>>    ins.tick_params(axis='both', which="major", labelsize=9)
-   >>>    ins.set_title(title, fontsize=9)
-   >>>    ins.set_xlabel(xlabel, fontsize=9)
-   >>>    ins.set_xticklabels([f"<{b}" for b in bins[1:]])
-   >>>    ins.set_ylabel(ylabel, fontsize=9)
-   >>>    ins.set_yticks([], minor=True)
-   >>>    ins.set_yticks([1, 10, 100, 1000])
+   >>>    hist.value_counts().sort_index().plot.bar(ax=ax, logy=True, color=color, width=0.7)
+   >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
+   >>>    ax.tick_params(axis='both', which="major", labelsize=9)
+   >>>    ax.set_title(title, fontsize=9)
+   >>>    ax.set_xlabel(xlabel, fontsize=9)
+   >>>    ax.set_xticklabels([f"<{b}" for b in bins[1:]])
+   >>>    ax.set_ylabel(ylabel, fontsize=9)
+   >>>    ax.set_yticks([], minor=True)
+   >>>    ax.set_yticks([1, 10, 100, 1000])
    >>>
-   >>> df = pd.Series(dict(G.degree()))
-   >>> df_in = pd.Series(dict(G.in_degree()))
-   >>> df_out = pd.Series(dict(G.out_degree()))
+   >>> deg = pd.Series(dict(G.degree()))
+   >>> deg_in = pd.Series(dict(G.in_degree()))
+   >>> deg_out = pd.Series(dict(G.out_degree()))
    >>>
-   >>> deg_plot(df, ax["Left"], xlabel="Degree (log-scaled)", ylabel="Frequency")
-   >>> deg_plot(df_in, ax["TopRight"], title="In-Degree (log)", color="#333")
-   >>> deg_plot(df_out, ax["BottomRight"], xlabel="Out-Degree (log)", color="#777")
+   >>> deg_plot(deg, ax["Left"], xlabel="Degree (log-scaled)", ylabel="Frequency")
+   >>> deg_plot(deg_in, ax["TopRight"], title="In-Degree (log)", color="#333")
+   >>> deg_plot(deg_out, ax["BottomRight"], xlabel="Out-Degree (log)", color="#777")
    >>>
    >>> bins = [0, 10, 50, 100, 500, 1000, 2000]
    >>>
-   >>> ins_plot(df, ax['Left'], bins, axes=[0.67, 0.59, 0.3, 0.32],
+   >>> hist_plot(deg, bins, ax["Left"].inset_axes([0.67, 0.59, 0.3, 0.32]),
    >>>          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
-   >>> ins_plot(df_in, ax['TopRight'], bins, axes=[0.5, 0.48, 0.45, 0.45], color="#333")
-   >>> ins_plot(df_out, ax['BottomRight'], bins, axes=[0.5, 0.48, 0.45, 0.45], color="#777")
+   >>> hist_plot(deg_in, bins, ax["TopRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#333")
+   >>> hist_plot(deg_out, bins, ax["BottomRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#777")
    >>>
    >>> plt.suptitle("Node Degree Distributions on Static Graph", fontsize=11, y=1, fontweight="bold")
    >>> plt.show()
@@ -549,7 +550,7 @@ Let's take a glance at the weekly activity among students using Pandas to
    >>>    "deg_out_max": [max(d[1] for d in deg) for deg in TG.out_degree()],
    >>>    "cent_in": tx.in_degree_centralization(TG),
    >>>    "cent_out": tx.out_degree_centralization(TG)},
-   >>>    index=TG.names)
+   >>>    index=TG.index)
    >>>
    >>>  print(df.describe().iloc[1:].round(2))
 
@@ -637,8 +638,8 @@ of their elements):
    >>>     ax.set_yticks(range(0, len(TG), 4))
    >>>     ax.set_xticks([i-0.5 for i in range(len(TG))], minor=True)
    >>>     ax.set_yticks([i-0.5 for i in range(len(TG))], minor=True)
-   >>>     ax.set_xticklabels([TG.names[i] for i in ax.get_xticks()], rotation=90)
-   >>>     ax.set_yticklabels([TG.names[i] for i in ax.get_yticks()])
+   >>>     ax.set_xticklabels([TG.index[i] for i in ax.get_xticks()], rotation=90)
+   >>>     ax.set_yticklabels([TG.index[i] for i in ax.get_yticks()])
    >>>     ax.tick_params(which="minor", bottom=False, left=False)
    >>>     ax.grid(which="minor", color="w", linestyle='dotted', linewidth=0.5)
    >>>     x0, y0, x1, y1 = ax.get_position().bounds
@@ -648,8 +649,8 @@ of their elements):
    >>>
    >>> fig, axs = plt.subplots(figsize=(8, 4), ncols=2)
    >>>
-   >>> intersect = tx.temporal_node_matrix(TG, method="intersect")
-   >>> jaccard = tx.temporal_node_matrix(TG, method="dice")
+   >>> intersect = tx.temporal_node_similarity(TG, method="intersect")
+   >>> jaccard = tx.temporal_node_similarity(TG, method="dice")
    >>>
    >>> plot_heatmap(intersect, axs[0], "Node set intersection")
    >>> plot_heatmap(jaccard, axs[1], "Node set similarity (Dice)")
@@ -670,8 +671,8 @@ There is also an anomalous period where very few nodes intersect with any other 
 
    >>> fig, axs = plt.subplots(figsize=(8, 4), ncols=2)
    >>>
-   >>> intersect = tx.temporal_edge_matrix(TG.to_undirected(), method="intersect")
-   >>> dice = tx.temporal_edge_matrix(TG.to_undirected(), method="dice")
+   >>> intersect = tx.temporal_edge_similarity(TG.to_undirected(), method="intersect")
+   >>> dice = tx.temporal_edge_similarity(TG.to_undirected(), method="dice")
    >>>
    >>> plot_heatmap(intersect, axs[0], "Edge set intersection")
    >>> plot_heatmap(dice, axs[1], "Edge set similarity (Dice)")
@@ -686,12 +687,11 @@ There is also an anomalous period where very few nodes intersect with any other 
 Edge set intersections (left) show instead that most message exchanges were short-lived,
 with few edges persisting for more than a couple of weeks. The edge set similarity (right)
 also reflects this trend, with most intervals sharing few edges in common, except for
-sequential weekly intervals.
+those closer in time.
 
-This initial exploration offers insight into the temporal dynamics of the network. Further analysis
-may seek to explore specific intervals of interest, e.g., the anomalous period in Week 25, identify
-the most active students, or `detect communities <https://networkx-temporal.readthedocs.io/en/latest/examples/community.html>`__
-to explore the evolution of social groups in time.
+This initial exploration offers initial insight into the temporal dimension of the data.
+Among others, next steps may seek to explore specific intervals of interest, different
+aggregation strategies, and node-and community-level metrics.
 
 
 -----

@@ -2,14 +2,17 @@ from typing import Optional, Union
 
 import networkx as nx
 
-from .snapshots import from_snapshots
 from ..classes.types import is_static_graph, is_temporal_graph
 from ..typing import StaticGraph, TemporalGraph
-from ..utils.convert import convert, FORMATS
+from ..utils.convert import convert
+from ..utils.convert.convert import FORMAT
 
 
-def from_static(*graphs: StaticGraph) -> TemporalGraph:
-    """ Returns :class:`~networkx_temporal.classes.TemporalGraph` from a static graph.
+def from_static(graph: Union[TemporalGraph, StaticGraph]) -> TemporalGraph:
+    """ Returns :class:`~networkx_temporal.classes.TemporalGraph` from a NetworkX graph.
+
+    If the input graph is already a temporal graph, it is added to a new temporal graph object.
+    If the input graph is a static graph, it is added to a new temporal graph as a single snapshot.
 
     .. seealso::
 
@@ -17,14 +20,21 @@ def from_static(*graphs: StaticGraph) -> TemporalGraph:
         <../examples/convert.html#graph-representations>`__
         page for details and examples.
 
-    :param G: NetworkX graph object.
+    :param graph: NetworkX graph object.
     """
-    return from_snapshots(list(graphs))
+    if not is_static_graph(graph) and not is_temporal_graph(graph):
+        raise TypeError(f"Input must be a valid NetworkX graph, received: {type(graph)}.")
+    from .. import empty_graph
+    directed = graph.is_directed()
+    multigraph = graph.is_multigraph()
+    TG = empty_graph(directed=directed, multigraph=multigraph)
+    TG.add_snapshot(graph) if is_static_graph(graph) else TG.add_snapshots_from(graph)
+    return TG
 
 
 def to_static(
-    TG: Union[TemporalGraph, StaticGraph],
-    to: Optional[FORMATS] = None,
+    graph: Union[TemporalGraph, StaticGraph],
+    to: Optional[FORMAT] = None,
     directed: Optional[bool] = None,
     multigraph: Optional[bool] = None,
     index: Optional[str] = None,
@@ -45,7 +55,7 @@ def to_static(
         The :func:`~networkx_temporal.classes.TemporalGraph.to_unrolled` method for a static
         representation allowing dynamic node attributes.
 
-    :param TemporalGraph TG: Temporal graph object.
+    :param TemporalGraph graph: Temporal graph object.
     :param str to: Package name or alias to convert the graph object. Optional.
     :param directed: If ``True``, returns a `DiGraph
         <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.
@@ -61,24 +71,24 @@ def to_static(
     if index is not None and type(index) != str:
         raise TypeError("Argument `index` expects a string.")
 
-    if is_static_graph(TG):
-        return convert(TG, to) if to else TG
-    if len(TG) == 1:
-        return convert(TG[0], to) if to else TG[0]
+    if is_static_graph(graph):
+        return convert(graph, to) if to else graph
+    if len(graph) == 1:
+        return convert(graph[0], to) if to else graph[0]
 
     if directed is None:
-        directed = TG.is_directed()
+        directed = graph.is_directed()
     if multigraph is None:
-        multigraph = TG.is_multigraph()
+        multigraph = graph.is_multigraph()
 
     G = getattr(nx, f"{'Multi' if multigraph else ''}{f'Di' if directed else ''}Graph")()
 
     list(G.add_nodes_from(nodes)
-         for nodes in TG.nodes(data=True))
+         for nodes in graph.nodes(data=True))
 
     list(G.add_edges_from(
          [(e[0], e[1], {**e[2], **({index: t} if index else {})}) for e in edges])
-         for t, edges in enumerate(TG.edges(data=True)))
+         for t, edges in enumerate(graph.edges(data=True)))
 
-    G.name = TG.name
+    G.graph.update(graph.graph)
     return convert(G, to) if to else G

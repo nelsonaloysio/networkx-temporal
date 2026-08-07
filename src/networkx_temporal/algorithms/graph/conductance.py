@@ -8,7 +8,7 @@ from ...utils import map_attr_to_nodes, partition_nodes
 
 
 def conductance(
-    TG: Union[TemporalGraph, StaticGraph],
+    graph: Union[TemporalGraph, StaticGraph],
     communities: Union[str, list, dict],
     weight: Optional[str] = "weight",
 ) -> Union[float, List[float]]:
@@ -42,7 +42,7 @@ def conductance(
         Journal of the ACM (JACM), 51(3), 497-515.
         doi: `10.1145/990308.990313 <https://doi.org/10.1145/990308.990313>`__.
 
-    :param object G: :class:`~networkx_temporal.classes.TemporalGraph`
+    :param object graph: :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
     :param communities: List of community assignments for each node, or
         a list of lists in case of temporal graphs, one per snapshot.
@@ -52,13 +52,13 @@ def conductance(
         `conductance <https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cuts.conductance.html>`__
         function.
     """
-    if not is_static_graph(TG) and not is_temporal_graph(TG):
+    if not is_static_graph(graph) and not is_temporal_graph(graph):
         raise TypeError("Input must be a temporal or static NetworkX graph.")
 
-    if is_static_graph(TG):
-        subsets = partition_nodes(TG, communities, index=False)
-        return sum(nx.algorithms.conductance(TG, S=S, weight=weight) for S in subsets
+    if is_static_graph(graph):
+        subsets = partition_nodes(graph, communities, index=False)
+        return sum(nx.algorithms.conductance(graph, S=S, weight=weight) for S in subsets
                    ) / len(subsets)
 
-    assignments = map_attr_to_nodes(TG, communities)
-    return [conductance(G, z) for G, z in zip(TG, assignments)]
+    assignments = map_attr_to_nodes(graph, communities)
+    return [conductance(G, z) for G, z in zip(graph, assignments)]

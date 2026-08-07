@@ -6,5 +6,5 @@ from .centralization import (
 )
 from .conductance import conductance
 from .modularity import modularity
-from .modularity_multislice import multislice_modularity
-from .modularity_spectral import spectral_modularity
+from .modularity_multislice import modularity_multislice
+from .modularity_spectral import modularity_spectral

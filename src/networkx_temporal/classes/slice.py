@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from typing import Any, Callable, Optional, Union
+from warnings import warn
 
 import pandas as pd
 
@@ -20,6 +19,8 @@ def slice(
     names: bool = True,
     as_view: bool = True,
     fillna: Optional[Any] = None,
+    inplace: bool = False,
+    applymap: Optional[Callable[..., Any]] = None,
     apply_func: Optional[Callable[..., Any]] = None,
 ) -> TemporalGraph:
     """ Slices temporal graph into snapshots, returning a new temporal graph object.
@@ -110,12 +111,20 @@ def slice(
         ``True`` if both ``attr`` and ``rank_first`` are unset, otherwise ``False``.
     :param sort: If ``True``, sort unique temporal values after slicing.
         Only applies to categorical temporal data. Default is ``True``.
+    :param names: If ``True``, assigns string labels to the returned graph index based on the temporal
     :param as_view: If ``False``, returns copies instead of `views
         <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
         of the original graph. Default is ``True``.
     :param fillna: Value to fill null values in attribute data.
-    :param Callable apply_func: Function to apply to temporal attribute values.
+    :param inplace: If ``True``, modifies the original graph instead of returning a new one.
+    :param Callable applymap: Function to apply to temporal attribute values.
+    :param Callable apply_func: Deprecated in favor of ``applymap``.
     """
+    if apply_func is not None:
+        warn("TemporalGraph slice `apply_func` argument is deprecated in favor of `applymap` and "
+             "will be removed in a future release.", DeprecationWarning)
+        if applymap is None:
+            applymap = apply_func
     if attr is None and bins is None:
         raise ValueError("Either `attr` or `bins` must be set.")
     if axis not in (0, 1):
@@ -199,8 +208,8 @@ def slice(
         times.fillna(fillna, inplace=True)
 
     # Apply function to time attribute values.
-    if apply_func is not None:
-        times = times.apply(apply_func)
+    if applymap is not None:
+        times = times.apply(applymap)
 
     # Obtain initial edge temporal values from node-level data.
     if level == "node" and len(edges) > 0:
@@ -311,10 +320,17 @@ def slice(
     if not as_view:
         graphs = [G.copy() for G in graphs]
 
+    # Return existing graph object.
+    if inplace:
+        self.graphs = graphs
+        if names and cats is not None:
+            self.index = [str(c) for c in cats]
+        return self
+
     # Create new temporal graph object.
     TG = self.__class__(t=0)
     TG.add_snapshots_from(graphs)
     TG.name = self.name
     if names and cats is not None:
-        TG.names = [str(c) for c in cats]
+        TG.index = [str(c) for c in cats]
     return TG

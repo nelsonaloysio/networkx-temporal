@@ -1,22 +1,21 @@
-.. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb
-   :alt: Open on Colab
-   :align: right
+.. include:: ../include-template.rst
 
 ################
 Basic operations
 ################
 
+   .. image:: https://colab.research.google.com/assets/colab-badge.svg
+      :target: https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb
+      :alt: Open on Colab
+      :align: right
+
+   Examples in this guide are also available as an interactive
+   `Jupyter notebook
+   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__.
+
 The examples below cover the package's basic functionalities, including how to build a temporal
 graph, slice it into snapshots, save and load graph objects to disk, and other inherited methods.
 
-.. seealso::
-
-   All examples in this guide are also available as an interactive
-   `Jupyter notebook
-   <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__
-   (`open in Colab
-   <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__).
 
 Build temporal graph
 ====================
@@ -101,14 +100,14 @@ Let's :func:`~networkx_temporal.drawing.draw` the static graph:
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", edge_labels="time", suptitle="Temporal Graph")
+   >>> tx.draw(TG, layout="kamada_kawai",
+   >>>         labels=True, edge_labels="time",
+   >>>         suptitle="Temporal Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_8_0.png
    :align: center
 
 |
-
-
 
 
 Slice temporal graph
@@ -139,7 +138,7 @@ in the temporal graph:
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
+   >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_13_0.png
    :align: center
@@ -161,7 +160,7 @@ A new object can be created with a specific number of snapshots by setting the
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_15_0.png
    :align: center
@@ -183,7 +182,7 @@ argument, optionally considering temporal information available as their ``attr`
 .. code-block:: python
 
    >>> TG = TG.slice(3, attr="time", axis=1)  # level="edge" (default)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2), names=False)
+   >>> tx.draw(TG, figsize=(6, 2), layout="kamada_kawai", labels=True, names=False)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_19_0.png
    :align: center
@@ -195,7 +194,7 @@ Or, to limit the maximum number of nodes allowed per snapshot, set ``axis=1`` an
 .. code-block:: python
 
    >>> TG = TG.slice(3, axis=1, level="node")
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(9, 2), names=False)
+   >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True, names=False)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_21_0.png
    :align: center
@@ -211,7 +210,7 @@ considers ``level="edge"`` attribute data:
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time")  # level="edge" (default)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
+   >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_23_0.png
    :align: center
@@ -223,7 +222,7 @@ If ``level='node'`` is set, node-level attribute data is used to determine snaps
 .. code-block:: python
 
    >>> TG_node = TG.slice(attr="time", level="node")
-   >>> tx.draw(TG_node, layout="kamada_kawai", figsize=(8, 2))
+   >>> tx.draw(TG_node, figsize=(8, 2), layout="kamada_kawai", labels=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_25_0.png
    :align: center
@@ -242,7 +241,7 @@ For example:
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2, qcut=True)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_27_0.png
    :align: center
@@ -269,7 +268,7 @@ nodes, or attributes, forcing each snapshot to have approximately the same numbe
 .. code-block:: python
 
    >>> TG = TG.slice(bins=2, rank_first=True)
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(4, 2), names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_29_0.png
    :align: center
@@ -311,7 +310,8 @@ are here highlighted in green:
    >>>
    >>> TG = TG.slice(attr="time")
    >>>
-   >>> tx.draw(TG, figsize=(8,2), layout="kamada_kawai", suptitle="Original Temporal Graph")
+   >>> tx.draw(TG, figsize=(8,2), layout="kamada_kawai",
+   >>>         labels=True, suptitle="Original Temporal Graph")
 
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_31_0.png
@@ -332,9 +332,9 @@ are here highlighted in green:
    >>>      for n1, n2 in G.edges()] for t, G in enumerate(TG_prop)]
    >>>
    >>> tx.draw(TG_prop, figsize=(8, 2), layout="kamada_kawai",
+   >>>         labels=True, suptitle="Propagated Temporal Graph (ffill)",
    >>>         temporal_node_color=temporal_node_color,
-   >>>         temporal_edge_color=temporal_edge_color,
-   >>>         suptitle="Propagated Temporal Graph (ffill)")
+   >>>         temporal_edge_color=temporal_edge_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_32_0.png
    :align: center
@@ -487,7 +487,7 @@ Obtaining a Jaccard similarity matrix (intersection over union) of node sets ove
 .. code:: python
 
    >>> snapshots = TG.slice(attr="time")
-   >>> tx.temporal_node_matrix(snapshots, method="jaccard")
+   >>> tx.temporal_node_similarity(snapshots, method="jaccard")
 
    [[1.0, 0.25], [0.25, 1.0]]
 

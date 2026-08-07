@@ -14,8 +14,8 @@ class TemporalGraph(TemporalABC, nx.Graph if nx.__version__ >= "2.8.1" else obje
     :func:`neighbors`, :func:`subgraph`, :func:`to_directed`, and :func:`to_undirected`,
     as well as additional methods implemented for handling temporal graphs and snapshots.
 
-    This is equivalent to calling :func:`~networkx_temporal.classes.temporal_graph` with ``directed=False``
-    and ``multigraph=False``.
+    This is equivalent to calling :func:`~networkx_temporal.classes.temporal_graph` with
+    ``directed=False`` and ``multigraph=False``.
 
     .. hint::
 
@@ -53,8 +53,8 @@ class TemporalGraph(TemporalABC, nx.Graph if nx.__version__ >= "2.8.1" else obje
          for a list of methods inherited by this class.
        - The :class:`~networkx_temporal.classes.TemporalDiGraph`,
          :class:`~networkx_temporal.classes.TemporalMultiGraph`,
-         and :class:`~networkx_temporal.classes.TemporalMultiDiGraph` classes for other temporal graph types
-         with directed and/or multiple edges among node pairs.
+         and :class:`~networkx_temporal.classes.TemporalMultiDiGraph` classes for other temporal
+         graph types with directed and/or multiple edges among node pairs.
 
     :param int t: Number of temporal graphs to initialize. Optional. Default is ``1``.
 

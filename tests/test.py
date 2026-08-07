@@ -6,6 +6,7 @@ from io import BytesIO
 from os import remove
 
 import networkx_temporal as tx
+from networkx_temporal.generators.datasets import DATASETS
 from networkx_temporal.typing import Literal, TemporalGraph
 from networkx_temporal.utils.convert import FORMATS
 
@@ -15,7 +16,13 @@ LOG_LEVELS = Literal
 
 def test_networkx_temporal(*args, **kwargs) -> None:
     log.info("test_networkx_temporal")
-    test_convert = kwargs.pop("test_convert", False)
+    test_dataset = kwargs.pop("test_dataset", [])
+    test_convert = kwargs.pop("test_convert", [])
+
+    if "all" in test_dataset:
+        test_dataset = DATASETS
+    if "all" in test_convert:
+        test_convert = FORMATS
 
     TG = test_temporal_graph()
     test_copy_graph(TG)
@@ -25,11 +32,16 @@ def test_networkx_temporal(*args, **kwargs) -> None:
     test_dynamic_sbm()
     test_generators()
     test_events_multigraph()
-    test_datasets()
+    test_supra_adjacency_subgraph()
+
+    if test_dataset:
+        for dataset in test_dataset:
+            assert dataset in DATASETS, f"Unsupported dataset: '{dataset}' not in {DATASETS}"
+            test_dataset_graph(dataset)
 
     if test_convert:
         for pkg in test_convert:
-            assert pkg in FORMATS.__args__, f"Unsupported package: '{pkg}' not in {FORMATS.__name__}"
+            assert pkg in FORMATS, f"Unsupported package: '{pkg}' not in {FORMATS}"
             test_convert_graph(TG, pkg)
 
     print("All tests passed!")
@@ -187,7 +199,6 @@ def test_dynamic_sbm() -> None:
         transition_matrix=tx.generators.generate_transition_matrix(k, eta=0.9),
         t=2,
         seed=0,
-        sparse=True
     )
     clusters = [
         [len([i for i in community_t if i == c]) for c in set(community_t)]
@@ -196,12 +207,9 @@ def test_dynamic_sbm() -> None:
     assert TG.order() == [10, 10]
     assert TG.order(copies=True) == 20
     assert TG.order(copies=False) == 10
-    # assert TG.size() == [38, 32]
-    # assert TG.size(copies=True) == 70
-    # assert TG.size(copies=False) == 38
-    assert TG.size() == [42, 40]
-    assert TG.size(copies=True) == 82
-    assert TG.size(copies=False) == 44
+    assert TG.size() == [22, 26]
+    assert TG.size(copies=True) == 48
+    assert TG.size(copies=False) == 29
     assert clusters == [[5, 5], [6, 4]]
 
 
@@ -232,17 +240,35 @@ def test_events_multigraph() -> None:
     assert TG.size() == TG_multi.size() == [1, 2, 1]
 
 
-def test_datasets() -> None:
-    log.info("test_datasets")
-    TG = tx.generators.collegemsg_graph().flatten()
-    assert TG.order() == [1899]
-    assert TG.size() == [59835]
-    TG = tx.generators.pubmed_graph().flatten()
-    assert TG.order() == [19717]
-    assert TG.size() == [44335]
-    TG = tx.generators.pubmed_graph(features=True).flatten()
-    assert TG.order() == [19717]
-    assert TG.size() == [44335]
+def test_supra_adjacency_subgraph() -> None:
+    log.info("test_supra_adjacency_subgraph")
+    TG = tx.generators.example_sbm_graph()
+    TG = TG.subgraph([0, 1, 2]).copy()
+    TG.remove_nodes_from(tx.isolates(TG))
+    assert TG.order(copies=False) == 3
+    assert TG.size(copies=True) == 4
+    assert tx.to_supra_adjacency_matrix(TG).sum() == 11
+    assert tx.to_supra_adjacency_matrix(TG, interslice_method="first").sum() == 12
+    assert tx.to_supra_adjacency_matrix(TG, interslice_method="all").sum() == 13
+
+
+def test_dataset_graph(dataset) -> None:
+    if dataset == "collegemsg":
+        log.info("test_datasets: collegemsg_graph")
+        TG = tx.generators.collegemsg_graph().flatten()
+        assert TG.order() == [1899]
+        assert TG.size() == [59835]
+    if dataset == "pubmed":
+        log.info("test_datasets: pubmed_graph")
+        TG = tx.generators.pubmed_graph().flatten()
+        # TG = tx.generators.pubmed_graph(features=True).flatten()
+        assert TG.order() == [19717]
+        assert TG.size() == [44335]
+    if dataset == "travian":
+        log.info("test_datasets: travian_graph")
+        TG = tx.generators.travian_graph().flatten()
+        assert TG.order() == [4612]
+        assert TG.size() == [1338110]
 
 
 def test_convert_graph(TG, pkg) -> None:
@@ -264,10 +290,17 @@ if __name__ == "__main__":
                         help="Set the logging level.")
 
     parser.add_argument("--convert",
-                        choices=FORMATS.__args__,
-                        default=False,
+                        choices=["all"] + FORMATS,
+                        default=[],
                         dest="test_convert",
-                        help="Perform conversion tests to other packages.",
+                        help="Perform tests for the specified packages.",
+                        nargs="+")
+
+    parser.add_argument("--dataset",
+                        choices=["all"] + DATASETS,
+                        default=[],
+                        dest="test_dataset",
+                        help="Perform tests for the specified datasets.",
                         nargs="+")
 
     args = parser.parse_args()

@@ -1,3 +1,7 @@
+.. .. container:: buttons
+
+..     `GitHub <https://github.com/nelsonaloysio/networkx-temporal>`_
+
 .. toctree::
    :hidden:
    :caption: Introduction
@@ -27,6 +31,7 @@
    examples/convert
    examples/metrics
    examples/community
+   examples/gpu
 
 .. toctree::
    :hidden:
@@ -39,6 +44,11 @@
 #################
 NetworkX-Temporal
 #################
+
+.. .. image:: ../assets/banner-logo.svg
+..    :target: ./index.html
+..    :alt: NetworkX-Temporal
+..    :align: center
 
 .. image:: https://badge.fury.io/py/networkx-temporal.svg
    :target: https://pypi.org/project/networkx-temporal/
@@ -59,7 +69,6 @@ NetworkX-Temporal
 .. image:: https://img.shields.io/pypi/l/networkx-temporal
    :target: https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md
    :alt: License
-
 
 **NetworkX-Temporal** extends the `NetworkX <https://networkx.org>`__ library to dynamic graphs,
 i.e., temporal network data.
@@ -103,8 +112,8 @@ More examples are accessible via the sidebar and also available as a
 <https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb>`__).
 
 
-Build and slice temporal graph
-------------------------------
+Build and slice temporal graphs
+-------------------------------
 
 Create a directed :class:`~networkx_temporal.classes.TemporalGraph` object and
 :func:`~networkx_temporal.classes.TemporalGraph.slice` it into a number of snapshots:
@@ -158,7 +167,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
    >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
 
-.. image:: https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png
+.. image:: ../assets/figure/temporal-graph.png
    :alt: Temporal graph plot
    :align: center
 
@@ -177,6 +186,39 @@ functions accept compressed temporal graphs:
 Both functions support the same `extension formats
 <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
 as in the installed NetworkX library version.
+
+
+Detect communities
+------------------
+
+CPU and GPU implementations of :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering`
+and :func:`~networkx_temporal.algorithms.community.leiden.leiden_communities` are available for both static
+and temporal graphs, with the latter supporting parallelized multislice modularity optimization on GPUs.
+
+.. code-block:: python
+
+   >>> import networkx_temporal as tx
+   >>>
+   >>> TG = tx.example_sbm_graph()
+   >>>
+   >>> y_true = tx.get_node_attributes(TG, "community", index=False)
+   >>> y_pred = tx.algorithms.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
+   >>>
+   >>> tx.draw([*TG, *TG], nrows=2, ncols=3, figsize=(6, 4), title=False,
+   >>>       layout="kamada_kawai", node_size=50, temporal_node_color=[*y_true, *y_pred],
+   >>>       suptitle="Ground Truths (top) vs Spectral Clustering (bottom)")
+
+.. image:: ../assets/figure/spectral-clustering.png
+   :alt: Spectral clustering plot
+   :align: center
+
+The library automatically detects whether a GPU is available and uses it for computation if the
+environment variable ``export NX_CUGRAPH_AUTOCONFIG=True`` is set; otherwise, defaults to CPU.
+
+.. seealso::
+
+   The `Community detection <examples/community.html>`__ and `GPU acceleration <examples/gpu.html>`__
+   pages for details and examples.
 
 
 Convert and transform graphs
@@ -203,18 +245,20 @@ This package allows to transform a :class:`~networkx_temporal.classes.TemporalGr
 
 In addition, both static and temporal graphs may be converted to the following
 `graph formats <examples/convert.html#graph-formats>`__:
-
-- `Deep Graph Library <https://www.dgl.ai>`__
-- `DyNetX <https://dynetx.readthedocs.io>`__
-- `graph-tool <https://graph-tool.skewed.de>`__
-- `igraph <https://igraph.org/python/>`__
-- `NetworKit <https://networkit.github.io>`__
-- `NumPy <https://numpy.org/>`__
-- `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__
-- `Stanford Network Analysis Platform <https://snap.stanford.edu>`__
-- `SciPy <https://scipy.org>`__
-- `StellarGraph <https://stellargraph.readthedocs.io>`__
-- `Teneto <https://teneto.readthedocs.io>`__
+`cuGraph <https://docs.nvidia.com/cugraph/latest/>`__,
+`CuPy <https://cupy.dev>`__,
+`Deep Graph Library <https://www.dgl.ai>`__,
+`DyNetX <https://dynetx.readthedocs.io>`__,
+`graph-tool <https://graph-tool.skewed.de>`__,
+`igraph <https://igraph.org/python/>`__,
+`NetworKit <https://networkit.github.io>`__,
+`NumPy <https://numpy.org/>`__,
+`Pandas <https://pandas.pydata.org>`__,
+`PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__,
+`Stanford Network Analysis Platform <https://snap.stanford.edu>`__,
+`SciPy <https://scipy.org>`__,
+`StellarGraph <https://stellargraph.readthedocs.io>`__,
+and `Teneto <https://teneto.readthedocs.io>`__.
 
 .. code-block:: python
 

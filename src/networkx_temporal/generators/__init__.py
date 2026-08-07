@@ -14,7 +14,9 @@ Generative models for temporal networks.
 
     collegemsg_graph
     example_sbm_graph
+    fediverse_graph
     pubmed_graph
+    travian_graph
 
 .. rubric:: Summary - Utilities
 
@@ -27,11 +29,15 @@ Generative models for temporal networks.
     generate_degree_vector
     generate_transition_matrix
     transition_node_memberships
+
+.. rubric:: Functions
 """
 
 from .datasets import (
     collegemsg_graph,
+    fediverse_graph,
     pubmed_graph,
+    travian_graph,
 )
 from .examples import (
     example_sbm_graph,
@@ -55,7 +61,9 @@ __all__ = (
     "dynamic_stochastic_block_model",
     "stochastic_block_model",
     "collegemsg_graph",
+    "fediverse_graph",
     "pubmed_graph",
+    "travian_graph",
     "example_sbm_graph",
     "community_matrix_from_vector",
     "generate_block_matrix",

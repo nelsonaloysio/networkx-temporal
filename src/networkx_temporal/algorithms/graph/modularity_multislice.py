@@ -7,11 +7,11 @@ from ...typing import TemporalGraph
 from ...utils import map_attr_to_nodes
 
 
-def multislice_modularity(
+def modularity_multislice(
     TG: TemporalGraph,
     communities: Union[list, str, dict],
-    resolution: Optional[float] = 1,
-    interslice_weight: Optional[float] = 1,
+    resolution: Optional[float] = 1.0,
+    interslice_weight: Optional[float] = 1.0,
     weight: Optional[str] = "weight",
     spectral: bool = False
 ) -> float:
@@ -25,10 +25,17 @@ def multislice_modularity(
 
     .. math::
 
-        Q_{\\textnormal{MS}} =
-        \\frac{1}{2 \\mu} \\sum_{G_t \\in \\mathcal{G}} \\left[ \\sum_{(i,j) \\in V^2}
-        \\left( A_{ij} - \\gamma \\frac{d_i^{out} \\, d_j^{in}}{2m} \\delta(c_i, c_j) \\right)
-        + \\sum_{i \\in V} \\omega \\, \\delta(c_{i}^{(t)}, c_{i}^{(t+1)}) \\right],
+        Q_\\mathrm{MS} =
+        \\frac{1}{2\\mu}
+        \\sum_{i,j,s,r}
+        \\left[
+            \\left(
+                A_{ij}^{(s)} - \\gamma^{(s)} \\frac{k_i^{(s)} k_j^{(s)}}{2m^{(s)}}
+            \\right)
+            \\delta^{(sr)}
+            + \\delta_{ij}\\,\\omega^{(sr)}
+        \\right]
+        \\delta(c_i^{(s)}, c_j^{(r)}),
 
     where
     :math:`\\mu` is the total number of intra- and inter-layer edges in the temporal graph,
@@ -41,8 +48,8 @@ def multislice_modularity(
     Additional term :math:`\\gamma = 1` (default) is the community resolution
     and :math:`\\omega = 1` (default) is the interlayer edge weight.
 
-    Note that if ``spectral=True``, modularity is computed using
-    :func:`~networkx_temporal.algorithms.spectral_modularity` instead.
+    Note that if ``spectral=True``, intra-slice modularity is computed using
+    :func:`~networkx_temporal.algorithms.modularity_spectral`.
 
     .. [8] P. J. Mucha et al. (2010). ''Community Structure in Time-Dependent,
         Multiscale, and Multiplex Networks''. Science, 328, 876--878.
@@ -64,27 +71,37 @@ def multislice_modularity(
     if not is_temporal_graph(TG):
         raise TypeError(f"Expects a temporal graph object, received: {type(TG)}.")
 
-    Q = modularity(TG, communities, weight=weight, resolution=resolution, spectral=spectral)
+    Q = modularity(
+        TG,
+        communities,
+        weight=weight,
+        resolution=resolution,
+        spectral=spectral,
+    )
+
     labels = map_attr_to_nodes(TG, communities)
 
     # Count node appearances over time.
     temporal_nodes = {}
     for G in TG:
-        for node in G.nodes():
+        for node in G:
             temporal_nodes[node] = temporal_nodes.get(node, 0) + 1
 
-    # Count total number of interslice edges.
-    interslice_edges = sum(temporal_nodes[n] - 1 for n in temporal_nodes)
+    interslice_edges = sum(
+        count - 1
+        for count in temporal_nodes.values()
+    )
 
-    within_interslice_edges = sum(
-        1 for t in range(len(TG)-1) for n in TG[t].nodes()
-        if labels[t][n] == labels[t+1].get(n, None)
+    # Combine intra- and inter-slice modularity contributions.
+    coupling = sum(
+        1
+        for t in range(len(TG)-1)
+        for n in set(TG[t]) & set(TG[t+1])
+        if labels[t][n] == labels[t+1][n]
     )
 
     # Total number of edges (intra- + inter-slice).
-    mu = sum(TG.size()) + interslice_edges
+    intra = sum(q * 2 * TG[t].size(weight=weight) for t, q in enumerate(Q))
+    mu = sum(G.size(weight=weight) for G in TG) + (interslice_weight * interslice_edges)
 
-    # Combine intra- and inter-slice modularity contributions.
-    Q_ms = (sum(Q) + (interslice_weight * within_interslice_edges)) / (2 * mu)
-
-    return Q_ms
+    return (intra + (interslice_weight * coupling)) / (2 * mu)

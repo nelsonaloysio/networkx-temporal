@@ -7,7 +7,7 @@ BACKEND = Literal["networkx"]
 
 
 def draw(
-    TG: Union[TemporalGraph, StaticGraph],
+    graph: Union[TemporalGraph, StaticGraph],
     backend: Optional[BACKEND] = "networkx",
     *args,
     **kwargs
@@ -15,8 +15,8 @@ def draw(
     """ Plot temporal graph using the specified renderer. By default,
     :func:`~networkx_temporal.drawing.draw_networkx` is used.
 
-    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
+        or static NetworkX graph object.
     :param str backend: Renderer to use. Optional. Default is ``'networkx'``.
     :param kwargs: Keyword arguments to pass to the renderer function.
     """
@@ -24,4 +24,4 @@ def draw(
         raise ValueError(f"Unknown backend, must be one of: {BACKEND.__args__}.")
 
     if backend is None or backend == "networkx":
-        return draw_networkx(TG, *args, **kwargs)
+        return draw_networkx(graph, *args, **kwargs)

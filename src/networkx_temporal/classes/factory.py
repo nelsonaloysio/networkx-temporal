@@ -6,8 +6,8 @@ from ..typing import StaticGraph, TemporalGraph
 
 def temporal_graph(
     t: Optional[int] = None,
-    directed: bool = False,
-    multigraph: bool = True,
+    directed: Optional[bool] = False,
+    multigraph: Optional[bool] = True,
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
     """ Creates a temporal graph with the desired properties. Similar to
@@ -78,11 +78,11 @@ def temporal_graph(
 
 
 def empty_graph(
-    directed: bool = None,
-    multigraph: bool = None,
+    directed: Optional[bool] = False,
+    multigraph: Optional[bool] = True,
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
-    """ Returns a temporal graph without any initialized snapshots.
+    """ Creates a temporal graph without any initialized snapshots.
 
     This function is a wrapper around :func:`~networkx_temporal.classes.temporal_graph`,
     setting ``t=0``.

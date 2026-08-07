@@ -21,7 +21,7 @@ _FigureType = _FigureType()
 
 class _StaticGraphType:
     def __repr__(self):
-        return "Graph"
+        return "NetworkXGraph"
 _StaticGraphType = _StaticGraphType()
 
 
@@ -66,10 +66,9 @@ else:
     TemporalMultiDiGraph = type(_TemporalMultiDiGraphType)
 
 classes = "networkx_temporal.classes"
-
 Literal.__doc__ = "Type for ``typing.Literal`` with Python 3.7 support."
 Figure.__doc__ = "Type for ``matplotlib.figure.Figure`` objects."
-StaticGraph.__doc__ = "Type for any ``networkx`` graph objects."
+StaticGraph.__doc__ = "Type for ``networkx`` static graph objects."
 TemporalGraph.__doc__ = f"Type for :class:`~{classes}.TemporalGraph` objects."
 TemporalDiGraph.__doc__ = f"Type for :class:`~{classes}.TemporalDiGraph` objects."
 TemporalMultiGraph.__doc__ = f"Type for :class:`~{classes}.TemporalMultiGraph` objects."

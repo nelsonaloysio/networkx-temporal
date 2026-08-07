@@ -4,40 +4,36 @@ from warnings import warn
 
 from ...typing import Literal, StaticGraph, TemporalGraph
 
-ALIASES = {
-    "dn": "dynetx",
-    "gt": "graph_tool",
-    "ig": "igraph",
-    "nk": "networkit",
-    "np": "numpy",
-    "pyg": "torch_geometric",
-    "sg": "stellargraph",
-    "sp": "scipy",
-    "tn": "teneto",
-}
-
-FORMATS = Literal[
+FORMAT = Literal[
+    "cugraph",
+    "cupy",
     "dgl",
     "dynetx",
     "graph_tool",
     "igraph",
     "networkit",
     "numpy",
+    "pandas",
     "scipy",
     "snap",
     "stellargraph",
-    "torch_geometric",
     "teneto",
+    "torch_geometric",
 ]
+FORMATS = list(FORMAT.__args__)
 
 
-def convert(G: Union[StaticGraph, TemporalGraph, list], to: FORMATS, *args, **kwargs) -> Any:
+def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, **kwargs) -> Any:
     """ High-level conversion function to other libraries. Calls the appropriate function based on the
     received ``to`` parameter. The following libraries are currently supported for conversion:
 
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                            |
     +===================================================================+======================================+===========================================================================+
+    | `CuGraph <https://docs.nvidia.com/cugraph/latest/>`__             | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.convert.to_cugraph`         |
+    +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+    | `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_cupy`            |
+    +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `Deep Graph Library <https://www.dgl.ai>`__                       | .. centered:: ``'dgl'``              | .. centered:: :func:`~networkx_temporal.utils.convert.to_dgl`             |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `DyNetX <https://dynetx.readthedocs.io>`__                        | .. centered:: ``'dynetx'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_dynetx`          |
@@ -50,21 +46,18 @@ def convert(G: Union[StaticGraph, TemporalGraph, list], to: FORMATS, *args, **kw
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_numpy`           |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
+    | `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_pandas`          |
+    +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.convert.to_torch_geometric` |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `SciPy <https://scipy.org>`__                                     | .. centered:: ``'scipy'``            | .. centered:: :func:`~networkx_temporal.utils.convert.to_scipy`           |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-    | `SNAP <https://https://snap.stanford.edu>`__                      | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
+    | `SNAP <https://snap.stanford.edu>`__                              | .. centered:: ``'snap'``             | .. centered:: :func:`~networkx_temporal.utils.convert.to_snap`            |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `StellarGraph <https://stellargraph.readthedocs.io>`__            | .. centered:: ``'stellargraph'``     | .. centered:: :func:`~networkx_temporal.utils.convert.to_stellargraph`    |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
     | `Teneto <https://teneto.readthedocs.io>`__                        | .. centered:: ``'teneto'``           | .. centered:: :func:`~networkx_temporal.utils.convert.to_teneto`          |
     +-------------------------------------------------------------------+--------------------------------------+---------------------------------------------------------------------------+
-
-    .. note::
-
-       To reduce package dependencies and avoid unnecessary imports, the required library is
-       imported on function call based on the ``to`` parameter and must be separately installed.
 
     .. rubric:: Example
 
@@ -88,8 +81,16 @@ def convert(G: Union[StaticGraph, TemporalGraph, list], to: FORMATS, *args, **kw
         Graph named "Zachary's Karate Club" with 34 nodes and 78 edges
         Data(edge_index=[2, 156], club=[34], weight=[156], name='Zachary's Karate Club', num_nodes=34)
 
-    :param object G: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a
-        single static NetworkX graph, or a list of static NetworkX graphs as input.
+    Temporal graphs may return a list of graph objects, one for each snapshot, or a single graph
+    object with temporal attributes, depending on the conversion function and paremeters used.
+
+    .. note::
+
+       To reduce package dependencies and avoid unnecessary imports, the required library is
+       imported on function call based on the ``to`` parameter and must be separately installed.
+
+    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
+        a single static NetworkX graph, or a list of static NetworkX graphs as input.
     :param str to: Package name or alias to convert the graph object.
     :param args: Additional positional arguments for the conversion function.
     :param kwargs: Additional keyword arguments for the conversion function.
@@ -99,19 +100,10 @@ def convert(G: Union[StaticGraph, TemporalGraph, list], to: FORMATS, *args, **kw
     :note: Available both as a function and as a method from
         :class:`~networkx_temporal.classes.TemporalGraph` objects.
     """
-    pkg = ALIASES.get(to, to)
-    func = ALIASES.get(pkg, pkg)
-
-    if to in ALIASES:
-        warn(
-            f"Alias '{to}' for '{pkg}' is deprecated and will be removed in future versions.",
-            category=FutureWarning
-        )
-
-    if pkg not in FORMATS.__args__:
+    if to not in FORMATS:
         raise ValueError(
-            f"Argument `to` must be among {list(FORMATS.__args__)} or aliases {list(ALIASES)}."
+            f"Argument `to` must be among {FORMATS}."
         )
 
-    func = import_module(f".", package=__package__).__dict__["to_%s" % func]
-    return func(G, *args, **kwargs)
+    func = import_module(f".", package=__package__).__dict__["to_%s" % to]
+    return func(graph, *args, **kwargs)

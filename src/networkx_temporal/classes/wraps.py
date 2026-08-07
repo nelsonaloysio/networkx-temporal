@@ -1,6 +1,6 @@
 from ..typing import TemporalGraph
 from functools import wraps
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -53,7 +53,7 @@ def copy(self: TemporalGraph, as_view: bool = False) -> TemporalGraph:
     TG = self.__class__(t=0)
     TG.add_snapshots_from([G.copy(as_view=as_view) for G in self])
     TG.name = self.name
-    TG.names = self.names
+    TG.index = self.index
     return TG
 copy.__doc__ += "\n:meta private:"
 
@@ -76,6 +76,28 @@ def out_degree(self: TemporalGraph, nbunch: Any = None, weight: str = None) -> U
 out_degree.__doc__ += "\n:meta private:"
 
 
+@wraps(nx.Graph.remove_edges_from)
+def remove_edges_from(self: TemporalGraph, edges: Union[list, List[list]]) -> None:
+    if type(edges) != list or len(edges) != len(self):
+        raise ValueError(
+            "Argument `edges` must be a list of edges or a list of lists of edges "
+            "with the same length as the temporal graph."
+        )
+    for t, G in enumerate(self):
+        G.remove_edges_from(edges[t] if isinstance(edges[0], list) else edges)
+
+
+@wraps(nx.Graph.remove_nodes_from)
+def remove_nodes_from(self: TemporalGraph, nodes: Union[list, List[list]]) -> None:
+    if type(nodes) != list or len(nodes) != len(self):
+        raise ValueError(
+            "Argument `nodes` must be a list of nodes or a list of lists of nodes "
+            "with the same length as the temporal graph."
+        )
+    for t, G in enumerate(self):
+        G.remove_nodes_from(nodes[t] if isinstance(nodes[0], list) else nodes)
+
+
 @wraps(nx.Graph.to_directed)
 def to_directed(self: TemporalGraph, as_view: Optional[bool] = True) -> TemporalGraph:
     if as_view is not None and type(as_view) != bool:
@@ -84,7 +106,7 @@ def to_directed(self: TemporalGraph, as_view: Optional[bool] = True) -> Temporal
     TG = TemporalMultiDiGraph(t=0) if self.is_multigraph() else TemporalDiGraph(t=0)
     TG.add_snapshots_from([G.to_directed(as_view=as_view) for G in self])
     TG.name = self.name
-    TG.names = self.names
+    TG.index = self.index
     return TG
 to_directed.__doc__ += "\n:meta private:"
 
@@ -97,7 +119,7 @@ def to_undirected(self: TemporalGraph, as_view: Optional[bool] = True) -> Tempor
     TG = TemporalMultiGraph(t=0) if self.is_multigraph() else TemporalGraph(t=0)
     TG.add_snapshots_from([G.to_undirected(as_view=as_view) for G in self])
     TG.name = self.name
-    TG.names = self.names
+    TG.index = self.index
     return TG
 to_undirected.__doc__ += "\n:meta private:"
 
@@ -108,7 +130,8 @@ def _degree(
     nbunch: Any = None,
     weight: str = None,
 ) -> Union[dict, int]:
-
+    """ Return the degree view of a temporal graph.
+    """
     if degree not in ("degree", "in_degree", "out_degree"):
         raise ValueError("Argument `degree` not in ('degree', 'in_degree', 'out_degree').")
 

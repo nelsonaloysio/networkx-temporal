@@ -16,6 +16,8 @@ def from_events(
     directed: bool = None,
     multigraph: bool = None,
     as_view: bool = True,
+    node_attrs: Optional[list] = None,
+    edge_attrs: Optional[list] = None,
 ) -> TemporalGraph:
     """ Returns :class:`~networkx_temporal.classes.TemporalGraph` from edge-level events.
     Events are:
@@ -40,6 +42,8 @@ def from_events(
         <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`_.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
+    :param node_attrs: List of node attributes to add to the temporal graph, one per event.
+    :param edge_attrs: List of edge attributes to add to the temporal graph, one per event.
     """
     multigraph = True if multigraph is None else multigraph
 
@@ -97,13 +101,33 @@ def from_events(
     if not as_view:
         TG = TG.copy()
 
+    if node_attrs is not None:
+        attr_name = "node_attr" if type(next(iter(next(iter(node_attrs)).values()))) != dict else None
+        for event, node_attr in zip(events, node_attrs):
+            t = event[2]
+            nx.set_node_attributes(TG[t], node_attr, attr_name)
+
+    if edge_attrs is not None:
+        edge_key = {}
+        attr_name = "edge_attr" if type(next(iter(edge_attrs))) != dict else None
+        for event, edge_attr in zip(events, edge_attrs):
+            u, v, t = event[:3]
+            if TG.is_multigraph():
+                k = edge_key.get((u, v), -1) + 1
+                edge = (u, v, k)
+                edge_key[(u, v)] = k
+            else:
+                edge = (u, v)
+            nx.set_edge_attributes(TG[t], {edge: edge_attr}, attr_name)
+
     return TG
 
 
 def to_events(
     TG: Union[TemporalGraph, StaticGraph],
     delta: Optional[Literal["int", "float"]] = None,
-    attr: Optional[str] = None,
+    node_attrs: Optional[Union[str, list, bool]] = None,
+    edge_attrs: Optional[Union[str, list, bool]] = None,
 ) -> list:
     """ Returns a list of edge-level events.
 
@@ -121,17 +145,20 @@ def to_events(
     :param TemporalGraph TG: Temporal graph object.
     :param delta: Defines which additional parameter :math:`\\delta` should be returned.
 
-        * If ``None``, returns events as 3-tuples. Default.
+        - If ``None``, returns events as 3-tuples. Default.
 
-        * If ``'int'``, returns events as 4-tuples with an additional parameter representing
+        - If ``'int'``, returns events as 4-tuples with an additional parameter representing
           edge addition (``1``) or deletion (``-1``) events.
 
-        * If ``'float'``, returns events as 4-tuples with an additional parameter representing
+        - If ``'float'``, returns events as 4-tuples with an additional parameter representing
           the duration of the pairwise interaction.
 
-    :param attr: Edge attribute to consider when ``delta`` is ``'float'``. If provided,
-        the attribute value is used for ``delta`` instead of the time difference between
-        the start and end of the interaction.
+    :param node_attrs: Return node-event attributes as a separate list of elements.
+        If ``None`` (default), no node attributes are returned. If a string or list of strings,
+        returns the specified node attributes. If ``True``, returns all node attributes.
+    :param edge_attrs: Return edge-event attributes as a separate list of elements.
+        If ``None`` (default), no edge attributes are returned. If a string or list of strings,
+        returns the specified edge attributes. If ``True``, returns all edge attributes.
 
     :note: Available both as a function and as a method from
         :class:`~networkx_temporal.classes.TemporalGraph` objects.
@@ -143,14 +170,6 @@ def to_events(
 
     if delta not in (None, int, float):
         raise TypeError(f"Argument `delta` must be either `int` or `float` if provided.")
-    if attr is not None and type(attr) != str:
-        raise TypeError(f"Argument `attr` must be a string if provided.")
-    # FIXME: Multigraph edge indices are not supported.
-    if attr is not None and any(TG.is_multigraph()):
-        raise ValueError(
-            "Edge attributes are not supported when converting multigraphs to events; "
-            "consider calling the `slice` method or `from_multigraph` beforehand."
-        )
     # Filtered (frozen) multigraphs produce inconsistent results. [networkx/networkx#7724]
     if any(G.is_multigraph() and nx.is_frozen(G) for G in TG):
         raise ValueError(
@@ -159,7 +178,7 @@ def to_events(
 
     # 3-tuples of format: (u, v, t).
     if not delta:
-        return [(e[0], e[1], t) for t, G in enumerate(TG) for e in G.edges()]
+        events = [(e[0], e[1], t) for t, G in enumerate(TG) for e in G.edges()]
 
     # 4-tuples of format: (u, v, t, int_edge_addition_or_deletion).
     if delta == int:
@@ -189,4 +208,55 @@ def to_events(
                     if i == len(TG) - 1:
                         events.append((u, v, i, 0.0))
 
-    return events
+    # Return node attribute(s) in a separate list if requested.
+    if node_attrs is not None:
+        node_attr_list = []
+        if type(node_attrs) == str:
+            k = node_attrs
+        for e in events:
+            u, v, t = e[:3]
+            node_attr_list.append({
+                n: TG[t].nodes[n].get(k, None)
+                   if isinstance(node_attrs, str) else
+                   {k: TG[t].nodes[n].get(k, None) for k in node_attrs}
+                   if isinstance(node_attrs, list) else
+                   TG[t].nodes[n]
+                for n in e[:2]
+            })
+        if not edge_attrs:
+            return events, node_attr_list
+
+    # Return edge attribute(s) in a separate list if requested.
+    if edge_attrs is not None:
+        edge_key, edge_attr_list = 0, []
+        if type(edge_attrs) == str:
+            k = edge_attrs
+        for i in range(len(events)):
+            if edge_key > 0:
+                # Skip already processed parallel edges in multigraphs while decrementing edge key.
+                edge_key -= 1
+                continue
+            u, v, t = events[i][:3]
+            data = TG[t].get_edge_data(u, v)
+            if TG.is_multigraph():
+                # Append all parallel edge attributes in the multigraph to list.
+                for edge_key, data in data.items():
+                    edge_attr_list.append(
+                        data.get(k, None)
+                        if isinstance(edge_attrs, str) else
+                        {k: data.get(k, None) for k in edge_attrs}
+                        if isinstance(edge_attrs, list) else
+                        data
+                    )
+            else:
+                edge_attr_list.append(
+                    data.get(k, None)
+                    if isinstance(edge_attrs, str) else
+                    {k: data.get(k, None) for k in edge_attrs}
+                    if isinstance(edge_attrs, list) else
+                    data
+                )
+        if not node_attrs:
+            return events, edge_attr_list
+
+    return (events, node_attr_list, edge_attr_list) if node_attrs and edge_attrs else events
