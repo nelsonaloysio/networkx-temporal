@@ -9,6 +9,11 @@
 ### Removed
 -->
 
+## \[1.4.1\] - 07-08-2026
+
+### Fixed
+- Keyword argument filtering for CPU/GPU and static/temporal Leiden backends.
+
 ## \[1.4\] - 07-08-2026
 
 ### Added
