@@ -196,7 +196,7 @@ def to_adjacency_matrix(
 
     """
     if is_temporal_graph(graph):
-        graph = from_multigraph(graph).flatten()
+        graph = graph.to_static()
     elif not is_static_graph(graph):
         raise TypeError("Argument `graph` must be a temporal or static NetworkX graph.")
     return to_supra_adjacency_matrix(

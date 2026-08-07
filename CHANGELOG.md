@@ -9,6 +9,11 @@
 ### Removed
 -->
 
+## \[1.4.2\] - 07-08-2026
+
+### Fixed
+- For temporal multigraphs, `to_{,supra_}adjacency_matrix` matches (weighted) `to_{numpy,scipy}`.
+
 ## \[1.4.1\] - 07-08-2026
 
 ### Fixed
