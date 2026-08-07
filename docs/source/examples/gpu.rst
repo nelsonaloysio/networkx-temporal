@@ -73,9 +73,9 @@ Spectral clustering
 
 The :func:`~networkx_temporal.algorithms.spectral_clustering` high-level function supports both CPU
 and GPU (NVIDIA) acceleration for three operators, implemented in the following functions:
-:class:`~networkx_temporal.algorithms.spectral_clustering_laplacian`,
-:class:`~networkx_temporal.algorithms.spectral_clustering_bethe_hessian`, and
-:class:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
+:func:`~networkx_temporal.algorithms.spectral_clustering_laplacian`,
+:func:`~networkx_temporal.algorithms.spectral_clustering_bethe_hessian`, and
+:func:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
 
 .. code-block:: python
 
@@ -450,7 +450,6 @@ approach allows a fast approximation where spectral or CPU-based methods may not
    Dynamic Graph Clustering on GPU Architectures with cuGraph''. The 6th
    workshop on Flexible Resource and Application Management on the Edge
    (FRAME); co-located with Euro-Par'26. Pisa, Italy, Aug. 24--28, 2026.
-   doi: `10.48550/arXiv.2608.03695 <https://doi.org/10.48550/arXiv.2608.03695>`__
 
 .. [2] V. A. Traag, L. Waltman, N. J. van Eck (2019). ''From Louvain to Leiden: guaranteeing
    well-connected communities''. Scientific Reports, 9(1), 5233.
