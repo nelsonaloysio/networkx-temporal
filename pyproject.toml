@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "networkx-temporal"
-version = "1.4.1"
+version = "1.4.2"
 description = "Python package to build and manipulate dynamic NetworkX graphs."
 requires-python = ">=3.7"
 readme = {file = "README.md", content-type = "text/markdown"}
-# license = "BSD-2-Clause"
+# license = "BSD-3-Clause"
 # license-files = ["LICENSE.md"]
 keywords = ["Network", "Graph", "Dynamic Graph", "Temporal Network"]
 authors = [
