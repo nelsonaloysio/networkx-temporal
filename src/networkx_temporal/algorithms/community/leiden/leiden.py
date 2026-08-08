@@ -26,12 +26,12 @@ def leiden_communities(
     """ Returns the Leiden partition of a graph.
 
     If ``graph`` is a :class:`~networkx_temporal.classes.TemporalGraph`, optimize (temporal)
-    :func:`~networkx_temporal.algorithms.graph.modularity_multislice.modularity_multislice` on
+    :func:`~networkx_temporal.algorithms.modularity_multislice` on
     the temporal graph using the specified device. If ``graph`` is a static graph, optimize
-    (static) :func:`~networkx_temporal.algorithms.graph.modularity.modularity`.
+    (static) :func:`~networkx_temporal.algorithms.modularity`.
 
     The GPU-based Leiden optimization of multislice modularity is parallelized and uses sparse
-    `CuPy <https://cupy.dev/>`__ as a backend on single devices (NVIDIA/AMD). The
+    `CuPy <https://cupy.dev/>`__ as a backend on single devices (AMD/NVIDIA). The
     `leidenalg <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__
     backend is used on CPU instead, and is preferrable For accuracy-sensitive tasks at the cost of
     longer runtimes.
@@ -48,7 +48,8 @@ def leiden_communities(
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
     :param gamma: Resolution parameter :math:`\\gamma` (default: ``1.0``).
-        Controls the size of communities, where higher values lead to smaller communities.
+        Controls the size of communities; higher values lead to smaller communities.
+        Only used when ``device='gpu'``; ignored when ``device='cpu'``.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``.
     :param interslice_weight: Inter-slice coupling strength for temporal graphs. Default: ``1.0``.
@@ -58,17 +59,25 @@ def leiden_communities(
     :param seed: Random seed number for reproducibility.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses ``igraph`` and ``leidenalg`` as backends.
+        - ``'cpu'``: Uses `igraph <https://igraph.org/python/>`__ and
+          `leidenalg <https://leidenalg.readthedocs.io>`__ as backends.
 
-        - ``'gpu'``: Uses ``pylibcugraph`` and ``nx-cugraph`` as backends (NVIDIA GPUs only).
+        - ``'gpu'``: Uses `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__ and
+          `CuPy <https://cupy.dev/>`__ as backends.
 
     :param kwargs: Additional keyword arguments to pass to the backend.
 
-        - ``device='cpu'``: leidenalg's `find_partition <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__
-          and `find_partition_temporal <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition_temporal>`__.
+        - ``device='cpu'``: leidenalg's
+          `find_partition <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__
+          and `find_partition_temporal
+          <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition_temporal>`__.
 
-        - ``device='gpu'``: pylibcugraph's `leiden <https://docs.rapids.ai/api/libcugraph/stable/api.html#leiden>`__
-          for static and :func:`~networkx_temporal.algorithms.leiden_multislice_gpu` for temporal graphs.
+        - ``device='gpu'``: cuGraph's
+          `leiden <https://docs.rapids.ai/api/libcugraph/stable/api.html#leiden>`__
+          (NVIDIA) for static graphs and
+          :func:`~networkx_temporal.algorithms.leiden_multislice_gpu`
+          using CuPy (AMD/NVIDIA) for temporal graphs.
+          A backend may be enforced by passing the appropriate graph.
     """
     gamma = 1.0 if gamma is None else gamma
 
@@ -77,7 +86,6 @@ def leiden_communities(
         if is_temporal_graph(graph):
             # Multislice modularity optimization with igraph/leidenalg backend.
             kwargs.update({
-                "resolution_parameter": gamma,
                 "weights": weight,
                 "n_iterations": max_iter,
                 "seed": seed,
@@ -90,7 +98,6 @@ def leiden_communities(
             })
         else:  # Static modularity optimization with igraph/leidenalg backend.
             kwargs.update({
-                "resolution_parameter": gamma,
                 "weights": weight,
                 "n_iterations": max_iter,
                 "seed": seed,
@@ -108,7 +115,7 @@ def leiden_communities(
                 "refine": kwargs.get("refine", True),
                 "max_iter": max_iter or 500,
                 "max_sweeps": kwargs.get("max_sweeps", 100),
-                "random_state": seed,
+                "seed": seed,
             })
         else:  # Static modularity optimization with pylibcugraph/nx-cugraph backend.
             fnc = _leiden_static_gpu
@@ -128,7 +135,7 @@ def leiden_communities(
 
 
 def _leiden_cpu(
-    graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     # partition_type: Optional[object] = la.ModularityVertexPartition,
     # initial_membership: Optional[List[int]] = None,
     # weights: Optional[str] = None,

@@ -19,9 +19,9 @@ def travian_graph(
     ) -> TemporalMultiDiGraph:
     """ Returns the Travian temporal graph.
 
-    The Travian dataset [16]_ is a network representing interactions between players in the online
-    game Travian. Nodes represent players, and directed edges represent interactions of three
-    types: attacks, messages, and trades. The dataset spans a period of 30 days starting from
+    The Travian dataset [16]_ is a graph representing interactions between players in the online
+    game Travian. Nodes represent the players, and directed edges their interactions among
+    three types: attacks, messages, and trades. The dataset spans a period of 30 days starting from
     December 1, 2009 to December 30, 2009, with daily snapshots and edge timestamps in seconds.
 
     Some nodes have an ``'alliance'`` attribute representing the player's alliance, while edges

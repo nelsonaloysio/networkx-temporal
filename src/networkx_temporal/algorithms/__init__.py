@@ -40,8 +40,8 @@ Algorithms and metrics for temporal graphs.
 
 .. rubric:: Note
 
-The convenience function :func:`~networkx_temporal.algorithms.is_gpu_enabled`
-may be used to check if GPU acceleration is enabled in the current environment:
+The property :mod:`~networkx_temporal.algorithms.is_gpu_enabled`
+allows checking if GPU acceleration is enabled in the environment:
 
 .. code-block:: python
 
@@ -52,6 +52,10 @@ may be used to check if GPU acceleration is enabled in the current environment:
    >>> tx.is_gpu_enabled  # Check whether GPU acceleration is enabled.
 
    True
+
+Note that a compatible GPU device and the required libraries must be installed for GPU acceleration
+to work. See the `GPU acceleration <../examples/gpu.html#accelerating-temporal-graph-algorithms>`__
+page for more details.
 
 .. rubric:: Functions
 """

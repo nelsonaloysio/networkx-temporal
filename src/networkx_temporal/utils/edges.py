@@ -220,9 +220,7 @@ def map_edge_attr_to_nodes(
         or static NetworkX graph object.
     :param attr: The edge attribute key to aggregate.
     :param default: The default value to return if the attribute is not found.
-    :param unique: Whether to discard duplicate attribute values.
-        Default is ``False``.
-    :param unique: Whether to return unique values for each edge when ``origin='both'``.
+    :param unique: Whether to discard duplicate attribute values. Default is ``False``.
     """
     if type(attr) != str:
         raise TypeError(f"Argument `attr` must be a string, received: {type(attr)}.")

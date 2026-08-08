@@ -4,7 +4,7 @@ import numpy as np
 
 
 def community_matrix_from_vector(*community_vectors: np.ndarray) -> np.ndarray:
-    """ Converts a community vector to a community matrix.
+    """ Converts a community vector to a matrix.
 
     :param community_vectors: Community assignment vector(s) with shape ``(n_nodes,)``.
     """

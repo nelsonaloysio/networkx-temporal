@@ -38,26 +38,15 @@ def spectral_clustering(
     - ``'modularity'``: modularity-based spectral clustering with
       :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_modularity`.
 
+    .. hint::
+
+       Setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+
     .. seealso::
 
        The `Examples → GPU acceleration → Spectral clustering
        <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
-    .. hint::
-
-       Setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
-
-    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
-    :param operator: The spectral operator to use. Supported types are
-        ``'laplacian'``, ``'bethe_hessian'``, and ``'modularity'``. Default is ``'laplacian'``.
-    :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
-    :param interslice_weight: Weight of inter-slice edges connecting node copies across snapshots.
-    :param str device: Device to use for computation. Available choices:
-
-        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
-
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and RAPIDS cuML (NVIDIA).
 
     .. rubric:: Example
 
@@ -74,8 +63,17 @@ def spectral_clustering(
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
+    :param operator: The spectral operator to use. Supported types are
+        ``'laplacian'``, ``'bethe_hessian'``, and ``'modularity'``. Default is ``'laplacian'``.
+    :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
+    :param interslice_weight: Weight of inter-slice edges connecting node copies across snapshots.
+    :param str device: Device to use for computation. Available choices:
 
-    :note: GPU acceleration requires the CuPy and RAPIDS cuML libraries.
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (RAPIDS).
+
+    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
     """
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")

@@ -53,8 +53,8 @@ def spectral_clustering_bethe_hessian(
 
     .. seealso::
 
-       The :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering`
-       function for a convenience wrapper around this function.
+       The :func:`~networkx_temporal.algorithms.spectral_clustering`
+       function for a convenience wrapper around this implementation.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
@@ -69,7 +69,9 @@ def spectral_clustering_bethe_hessian(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and RAPIDS cuML (NVIDIA).
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (RAPIDS).
+
+    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
     """
     if device == "cpu":
         import numpy as xp

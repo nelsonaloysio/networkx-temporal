@@ -52,12 +52,13 @@ from .generators import (
     transition_node_memberships,
 )
 from .sbm import (
+    dynamic_sbm,
     dynamic_stochastic_block_model,
     stochastic_block_model
 )
-dynamic_sbm = dynamic_stochastic_block_model  # Alias
 
 __all__ = (
+    "dynamic_sbm",
     "dynamic_stochastic_block_model",
     "stochastic_block_model",
     "collegemsg_graph",

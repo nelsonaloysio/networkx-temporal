@@ -33,7 +33,7 @@ def dynamic_stochastic_block_model(
     selfloops: Optional[bool] = False,
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
     distribution: DISTRIBUTION = "poisson",
-    sparse: Optional[bool] = False,
+    sparse: Optional[bool] = None,
     seed: Optional[int] = None,
 ) -> TemporalGraph:
     """ Generates a dynamic stochastic block model graph.
@@ -52,7 +52,8 @@ def dynamic_stochastic_block_model(
     where :math:`\\boldsymbol{\\tau}` is the transition matrix with the same shape of the
     block matrix :math:`\\mathbf{B}`. Adjacencies :math:`\\mathbf{A}^{(t)}` at snapshot :math:`t`
     are sampled from a Poisson (default) or Bernoulli (if ``distribution='bernoulli'``)
-    distribution considering the temporal communities :math:`\\mathbf{z}^{(t)}`.
+    distribution considering the temporal communities :math:`\\mathbf{z}^{(t)}`,
+    with expected adjacencies given by
 
     .. math::
 
@@ -64,21 +65,32 @@ def dynamic_stochastic_block_model(
     where :math:`\\mathbf{C}` is the :math:`n \\times k` community assignment matrix and
     :math:`\\mathbf{\\Theta}` are diagonal matrices of degree-correction factors given by the
     inverse square root of the sum of expected node degrees.
-    Degree-correction factors are computed based on the expected degree vectors, which are
-    fixed over time, and not based on the actual degree of nodes at each snapshot.
+    Degree correction factors are computed based on the expected degree vectors, which are
+    fixed over time (for all snapshots), instead of based on the actual degree of nodes at each
+    snapshot.
 
     Under the Poisson model, edge multiplicities are drawn as counts, yielding a multigraph;
     set ``multigraph=False`` to collapse counts to a binary adjacency. Note that the Bernoulli
     model and ``min(Poisson, 1)`` are *not* equivalent at non-vanishing density: collapsing
     Poisson counts yields :math:`\\text{Bernoulli}(1 - e^{-\\lambda})`, not
-    :math:`\\text{Bernoulli}(\\lambda)`. Use ``distribution='bernoulli'`` for a true
-    simple-graph SBM in the dense regime.
+    :math:`\\text{Bernoulli}(\\lambda)`. For a true simple SBM graph in the dense regime,
+    use ``distribution='bernoulli'`` and ensure that the block matrix :math:`\\mathbf{B}` has
+    entries in :math:`[0, 1]`.
 
     If ``fix_transition_prob=True``, node community transition probabilities are fixed
     based on their initial memberships at :math:`t=0` for all :math:`t>0` snapshots; otherwise,
     considering their most recent memberships.
     For details on the generative model, see the
     :func:`~networkx_temporal.generators.stochastic_block_model` function.
+
+    .. seealso::
+
+        - The `graph-tool <https://graph-tool.skewed.de>`__ library for efficient
+          implementations of stochastic block models for graph generation and inference, with
+          features such as hierarchical community structures.
+        - The `tadc-sbm <https://pypi.org/project/tadc-sbm/>`__ library for the generation
+          of time-varying, attributed, degree-corrected stochastic block model graphs, using
+          graph-tool as the computational backend.
 
     .. rubric:: Example
 
@@ -153,13 +165,6 @@ def dynamic_stochastic_block_model(
     .. image:: ../../assets/figure/generators/dynamic_stochastic_block_model.png
        :align: center
 
-    .. seealso::
-
-        The `graph-tool <https://graph-tool.skewed.de>`__ library, which provides more efficient
-        implementations of advanced models with features such as hierarchical community structures.
-        For a model example with graph-tool for time-varying attributed graphs, see also:
-        `tadc-sbm <https://github.com/nelsonaloysio/tadcsbm>`__.
-
     .. [1] Amir Ghasemian et al. (2016).
         ''Detectability Thresholds and Optimal Algorithms for Community Structure in Dynamic
         Networks''. doi: `10.1103/PhysRevX.6.031005 <https://doi.org/10.1103/PhysRevX.6.031005>`__
@@ -182,7 +187,7 @@ def dynamic_stochastic_block_model(
     :param create_using: Graph constructor to use.
     :param fix_transition_prob: If ``True``, node transition probabilities refer
         to the ground truth probabilities in every snapshot. Default is ``False``.
-    :param distribution: Edge sampling distribution, either ``'poisson'`` (default) or
+    :param str distribution: Edge sampling distribution, either ``'poisson'`` (default) or
         ``'bernoulli'``. Poisson yields edge counts (a multigraph); Bernoulli yields a
         simple graph and requires ``B`` entries in ``[0, 1]``.
     :param sparse: Whether to build each snapshot from a sparse adjacency matrix. This affects
@@ -200,6 +205,9 @@ def dynamic_stochastic_block_model(
             raise ValueError(
                 "Parameters `multigraph` and `directed` are exclusive with `create_using`."
             )
+    if sparse is not None:
+        warn("Parameter `sparse` is deprecated and will be removed in future versions.",
+             DeprecationWarning)
 
     # Block matrix as a dense float array (k x k, always small).
     B = B.toarray() if sp.issparse(B) else np.asarray(B, dtype=float)
@@ -343,3 +351,10 @@ def dynamic_stochastic_block_model(
         TG.graphs = list(map(lambda G: nx.relabel_nodes(G, mapping, copy=True), TG))
 
     return TG
+
+
+def dynamic_sbm(*args, **kwargs) -> TemporalGraph:
+    """ Generates a dynamic stochastic block model graph.
+    Alias to :func:`~networkx_temporal.generators.dynamic_stochastic_block_model`.
+    """
+    return dynamic_stochastic_block_model(*args, **kwargs)

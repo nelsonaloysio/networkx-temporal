@@ -8,7 +8,7 @@ _BUDGET = 1 << 22
 
 
 def leiden_multislice_gpu(
-    graph: Union[TemporalGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     gamma: float = 1.0,
     weight: Optional[str] = "weight",
     interslice_weight: Optional[float] = 1.0,
@@ -17,11 +17,26 @@ def leiden_multislice_gpu(
     refine: bool = True,
     seed: Optional[int] = None,
 ) -> List[List[int]]:
-    """ GPU-accelerated parallelized Leiden algorithm. Optimizes multislice modularity via
-    `CuPy <https://cupy.dev/>`__.
+    """ GPU-accelerated parallelized Leiden algorithm. Optimizes
+    :func:`~networkx_temporal.algorithms.modularity_multislice`.
 
-    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or list of static NetworkX
-        graphs
+    Accepts a :class:`~networkx_temporal.classes.TemporalGraph`, a static NetworkX graph, or a list
+    of static NetworkX graphs as input. Uses sparse `CuPy <https://cupy.dev/>`__ as a backend on
+    single devices (AMD/NVIDIA). For multi-GPU or distributed computing, consider using the
+    :func:`~networkx_temporal.algorithms.leiden_communities` function with ``device='gpu'``
+    set, which uses `cuGraph <https://docs.rapids.ai/api/libcugraph/stable/>`__ as a backend
+    (NVIDIA only), which optimizes global :func:`~networkx_temporal.algorithms.modularity` instead.
+
+    .. seealso::
+
+        The `Examples → GPU acceleration → Compare running times
+        <../examples/gpu.html#compare-running-times>`__
+        and `Examples → GPU acceleration → Compare detection accuracy
+        <../examples/gpu.html#compare-detection-accuracy>`__
+        sections for efficiency/efficacy comparisons.
+
+    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param gamma: Resolution parameter :math:`\\gamma` (default: ``1.0``).
         Controls the size of communities, where higher values lead to smaller communities.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
@@ -33,7 +48,8 @@ def leiden_multislice_gpu(
         Used for parallelized local moving and refinement phases.
     :param refine: Whether to run the refinement phase of Leiden. Default is ``True``.
         If ``False``, yields a Louvain-like algorithm that is slightly faster.
-    :param seed: Random seed number for reproducibility.
+    :param seed: Random seed number for reproducibility. Note that parallelized GPU computations
+        may not be fully deterministic across runs.
     """
     try:
         import cupy as cp
@@ -45,8 +61,8 @@ def leiden_multislice_gpu(
             "`conda install -c conda-forge -c rapidsai -c nvidia cupy`."
         ) from exc
 
-    if random_state is not None:
-        cp.random.seed(random_state)
+    if seed is not None:
+        cp.random.seed(seed)
 
     def one_hot(labels, n, k, dtype):
         """ Assignment matrix (n x k) with one unit entry per row."""
@@ -259,8 +275,8 @@ def leiden_multislice_gpu(
 
         # Aggregate (contract by reduce_by_key) the refined partition,
         # the next level's communities from the non-refined one.
-        seed = cp.zeros(n_parts, dtype=cp.int64)
-        seed[part] = comm
+        seed_part = cp.zeros(n_parts, dtype=cp.int64)
+        seed_part[part] = comm
         coo = adj.tocoo()
         adj = csp.coo_matrix(
             (coo.data, (part[coo.row], part[coo.col])), shape=(n_parts, n_parts)).tocsr()
@@ -268,7 +284,7 @@ def leiden_multislice_gpu(
         # Update the per-slice null model for the next level.
         D = volumes(part, n, n_parts)
         compose = part[compose]
-        comm = relabel(seed)
+        comm = relabel(seed_part)
 
     labels = cp.asnumpy(relabel(comm[compose])).astype(int).tolist()
     return [labels[start:end] for start, end in zip(bounds, bounds[1:])]

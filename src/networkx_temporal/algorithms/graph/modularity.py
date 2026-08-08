@@ -54,7 +54,7 @@ def modularity(
 
     .. seealso::
 
-        The :func:`~networkx_temporal.algorithms.multislice_modularity` function for a temporal
+        The :func:`~networkx_temporal.algorithms.modularity_multislice` function for a temporal
         generalization of the metric.
 
     .. [7] A. Clauset, M. E. J. Newman, C. Moore (2004). ''Finding community structure in very
