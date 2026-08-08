@@ -11,6 +11,9 @@
 
 ## \[1.4.3\] - Roadmap
 
+### Added
+- Alias `dynamic_sbm` to `dynamic_stochastic_block_model`.
+
 ### Changed
 - Argument `random_state` renamed to `seed` for `leiden_multislice_gpu` to match other functions.
 

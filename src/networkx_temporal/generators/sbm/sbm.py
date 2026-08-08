@@ -14,6 +14,8 @@ def stochastic_block_model(
     isolates: Optional[bool] = True,
     selfloops: Optional[bool] = False,
     create_using: Optional[StaticGraph] = None,
+    distribution: DISTRIBUTION = "poisson",
+    sparse: Optional[bool] = None,
     seed: Optional[int] = None,
     sparse: Optional[bool] = False,
 ) -> StaticGraph:
@@ -96,8 +98,10 @@ def stochastic_block_model(
     :param create_using: Graph constructor to use.
     :param fix_transition_prob: If ``True``, node transition probabilities refer
         to the ground truth probabilities in every snapshot. Default is ``False``.
+    :param str distribution: Edge sampling distribution, either ``'poisson'`` (default) or
+        ``'bernoulli'``. Poisson yields edge counts (a multigraph); Bernoulli yields a
+        simple graph and requires ``B`` entries in ``[0, 1]``.
     :param seed: Random number generator state.
-    :param sparse: Whether to use sparse matrices. Default is ``False``.
 
     :param note: Same as :func:`~networkx_temporal.generators.dynamic_sbm` with ``t=1``.
     """
@@ -108,6 +112,7 @@ def stochastic_block_model(
         isolates=isolates,
         selfloops=selfloops,
         create_using=create_using,
-        seed=seed,
+        distribution=distribution,
         sparse=sparse,
+        seed=seed,
     )[0]
