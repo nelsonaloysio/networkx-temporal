@@ -21,6 +21,9 @@
 ### Deprecated
 - Argument `sparse` from `{stochastic,dynamic_stochastic}_block_mdoel`.
 
+### Fixed
+- Argument `gamma` (modularity resolution parameter) not passed to CPU-based Leiden algorithm.
+
 ## \[1.4.2\] - 07-08-2026
 
 ### Fixed

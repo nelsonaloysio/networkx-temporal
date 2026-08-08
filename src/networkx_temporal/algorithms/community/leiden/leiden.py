@@ -84,6 +84,7 @@ def leiden_communities(
                 "weight_attr": weight,
                 "interslice_weight": interslice_weight,
                 "vertex_id_attr": "_nx_name",
+                # "resolution_parameter": gamma,
                 # "edge_type_attr": "interslice",
                 # "slice_attr": "slice",
             })
@@ -93,6 +94,7 @@ def leiden_communities(
                 "weights": weight,
                 "n_iterations": max_iter,
                 "seed": seed,
+                # "resolution_parameter": gamma,
             })
 
     elif device == "gpu":
