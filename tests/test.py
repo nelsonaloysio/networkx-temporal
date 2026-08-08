@@ -247,9 +247,9 @@ def test_supra_adjacency_subgraph() -> None:
     TG.remove_nodes_from(tx.isolates(TG))
     assert TG.order(copies=False) == 3
     assert TG.size(copies=True) == 4
-    assert tx.to_supra_adjacency_matrix(TG).sum() == 11
-    assert tx.to_supra_adjacency_matrix(TG, interslice_method="first").sum() == 12
-    assert tx.to_supra_adjacency_matrix(TG, interslice_method="all").sum() == 13
+    assert tx.to_supra_adjacency_matrix(TG).sum() == 14
+    assert tx.to_supra_adjacency_matrix(TG, interslice_couple="first").sum() == 16
+    assert tx.to_supra_adjacency_matrix(TG, interslice_couple="all").sum() == 18
 
 
 def test_dataset_graph(dataset) -> None:
