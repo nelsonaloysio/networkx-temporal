@@ -13,7 +13,7 @@ from networkx_temporal import __version__
 release = version = __version__
 
 project = "networkx-temporal"
-copyright = "2026"
+copyright = "2024-2026, Nelson Aloysio Reis de Almeida Passos"
 author = "Nelson Aloysio Reis de Almeida Passos"
 
 for _ in ["-", "a", "b", "post", "rc"]:

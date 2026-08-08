@@ -25,7 +25,7 @@ def leiden_multislice_gpu(
     single devices (AMD/NVIDIA). For multi-GPU or distributed computing, consider using the
     :func:`~networkx_temporal.algorithms.leiden_communities` function with ``device='gpu'``
     set, which uses `cuGraph <https://docs.rapids.ai/api/libcugraph/stable/>`__ as a backend
-    (NVIDIA only), which optimizes global :func:`~networkx_temporal.algorithms.modularity` instead.
+    (NVIDIA only), but optimizes global :func:`~networkx_temporal.algorithms.modularity` instead.
 
     .. seealso::
 

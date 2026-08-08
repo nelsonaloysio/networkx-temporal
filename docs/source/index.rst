@@ -58,7 +58,7 @@ NetworkX-Temporal
    :target: https://networkx-temporal.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation
 
-.. image:: https://static.pepy.tech/badge/networkx-temporal/month
+.. image:: https://static.pepy.tech/badge/networkx-temporal
    :target: https://pepy.tech/project/networkx-temporal?versions=*
    :alt: Downloads
 
@@ -158,20 +158,6 @@ Note that the total number of nodes may vary, while the total number of edges is
    of the original graph, so no data is copied unless otherwise specified.
 
 
-Plot snapshots
---------------
-
-We may visualize the resulting temporal graph using the :func:`~networkx_temporal.drawing.draw` function:
-
-.. code-block:: python
-
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
-
-.. image:: ../assets/figure/temporal-graph.png
-   :alt: Temporal graph plot
-   :align: center
-
-
 Save and load data
 ------------------
 
@@ -186,6 +172,20 @@ functions accept compressed temporal graphs:
 Both functions support the same `extension formats
 <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
 as in the installed NetworkX library version.
+
+
+Plot snapshots
+--------------
+
+We may visualize the resulting temporal graph using the :func:`~networkx_temporal.drawing.draw` function:
+
+.. code-block:: python
+
+   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
+
+.. image:: ../assets/figure/temporal-graph.png
+   :alt: Temporal graph plot
+   :align: center
 
 
 Detect communities
