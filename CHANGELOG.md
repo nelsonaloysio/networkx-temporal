@@ -9,7 +9,7 @@
 ### Removed
 -->
 
-## \[1.4.3\] - Roadmap
+## \[1.4.3\] - 08-08-2026
 
 ### Added
 - Alias `dynamic_sbm` to `dynamic_stochastic_block_model`.
