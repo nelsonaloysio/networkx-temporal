@@ -9,6 +9,12 @@
 ### Removed
 -->
 
+## \[1.4.3\] - Roadmap
+
+### Changed
+- Argument `random_state` renamed to `seed` for `leiden_multislice_gpu` to match other functions.
+
+
 ## \[1.4.2\] - 07-08-2026
 
 ### Fixed

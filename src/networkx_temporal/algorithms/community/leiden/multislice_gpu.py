@@ -15,7 +15,7 @@ def leiden_multislice_gpu(
     max_iter: int = 500,
     max_sweeps: int = 100,
     refine: bool = True,
-    random_state: Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> List[List[int]]:
     """ GPU-accelerated parallelized Leiden algorithm. Optimizes multislice modularity via
     `CuPy <https://cupy.dev/>`__.
