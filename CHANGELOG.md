@@ -18,6 +18,8 @@
 ### Changed
 - Argument `random_state` renamed to `seed` for `leiden_multislice_gpu` to match other functions.
 
+### Deprecated
+- Argument `sparse` from `{stochastic,dynamic_stochastic}_block_mdoel`.
 
 ## \[1.4.2\] - 07-08-2026
 
