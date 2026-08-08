@@ -46,7 +46,7 @@ allows checking if GPU acceleration is enabled in the environment:
 .. code-block:: python
 
    >>> import os
-   >>> os.environ["NX_CUGRAPH_AUTOCONFIG"] = "1"  # Enable GPU acceleration by default.
+   >>> os.environ["NX_GPU_AUTOCONFIG"] = "1"  # Enable GPU acceleration by default.
    >>>
    >>> import networkx_temporal as tx
    >>> tx.is_gpu_enabled  # Check whether GPU acceleration is enabled.
@@ -62,11 +62,11 @@ page for more details.
 
 from .community import *
 from .community.leiden.multislice_gpu import leiden_multislice_gpu
-from .cugraph import NX_CUGRAPH_AUTOCONFIG
+from .gpu import NX_GPU_AUTOCONFIG
 from .graph import *
 from .node import *
 
-is_gpu_enabled = NX_CUGRAPH_AUTOCONFIG
+is_gpu_enabled = NX_GPU_AUTOCONFIG
 
 __all__ = (
     "leiden_communities",

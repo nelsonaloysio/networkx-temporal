@@ -213,7 +213,7 @@ and temporal graphs, with the latter supporting parallelized multislice optimiza
    :align: center
 
 The library automatically detects whether a GPU is available and uses it for computation if the
-environment variable ``export NX_CUGRAPH_AUTOCONFIG=True`` is set; otherwise, defaults to CPU.
+environment variable ``export NX_GPU_AUTOCONFIG=True`` is set; otherwise, defaults to CPU.
 
 .. seealso::
 

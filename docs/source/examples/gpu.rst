@@ -39,14 +39,17 @@ GPU-accelerated algorithms may require the installation of the following librari
 
 .. code-block:: bash
 
-   # Parallelized multislice Leiden algorithm (AMD/NVIDIA GPUs)
+   # Parallelized multislice Leiden via CuPy (NVIDIA GPUs)...
    conda install -c conda-forge cupy
 
-   # Spectral clustering and static Leiden algorithm (NVIDIA GPUs)
-   conda install -c conda-forge -c rapidsai -c nvidia cupy cuml cugraph pylibcugraph nx-cugraph
+   # ...or on AMD GPUs (ROCm, experimental; separate build)
+   pip install amd-cupy --extra-index-url=https://pypi.amd.com/simple
+
+   # Spectral clustering + static Leiden algorithm (NVIDIA only)
+   conda install -c conda-forge -c rapidsai -c nvidia cupy cuml cugraph nx-cugraph pylibcugraph
 
 Once installed, GPU acceleration in NetworkX-Temporal may be enabled by passing the parameter
-``device="gpu"`` in the relevant functions; or by setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the
+``device="gpu"`` in the relevant functions; or by setting ``NX_GPU_AUTOCONFIG=1`` in the
 environment, allowing zero-code configuration and automatic detection of GPU availability.
 To verify it:
 

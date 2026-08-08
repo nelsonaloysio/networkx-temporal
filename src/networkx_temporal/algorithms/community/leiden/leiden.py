@@ -4,13 +4,11 @@ from typing import List, Optional, Union
 import numpy as np
 
 from .multislice_gpu import leiden_multislice_gpu
-from ...cugraph import NX_CUGRAPH_AUTOCONFIG
+from ...gpu import NX_GPU_AUTOCONFIG, NX_CUGRAPH_AUTOCONFIG
 from ....classes.functions import is_static_graph, is_temporal_graph
 from ....typing import TemporalGraph, StaticGraph, Literal
 from ....utils.convert.cugraph import to_cugraph
 from ....utils.convert.igraph import to_igraph
-
-DEVICE = "gpu" if NX_CUGRAPH_AUTOCONFIG else "cpu"
 
 
 def leiden_communities(
@@ -20,7 +18,7 @@ def leiden_communities(
     interslice_weight: Optional[float] = 1.0,
     max_iter: Optional[int] = None,
     seed: Optional[int] = None,
-    device: Literal["cpu", "gpu"] = DEVICE,
+    device: Optional[Literal["cpu", "gpu"]] = None,
     **kwargs,
 ) -> Union[dict, List[dict]]:
     """ Returns the Leiden partition of a graph.
@@ -38,7 +36,7 @@ def leiden_communities(
 
     .. hint::
 
-       Setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. seealso::
 
@@ -79,6 +77,7 @@ def leiden_communities(
           using CuPy (AMD/NVIDIA) for temporal graphs.
           A backend may be enforced by passing the appropriate graph.
     """
+    device = _resolve_device(device, graph)
     gamma = 1.0 if gamma is None else gamma
 
     if device == "cpu":
@@ -219,7 +218,7 @@ def _leiden_static_gpu(
             "GPU Leiden requires cupy, nx-cugraph, and pylibcugraph. "
             "Please install it via "
             "`conda install -c rapidsai -c nvidia -c conda-forge "
-            "cugraph pylibcugraph nx-cugraph`."
+            "cugraph nx-cugraph pylibcugraph`."
         ) from exc
 
     cuG = graph  # Assume the input graph is already a cuGraph object.
@@ -260,3 +259,18 @@ def _leiden_static_gpu(
     if isolated.any():
         membership[isolated] = membership.max() + 1 + np.arange(int(isolated.sum()))
     return np.unique(membership, return_inverse=True)[1].astype(int).tolist()
+
+
+def _resolve_device(device, graph):
+    """ Explicit arg > NX_GPU_AUTOCONFIG > NX_CUGRAPH_AUTOCONFIG.
+
+    NX_CUGRAPH_AUTOCONFIG only promotes the static (cuGraph) path — never
+    multislice, which runs on CuPy and is not a cuGraph backend.
+    """
+    if device is not None:
+        return device
+    if NX_GPU_AUTOCONFIG:
+        return "gpu"
+    if NX_CUGRAPH_AUTOCONFIG and not is_temporal_graph(graph):
+        return "gpu"
+    return "cpu"

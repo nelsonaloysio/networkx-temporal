@@ -9,6 +9,15 @@
 ### Removed
 -->
 
+## \[1.4.4\] - 09-08-2026
+
+### Added
+- Environment variable `NX_GPU_AUTOCONFIG` to enable GPU acceleration on supported algorithms.
+
+### Changed
+- Environment variable `NX_CUGRAPH_AUTOCONFIG` now only enables GPU Leiden for static graphs.
+
+
 ## \[1.4.3\] - 08-08-2026
 
 ### Added
@@ -24,15 +33,18 @@
 ### Fixed
 - Argument `gamma` (modularity resolution parameter) not passed to CPU-based Leiden algorithm.
 
+
 ## \[1.4.2\] - 07-08-2026
 
 ### Fixed
 - For temporal multigraphs, `to_{,supra_}adjacency_matrix` matches (weighted) `to_{numpy,scipy}`.
 
+
 ## \[1.4.1\] - 07-08-2026
 
 ### Fixed
 - Keyword argument filtering for CPU/GPU and static/temporal Leiden backends.
+
 
 ## \[1.4\] - 07-08-2026
 

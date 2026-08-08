@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 from .bethe_hessian import spectral_clustering_bethe_hessian
 from .laplacian import spectral_clustering_laplacian
 from .modularity import spectral_clustering_modularity
-from ...cugraph import NX_CUGRAPH_AUTOCONFIG
+from ...gpu import NX_GPU_AUTOCONFIG
 from ....classes.types import is_temporal_graph
 from ....typing import Literal, StaticGraph, TemporalGraph
 from ....utils import to_supra_adjacency_matrix
@@ -12,7 +12,7 @@ from ....utils import to_supra_adjacency_matrix
 OPERATOR = Literal["laplacian", "bethe_hessian", "modularity"]
 OPERATORS = list(OPERATOR.__args__)
 
-DEVICE = "gpu" if NX_CUGRAPH_AUTOCONFIG else "cpu"
+DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def spectral_clustering(
@@ -40,7 +40,7 @@ def spectral_clustering(
 
     .. hint::
 
-       Setting ``NX_CUGRAPH_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. seealso::
 
