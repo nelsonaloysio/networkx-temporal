@@ -3,7 +3,7 @@ from typing import Any, List, Optional, Union
 import networkx as nx
 
 from ..classes.types import is_static_graph, is_temporal_graph
-from ..typing import StaticGraph, TemporalGraph
+from ..typing import StaticGraph, TemporalGraph, Literal
 
 
 def get_edge_attributes(
@@ -11,12 +11,14 @@ def get_edge_attributes(
     attr: str,
     default: Any = None,
     index: bool = True,
+    values: Optional[Literal["list", "set"]] = None
 ) -> List[Any]:
     """ Returns edge attribute values for each snapshot and edge in the graph.
 
     For temporal graphs, returns a list of dictionaries, one per snapshot, where keys are edges
     and values are attribute values. If ``index=False``, returns a list of lists of attribute
     values for each snapshot, where the order of values corresponds to the edge order in the graph.
+    If ``values`` is set to ``'list'`` or ``'set'``, returns a list or a set of values per node.
 
     Note that edges with missing attributes are skipped by default, unless ``default`` is set.
 
@@ -47,17 +49,46 @@ def get_edge_attributes(
     :param attr: The edge attribute key.
     :param default: The default value to return if the attribute is not found.
     :param index: Whether to return a dictionary with edges as keys.
+        If ``False``, returns a list of attribute values for each snapshot, where the order of
+        values corresponds to the edge order in the graph. Default is ``True``.
+    :param values: If set, returns a dictionary with a single key-value pair for each edge, being:
+
+       - ``'list'``: returns a list of attribute values per edge across time.
+
+       - ``'set'``: returns a set of unique attribute values per edge across time.
     """
     if is_static_graph(graph):
-        edge_attr = nx.get_edge_attributes(graph, attr, default=default)
+        edge_attrs = nx.get_edge_attributes(graph, attr, default=default)
         if not index:
-            edge_attr = list(edge_attr.values())
+            edge_attrs = list(edge_attrs.values())
     else:
-        edge_attr = [nx.get_edge_attributes(G, attr, default=default) for G in graph]
+        if values is None:
+            edge_attrs = [
+                nx.get_edge_attributes(G, attr, default=default)
+                for G in graph
+            ]
+        elif values in (list, "list"):
+            edge_attrs = {}
+            list(
+                edge_attrs.setdefault(edge, []).append(value)
+                for G in graph
+                for edge, value in nx.get_edge_attributes(G, attr, default=default).items()
+            )
+        elif values in (set, "set"):
+            edge_attrs = {}
+            list(
+                edge_attrs.setdefault(edge, set()).add(value)
+                for G in graph
+                for edge, value in nx.get_edge_attributes(G, attr, default=default).items()
+            )
+        else:
+            raise ValueError(f"Argument `values` must be `None` or one of: 'list', 'set'.")
         if not index:
-            edge_attr = [list(attrs.values()) for attrs in edge_attr]
-
-    return edge_attr
+            edge_attrs = (
+                [list(attrs.values()) for attrs in edge_attrs]
+                if values is None else list(edge_attrs.values())
+            )
+    return edge_attrs
 
 
 def get_unique_edge_attributes(

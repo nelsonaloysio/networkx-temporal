@@ -11,12 +11,14 @@ def get_node_attributes(
     attr: str,
     default: Any = None,
     index: bool = True,
+    values: Optional[Literal["list", "set"]] = None,
 ) -> List[Any]:
     """ Returns node attribute values for each snapshot and node in the graph.
 
     For temporal graphs, returns a list of dictionaries, one per snapshot, where keys are nodes
     and values are attribute values. If ``index=False``, returns a list of lists of attribute
     values for each snapshot, where the order of values corresponds to the node order in the graph.
+    If ``values`` is set to ``'list'`` or ``'set'``, returns a list or a set of values per node.
 
     Note that nodes with missing attributes are skipped by default, unless ``default`` is set.
 
@@ -38,7 +40,7 @@ def get_node_attributes(
 
     .. code-block:: python
 
-        >>> tx.get_node_attributes(TG, attr="group", default="unknown", index=None)
+        >>> tx.get_node_attributes(TG, attr="group", default="unknown", index=False)
 
         [[0, 1, 'unknown']]
 
@@ -47,15 +49,45 @@ def get_node_attributes(
     :param attr: The node attribute key.
     :param default: The default value to return if the attribute is not found.
     :param index: Whether to return a dictionary with nodes as keys.
+        If ``False``, returns a list of attribute values for each snapshot, where the order of
+        values corresponds to the node order in the graph. Default is ``True``.
+    :param values: If set, returns a dictionary with a single key-value pair for each node, being:
+
+       - ``'list'``: returns a list of attribute values per node across time.
+
+       - ``'set'``: returns a set of unique attribute values per node across time.
     """
     if is_static_graph(graph):
         node_attrs = nx.get_node_attributes(graph, attr, default=default)
         if not index:
             node_attrs = list(node_attrs.values())
     else:
-        node_attrs = [nx.get_node_attributes(G, attr, default=default) for G in graph]
+        if values is None:
+            node_attrs = [
+                nx.get_node_attributes(G, attr, default=default)
+                for G in graph
+            ]
+        elif values in (list, "list"):
+            node_attrs = {}
+            list(
+                node_attrs.setdefault(node, []).append(value)
+                for G in graph
+                for node, value in nx.get_node_attributes(G, attr, default=default).items()
+            )
+        elif values in (set, "set"):
+            node_attrs = {}
+            list(
+                node_attrs.setdefault(node, set()).add(value)
+                for G in graph
+                for node, value in nx.get_node_attributes(G, attr, default=default).items()
+            )
+        else:
+            raise ValueError(f"Argument `values` must be `None` or one of: 'list', 'set'.")
         if not index:
-            node_attrs = [list(attrs.values()) for attrs in node_attrs]
+            node_attrs = (
+                [list(attrs.values()) for attrs in node_attrs]
+                if values is None else list(node_attrs.values())
+            )
     return node_attrs
 
 

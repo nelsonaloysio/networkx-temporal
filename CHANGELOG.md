@@ -13,6 +13,7 @@
 
 ### Added
 - Alias `dynamic_sbm` to `dynamic_stochastic_block_model`.
+- Argument `values` to `get_{edge,node}_attributes` returns a list or set of values per node/edge.
 
 ### Changed
 - Argument `random_state` renamed to `seed` for `leiden_multislice_gpu` to match other functions.
