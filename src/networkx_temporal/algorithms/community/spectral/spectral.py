@@ -30,13 +30,13 @@ def spectral_clustering(
     ``operator``:
 
     - ``'laplacian'``: normalized or unnormalized operator with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_laplacian`;
+      :func:`~networkx_temporal.algorithms.spectral_clustering_laplacian`;
 
     - ``'bethe_hessian'``: Bethe-Hessian operator with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_bethe_hessian`;
+      :func:`~networkx_temporal.algorithms.spectral_clustering_bethe_hessian`;
 
     - ``'modularity'``: modularity-based spectral clustering with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_modularity`.
+      :func:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
 
     .. hint::
 
