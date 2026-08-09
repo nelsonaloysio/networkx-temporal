@@ -3,13 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NetworkX-Temporal — Temporal network analysis in Python</title>
-<meta name="description" content="NetworkX-Temporal is a Python package for the creation, manipulation, and study of the structure, dynamics, and functions of temporal networks.">
-<link rel="icon" href="https://raw.githubusercontent.com/nelsonaloysio/networkx-temporal/refs/heads/main/docs/assets/banner-logo.svg">
+<title>NetworkX-Temporal — Temporal graph analysis in Python</title>
+<meta name="description" content="NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of the structure and dynamics of temporal graphs.">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
 <style>
   :root {
-    --blue: #136097;          /* networkx / matplotlib C0 */
-    --link: #555555;          /* gray links, blue on hover */
+    --blue: #136097;
+    --link: #555555;
     --ink: #2b2b2b;
     --muted: #6b6b6b;
     --line: #e3e3e3;
@@ -57,7 +61,7 @@
 
   .search { display: block; }
   .search input {
-    width: 100%;
+    width: 85%;
     font-family: var(--serif); font-size: 0.92rem;
     padding: 0.4rem 0.55rem;
     border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink);
@@ -130,7 +134,6 @@
       <nav class="group" aria-label="Project links">
         <h2>Project</h2>
         <ul>
-          <li><a href="https://pypi.org/project/networkx-temporal/">PyPI</a></li>
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal">Source</a></li>
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal/issues">Issue tracker</a></li>
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md">Changelog</a></li>
@@ -156,23 +159,24 @@
         <h2>Search</h2>
         <input type="hidden" name="check_keywords" value="yes">
         <input type="hidden" name="area" value="default">
-        <input type="search" name="q" placeholder="Search docs…" aria-label="Search the documentation">
+        <input type="search" name="q" placeholder="Search docs" aria-label="Search the documentation">
       </form>
     </aside>
 
     <main class="main">
       <a class="brand" href="/" aria-label="NetworkX-Temporal home">
-        <img src="https://raw.githubusercontent.com/nelsonaloysio/networkx-temporal/refs/heads/main/docs/assets/banner-logo.svg" alt="NetworkX-Temporal — Network Analysis in Python">
+        <img src="/banner.svg" alt="NetworkX-Temporal — Temporal graph analysis in Python">
       </a>
 
       <p class="lead">
         NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of
-        the structure, dynamics, and functions of temporal (dynamic) networks — extending
-        <a href="https://networkx.org">NetworkX</a> to graphs that change over time.
+        the structure and dynamics of temporal graphs — extending
+        <a href="https://networkx.org">NetworkX</a>
+        with support for time-varying relational data.
       </p>
 
       <div class="install-block">
-        <p class="label">Install from PyPI:</p>
+        <p class="label">Install from <a href="https://pypi.org/project/networkx-temporal/">PyPI</a>:</p>
         <code class="install">pip install networkx-temporal</code>
       </div>
 
@@ -180,13 +184,13 @@
 
       <ul class="feature-list">
         <li><code><a href="https://networkx-temporal.readthedocs.io/en/stable/api/classes.html#networkx_temporal.classes.TemporalGraph">TemporalGraph</a></code> classes that inherit NetworkX static graph classes</li>
-        <li>Slice temporal data into snapshots by time, quantile, or rank</li>
-        <li>Algorithms for temporal networks, compatible with NetworkX functions</li>
+        <li>Easy slicing of temporal data into snapshots by time, quantile, or rank</li>
+        <li>Conversion between static, snapshot, event, and unrolled representations</li>
+        <li>Algorithms for temporal networks, plus static NetworkX algorithms per snapshot</li>
         <li>Community detection: spectral clustering and multislice Leiden optimization</li>
-        <li>CPU and GPU (CuPy/CUDA) backends, switchable via environment variable</li>
+        <li>CPU and GPU (CuPy/RAPIDS) backends, switchable via environment variable</li>
         <li>Dataset loaders and generators, including dynamic stochastic block models</li>
-        <li>Convert graphs between static, snapshot, event, and unrolled representations</li>
-        <li>Interoperates with igraph, graph-tool, PyTorch Geometric, DGL, <a href="https://networkx-temporal.readthedocs.io/en/stable/#convert-and-transform-graphs">and more</a></li>
+        <li>Interoperability with igraph, graph-tool, PyTorch Geometric, DGL, <a href="https://networkx-temporal.readthedocs.io/en/stable/#convert-and-transform-graphs">and more</a></li>
         <li>Open source <a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/LICENSE.md">3-clause BSD license</a></li>
         <li>Extensive documentation and examples, plus additional benefits from Python: fast prototyping, cross-platform, and easy to teach and debug</li>
       </ul>
