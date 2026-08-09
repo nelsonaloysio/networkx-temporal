@@ -49,8 +49,8 @@ GPU-accelerated algorithms may require the installation of the following librari
    conda install -c conda-forge -c rapidsai -c nvidia cupy cuml cugraph nx-cugraph pylibcugraph
 
 Once installed, GPU acceleration in NetworkX-Temporal may be enabled by passing the parameter
-``device="gpu"`` in the relevant functions; or by setting ``NX_GPU_AUTOCONFIG=1`` in the
-environment, allowing zero-code configuration and automatic detection of GPU availability.
+``device='gpu'`` in the relevant functions; or by setting ``NX_GPU_AUTOCONFIG=1`` in the
+environment, allowing zero-code configuration and automatic switch to GPU device when supported.
 To verify it:
 
 .. code-block:: python
