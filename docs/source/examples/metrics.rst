@@ -689,10 +689,15 @@ with few edges persisting for more than a couple of weeks. The edge set similari
 also reflects this trend, with most intervals sharing few edges in common, except for
 those closer in time.
 
-This initial exploration offers initial insight into the temporal dimension of the data.
-Among others, next steps may seek to explore specific intervals of interest, different
-aggregation strategies, and node-and community-level metrics.
+This initial exploration offers insight into the temporal dimension of the data.
+Next steps may seek to explore specific intervals of interest, different
+aggregation strategies, and the application of other graph metrics and algorithms to better
+understand the evolution of the network over time.
 
+.. seealso::
+
+   The `Community detection <community.html>`__ section for examples on dynamic community
+   detection algorithms.
 
 -----
 

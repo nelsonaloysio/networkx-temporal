@@ -39,7 +39,7 @@ GPU-accelerated algorithms may require the installation of the following librari
 
 .. code-block:: bash
 
-   # Parallelized multislice Leiden via CuPy (NVIDIA GPUs)...
+   # Parallelized multislice Leiden via CuPy on NVIDIA GPUs (CUDA)...
    conda install -c conda-forge cupy
 
    # ...or on AMD GPUs (ROCm, experimental; separate build)
@@ -347,7 +347,7 @@ Let's visualize the results of Leiden optimizing static
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_39_0.png
 
 On this synthetic SBM instance, the predicted communities differ among implementations under a fixed
-budget of `max_iter=100` optimization passes, with the GPU implementation yielding a more accurate
+budget of ``max_iter=100`` optimization passes, with the GPU implementation yielding a more accurate
 partitioning. Note that the :func:`~networkx_temporal.generators.example_sbm_graph` is generated
 with a dynamic SBM model, in which the community assignments of nodes may change over time, and the
 ground truths here consider the node assignments at the last time step. For dynamic community
@@ -493,6 +493,11 @@ do not inflate node degrees, yielding a more consistent node partitioning across
 This example highlights the advantages of temporal graph optimization over static supra-graph
 surrogates, which offer a faster but less accurate alternative over methods such as spectral
 or multislice modularity optimization for dynamic community detection in larger networks.
+
+.. seealso::
+
+   The :mod:`~networkx_temporal.algorithms` module for more details on the available algorithms
+   and their parameters.
 
 -----
 

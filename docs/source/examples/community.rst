@@ -329,6 +329,11 @@ This illustrates how algorithms that consider both mixed and dynamic community a
 more fitting choices to graphs in which nodes are not restricted to a single community,
 including greedy optimization approaches, such as those using modularity as a quality function.
 
+.. seealso::
+
+   The `GPU acceleration <gpu.html>`__ section for more community detection examples, including
+   spectral clustering, modularity optimization, and GPU-accelerated algorithm implementations.
+
 -----
 
 .. rubric:: References

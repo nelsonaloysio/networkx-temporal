@@ -21,17 +21,18 @@ def leiden_communities(
     device: Optional[Literal["cpu", "gpu"]] = None,
     **kwargs,
 ) -> Union[dict, List[dict]]:
-    """ Returns the Leiden partition of a graph.
+    """ Returns the Leiden partition of a graph. High-level function that dispatches to CPU or GPU
+    backends based on the input ``graph`` type (static/temporal) and passed ``device`` parameter.
 
-    If ``graph`` is a :class:`~networkx_temporal.classes.TemporalGraph`, optimize (temporal)
-    :func:`~networkx_temporal.algorithms.modularity_multislice` on
-    the temporal graph using the specified device. If ``graph`` is a static graph, optimize
-    (static) :func:`~networkx_temporal.algorithms.modularity`.
+    If ``graph`` is a :class:`~networkx_temporal.classes.TemporalGraph`, optimizes
+    :func:`~networkx_temporal.algorithms.modularity_multislice` on the temporal graph on the
+    ``'cpu'`` or ``'gpu'`` device. If ``graph`` is a static graph, optimizes
+    (static) :func:`~networkx_temporal.algorithms.modularity` instead.
 
     The GPU-based Leiden optimization of multislice modularity is parallelized and uses sparse
     `CuPy <https://cupy.dev/>`__ as a backend on single devices (AMD/NVIDIA). The
     `leidenalg <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__
-    backend is used on CPU instead, and is preferrable For accuracy-sensitive tasks at the cost of
+    backend is used on CPU instead, and is preferrable for accuracy-sensitive tasks at the cost of
     longer runtimes.
 
     .. hint::

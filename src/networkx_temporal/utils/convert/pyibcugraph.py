@@ -37,7 +37,7 @@ def to_pylibcugraph(
             "nx-cugraph is required to convert NetworkX graphs to cuGraph. "
             "Please install it via " \
             "`conda install -c rapidsai -c nvidia -c conda-forge "
-            "cugraph pylibcugraph nx-cugraph`."
+            "cugraph nx-cugraph pylibcugraph`."
         ) from exc
 
     if not (is_temporal_graph(graph) or is_static_graph(graph)):

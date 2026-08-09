@@ -10,7 +10,7 @@
 
 .. toctree::
    :hidden:
-   :caption: Package reference
+   :caption: API reference
    :glob:
 
    api/api
@@ -273,7 +273,7 @@ Links
 
 For more information on using this package, please refer to the following sections:
 
-- `Package reference <api/api.html>`__ for details on the classes and functions implemented by each module.
+- `API reference <api/api.html>`__ for details on the classes and functions implemented by each module.
 
 - `Examples <examples/basics.html>`__ covering some of its main functionalities and most common use cases.
 

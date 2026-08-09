@@ -4,6 +4,6 @@
 
 ..    <style>
 ..    h1 a.reference.internal:after {
-..        content: ' — Package reference';
+..        content: ' — API reference';
 ..    }
 ..    </style>
