@@ -12,6 +12,7 @@
 ## \[1.4.4\] - 09-08-2026
 
 ### Added
+- Argument `offsets` to `leiden_multislice_gpu` to support passing supra-adjacency matrices.
 - Environment variable `NX_GPU_AUTOCONFIG` to enable GPU acceleration on supported algorithms.
 
 ### Changed
