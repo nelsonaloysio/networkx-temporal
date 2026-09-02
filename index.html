@@ -21,6 +21,32 @@
     --code-bg: #f6f7f8;
     --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, "Times New Roman", serif;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+
+  /* Dark palette: system setting, unless light was explicitly chosen. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --blue: #6cb0e6;
+      --link: #b4b4b4;
+      --ink: #eeeeee;
+      --muted: #989898;
+      --line: #33373a;
+      --bg: #16181a;
+      --code-bg: #202427;
+      color-scheme: dark;
+    }
+  }
+  /* Dark palette: explicit choice, set by the toggle. */
+  :root[data-theme="dark"] {
+    --blue: #6cb0e6;
+    --link: #b4b4b4;
+    --ink: #eeeeee;
+    --muted: #989898;
+    --line: #33373a;
+    --bg: #16181a;
+    --code-bg: #202427;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -68,6 +94,19 @@
   }
   .search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 119, 180, 0.2); }
 
+  .theme button {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--serif); font-size: 0.92rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--line); border-radius: 4px;
+    background: var(--bg); color: var(--link); cursor: pointer;
+  }
+  .theme button:hover { color: var(--blue); border-color: var(--blue); }
+  .theme svg { width: 15px; height: 15px; flex: none; }
+  .theme .icon-moon { display: none; }
+  :root[data-theme="dark"] .theme .icon-sun { display: none; }
+  :root[data-theme="dark"] .theme .icon-moon { display: inline; }
+
   /* Main */
   .main .brand img { max-width: 400px; width: 100%; height: auto; display: block; margin-bottom: 1.25rem; }
   .lead {
@@ -81,7 +120,7 @@
     font-family: var(--mono); font-size: 0.9rem;
     background: var(--code-bg); border: 1px solid var(--line);
     border-left: 3px solid var(--blue);
-    border-radius: 4px; padding: 0.6rem 0.9rem; display: inline-block; user-select: all; color: #333;
+    border-radius: 4px; padding: 0.6rem 0.9rem; display: inline-block; user-select: all; color: var(--ink);
   }
   .install::before { content: "$ "; color: var(--muted); }
 
@@ -108,6 +147,15 @@
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
+<script>
+  /* Runs before first paint so the page never flashes the wrong theme. */
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (e) { }
+    document.documentElement.dataset.theme =
+      stored || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  })();
+</script>
 </head>
 <body>
   <div class="wrap">
@@ -162,6 +210,21 @@
         <input type="hidden" name="area" value="default">
         <input type="search" name="q" placeholder="Search docs" aria-label="Search the documentation">
       </form>
+
+      <div class="group theme">
+        <button type="button" id="theme-toggle" aria-label="Switch to dark theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5"/>
+            <path d="M12 1.5v3M12 19.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1.5 12h3M19.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>
+          </svg>
+          <span class="theme-label">Dark</span>
+        </button>
+      </div>
     </aside>
 
     <main class="main">
@@ -201,5 +264,36 @@
   <footer>
     <p>&copy;2024-2026, NetworkX-Temporal developers.</p>
   </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var button = document.getElementById('theme-toggle');
+      var label = button.querySelector('.theme-label');
+      var system = matchMedia('(prefers-color-scheme: dark)');
+
+      function apply(theme) {
+        root.dataset.theme = theme;
+        var next = theme === 'dark' ? 'light' : 'dark';
+        label.textContent = next === 'dark' ? 'Dark' : 'Light';
+        button.setAttribute('aria-label', 'Switch to ' + next + ' theme');
+      }
+
+      apply(root.dataset.theme);
+
+      button.addEventListener('click', function () {
+        var theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        apply(theme);
+        try { localStorage.setItem('theme', theme); } catch (e) { }
+      });
+
+      /* Follow live OS changes until the visitor picks a theme of their own. */
+      system.addEventListener('change', function (event) {
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (e) { }
+        if (!stored) apply(event.matches ? 'dark' : 'light');
+      });
+    })();
+  </script>
 </body>
 </html>
