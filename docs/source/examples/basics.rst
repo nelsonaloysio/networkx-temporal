@@ -70,24 +70,24 @@ Static graphs from NetworkX can be converted into temporal graphs with
    >>> G = nx.DiGraph()
    >>>
    >>> G.add_nodes_from([
-   >>>     ("a", {"time": 0}),
-   >>>     ("b", {"time": 0}),
-   >>>     ("c", {"time": 1}),
-   >>>     ("d", {"time": 2}),
-   >>>     ("e", {"time": 3}),
-   >>>     ("f", {"time": 3}),
-   >>> ])
+   ...     ("a", {"time": 0}),
+   ...     ("b", {"time": 0}),
+   ...     ("c", {"time": 1}),
+   ...     ("d", {"time": 2}),
+   ...     ("e", {"time": 3}),
+   ...     ("f", {"time": 3}),
+   ... ])
    >>>
    >>> G.add_edges_from([
-   >>>     ("a", "b", {"time": 0}),
-   >>>     ("c", "b", {"time": 1}),
-   >>>     ("d", "c", {"time": 2}),
-   >>>     ("d", "e", {"time": 2}),
-   >>>     ("a", "c", {"time": 2}),
-   >>>     ("f", "e", {"time": 3}),
-   >>>     ("f", "a", {"time": 3}),
-   >>>     ("f", "b", {"time": 3}),
-   >>> ])
+   ...     ("a", "b", {"time": 0}),
+   ...     ("c", "b", {"time": 1}),
+   ...     ("d", "c", {"time": 2}),
+   ...     ("d", "e", {"time": 2}),
+   ...     ("a", "c", {"time": 2}),
+   ...     ("f", "e", {"time": 3}),
+   ...     ("f", "a", {"time": 3}),
+   ...     ("f", "b", {"time": 3}),
+   ... ])
    >>>
    >>> TG = tx.from_static(G)
    >>> print(TG)
@@ -101,8 +101,8 @@ Let's :func:`~networkx_temporal.drawing.draw` the static graph:
 .. code-block:: python
 
    >>> tx.draw(TG, layout="kamada_kawai",
-   >>>         labels=True, edge_labels="time",
-   >>>         suptitle="Temporal Graph")
+   ...         labels=True, edge_labels="time",
+   ...         suptitle="Temporal Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_8_0.png
    :align: center
@@ -311,7 +311,7 @@ are here highlighted in green:
    >>> TG = TG.slice(attr="time")
    >>>
    >>> tx.draw(TG, figsize=(8,2), layout="kamada_kawai",
-   >>>         labels=True, suptitle="Original Temporal Graph")
+   ...         labels=True, suptitle="Original Temporal Graph")
 
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_31_0.png
@@ -324,17 +324,17 @@ are here highlighted in green:
    >>> TG_prop = tx.propagate_snapshots(TG, method="ffill")
    >>>
    >>> temporal_node_color = [
-   >>>     ["green" if TG_prop.index_node(n)[0] == t else "tab:red"
-   >>>      for n in G.nodes()] for t, G in enumerate(TG_prop)]
+   ...     ["green" if TG_prop.index_node(n)[0] == t else "tab:red"
+   ...      for n in G.nodes()] for t, G in enumerate(TG_prop)]
    >>>
    >>> temporal_edge_color = [
-   >>>     ["tab:green" if TG_prop.index_edge((n1, n2))[0] == t else "black"
-   >>>      for n1, n2 in G.edges()] for t, G in enumerate(TG_prop)]
+   ...     ["tab:green" if TG_prop.index_edge((n1, n2))[0] == t else "black"
+   ...      for n1, n2 in G.edges()] for t, G in enumerate(TG_prop)]
    >>>
    >>> tx.draw(TG_prop, figsize=(8, 2), layout="kamada_kawai",
-   >>>         labels=True, suptitle="Propagated Temporal Graph (ffill)",
-   >>>         temporal_node_color=temporal_node_color,
-   >>>         temporal_edge_color=temporal_edge_color)
+   ...         labels=True, suptitle="Propagated Temporal Graph (ffill)",
+   ...         temporal_node_color=temporal_node_color,
+   ...         temporal_edge_color=temporal_edge_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_32_0.png
    :align: center

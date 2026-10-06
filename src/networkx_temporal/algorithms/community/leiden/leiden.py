@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 
-from .multislice_gpu import leiden_multislice_gpu
+from .multislice import leiden_multislice
 from ...gpu import NX_GPU_AUTOCONFIG, NX_CUGRAPH_AUTOCONFIG
 from ....classes.functions import is_static_graph, is_temporal_graph
 from ....typing import TemporalGraph, StaticGraph, Literal
@@ -74,7 +74,7 @@ def leiden_communities(
         - ``device='gpu'``: cuGraph's
           `leiden <https://docs.rapids.ai/api/libcugraph/stable/api.html#leiden>`__
           (NVIDIA) for static graphs and
-          :func:`~networkx_temporal.algorithms.leiden_multislice_gpu`
+          :func:`~networkx_temporal.algorithms.leiden_multislice`
           using CuPy (AMD/NVIDIA) for temporal graphs.
           A backend may be enforced by passing the appropriate graph.
     """
@@ -83,7 +83,7 @@ def leiden_communities(
 
     if device == "cpu":
         fnc = _leiden_cpu
-        if is_temporal_graph(graph):
+        if is_temporal_graph(graph) or type(graph) == list:
             # Multislice modularity optimization with igraph/leidenalg backend.
             kwargs.update({
                 "weights": weight,
@@ -107,7 +107,7 @@ def leiden_communities(
     elif device == "gpu":
         if is_temporal_graph(graph):
             # Parallelized multislice modularity optimization with cupy backend.
-            fnc = leiden_multislice_gpu
+            fnc = leiden_multislice
             kwargs.update({
                 "gamma": gamma,
                 "weight": weight,
@@ -159,12 +159,14 @@ def _leiden_cpu(
             "Please install it via `pip install leidenalg`."
         ) from e
 
+    iG = graph  # Assume the input graph is already an igraph object.
     if is_static_graph(graph):
         iG = to_igraph(graph)
-        fnc = la.find_partition
-    else:
+    elif is_temporal_graph(graph):
         iG = [to_igraph(g) for g in graph]
-        fnc = la.find_partition_temporal
+
+    # Select function based on whether input is a single graph or a sequence of graphs.
+    fnc = la.find_partition_temporal if type(iG) == list else la.find_partition
 
     # Optimizer function; defaults to ModularityVertexPartition if unset.
     opt = kwargs.pop("partition_type", la.ModularityVertexPartition)
@@ -191,7 +193,7 @@ def _leiden_cpu(
     # Run the Leiden algorithm with the selected optimizer and filtered kwargs.
     partition = fnc(iG, opt, **{**fnc_kwargs, **opt_kwargs})
 
-    if is_static_graph(graph):
+    if fnc == la.find_partition:
         membership = partition.membership
     else:
         membership, _ = partition

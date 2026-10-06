@@ -15,7 +15,7 @@ Community detection
 
 
 Community detection is a fundamental task in network analysis. This simple example demonstrates how
-a network's temporal dynamics can overall benefit the detection of its mesoscale structures.
+a network's temporal dynamics can benefit the detection of its mesoscale structures.
 
 
 Generate graph
@@ -34,9 +34,9 @@ nodes each continuously mix over time (decreasing assortativity):
    >>> TG = tx.temporal_graph()
    >>>
    >>> for r in [0, .125, .25, .375]:
-   >>>     p = tx.generate_block_matrix(k=5, p=.9-r, q=.1+r)
-   >>>     G = nx.stochastic_block_model(p=p, sizes=[5]*5, seed=10)
-   >>>     TG.add_snapshot(tx.to_multigraph(G))
+   ...     p = tx.generate_block_matrix(k=5, p=.9-r, q=.1+r)
+   ...     G = nx.stochastic_block_model(p=p, sizes=[5]*5, seed=10)
+   ...     TG.add_snapshot(tx.to_multigraph(G))
    >>>
    >>> print(TG)
 
@@ -66,8 +66,8 @@ Let's plot the graphs, with colors representing communities and within-community
    >>>
    >>> # Plot snapshots with community ground truths.
    >>> tx.draw(TG, pos=pos, figsize=(12, 3.5), node_size=300,
-   >>>         node_color=node_color, edge_color=(0, 0, 0, .3),
-   >>>         suptitle="Ground truths")
+   ...         node_color=node_color, edge_color=(0, 0, 0, .3),
+   ...         suptitle="Ground truths")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_6_0.png
    :align: center
@@ -87,18 +87,18 @@ Modularity optimization
 =======================
 
 The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
-for community detection that may be applied on snapshot-based temporal graphs, allowing to better
-capture their underlying structure.
+for community detection that may be applied on snapshot-based temporal graphs, allowing to
+capture their underlying, evolving structure.
 
 .. attention ::
 
    Optimization algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
-   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ [2]_ for a discussion.
+   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ and [2]_ for a discussion.
 
 
-Optimizating static modularity
-------------------------------
+Optimizing static modularity
+----------------------------
 
 Let's start by considering the network as a single static graph, ignoring its temporal information.
 
@@ -114,9 +114,9 @@ fails to retrieve the true communities (ground truths) in the network:
    >>> node_color = [colors[x % len(colors)] for x in assignments]
    >>>
    >>> tx.draw(G, pos=pos, figsize=(4,4), node_size=300,
-   >>>         node_color=node_color, edge_color=get_edge_color(G.edges(), node_color),
-   >>>         connectionstyle="arc3,rad=0.1",
-   >>>         suptitle="Modularity optimization on static graph")
+   ...         node_color=node_color, edge_color=get_edge_color(G.edges(), node_color),
+   ...         connectionstyle="arc3,rad=0.1",
+   ...         suptitle="Modularity optimization on static graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_10_0.png
    :align: center
@@ -130,24 +130,23 @@ clusters only on the first graph (:math:`t=0`). In addition, community indices (
 colors) are not fixed over snapshots, which makes it harder to track their mesoscale dynamics:
 
 .. code-block:: python
-
-   >>> snapshot_assignments = [
-   >>>     tx.leiden_communities(G, max_iter=-1, seed=0) for G in TG
-   >>> ]
+   ...     snapshot_assignments = [
+   ...     tx.leiden_communities(G, max_iter=-1, seed=0) for G in TG
+   ... ]
    >>>
    >>> temporal_node_color = [
-   >>>     [colors[m] for m in snapshot_assignments[t]]
-   >>>     for t in range(len(TG))
-   >>> ]
+   ...     [colors[m] for m in snapshot_assignments[t]]
+   ...     for t in range(len(TG))
+   ... ]
    >>>
    >>> tx.draw(TG, pos=pos, figsize=(12, 3.5), node_size=300,
-   >>>         temporal_node_color=temporal_node_color,
-   >>>         temporal_edge_color=[
-   >>>              get_edge_color(G.edges(), temporal_node_color[t])
-   >>>              for t, G in enumerate(TG)
-   >>>          ],
-   >>>          connectionstyle="arc3,rad=0.1",
-   >>>          suptitle="Modularity optimization on graph snapshots")
+   ...         temporal_node_color=temporal_node_color,
+   ...         temporal_edge_color=[
+   ...              get_edge_color(G.edges(), temporal_node_color[t])
+   ...              for t, G in enumerate(TG)
+   ...          ],
+   ...          connectionstyle="arc3,rad=0.1",
+   ...          suptitle="Modularity optimization on graph snapshots")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_12_0.png
    :align: center
@@ -155,8 +154,9 @@ colors) are not fixed over snapshots, which makes it harder to track their mesos
 |
 
 This is partly due to modularity optimization expecting an assortative community structure, while
-the network grew more disassortative over time. Not only the results of later snapshots are here
-suboptimal, but the varying community indices increase the complexity of their temporal analysis.
+the network grew less assortative over time.
+Not only are the results for later snapshots suboptimal, but
+the varying community indices increase the complexity of their temporal analysis.
 
 
 Optimizing multislice modularity
@@ -169,21 +169,21 @@ their mesoscale structures [3]_. This example uses the same algorithm as before:
 
 .. code-block:: python
 
-   >>> multislice_assignments = tx.leiden_temporal_partition(TG, n_iterations=-1, seed=0)
+   >>> multislice_assignments = tx.leiden_communities(TG, max_iter=-1, seed=0)
    >>>
    >>> temporal_node_color = [
-   >>>     [colors[m] for m in multislice_assignments[t]]
-   >>>     for t in range(len(TG))
-   >>> ]
+   ...     [colors[m] for m in multislice_assignments[t]]
+   ...     for t in range(len(TG))
+   ... ]
    >>>
    >>> tx.draw(TG, pos=pos, figsize=(12, 3.5), node_size=300,
-   >>>         temporal_node_color=temporal_node_color,
-   >>>         temporal_edge_color=[
-   >>>             get_edge_color(G.edges(), temporal_node_color[t])
-   >>>             for t, G in enumerate(TG)
-   >>>         ],
-   >>>         connectionstyle="arc3,rad=0.1",
-   >>>         suptitle="Modularity optimization on multislice graph")
+   ...         temporal_node_color=temporal_node_color,
+   ...         temporal_edge_color=[
+   ...             get_edge_color(G.edges(), temporal_node_color[t])
+   ...             for t, G in enumerate(TG)
+   ...         ],
+   ...         connectionstyle="arc3,rad=0.1",
+   ...         suptitle="Modularity optimization on multislice graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_14_0.png
    :align: center
@@ -222,10 +222,12 @@ ground truths. This illustrates how modularity optimization may yield misleading
 assumptions of the quality function are not met by the network structure, as in this case.
 
 The same observation can be made for conductance [4]_, where lower values correspond to more
-tight-knit communities, with comparatively fewer connections to the rest of the network:
+tightly knit communities, with comparatively fewer connections to the rest of the network:
 
 .. code-block:: python
 
+   >>> optimization = ("Static", "Snapshot", "Multislice")
+   >>>
    >>> for m, assignments in zip(optimization, partitions):
    >>>    conductance = tx.conductance(TG, assignments)
    >>>    mean = sum(conductance) / len(conductance)
@@ -237,21 +239,21 @@ tight-knit communities, with comparatively fewer connections to the rest of the 
    Multislice: C = [0.344, 0.532, 0.71, 0.78] (mean: 0.591)
 
 We see how the assumption that communities are assortative structures leads to suboptimal results
-as it is not shared by this network, which  becomes increasingly disassortative over time.
+as it is not shared by this network, which becomes decreasingly assortative over time.
 
 
 Time-aware quality functions
 ----------------------------
 
-The :func:`~networkx_temporal.algorithms.multislice_modularity` extension of the static metric
+The :func:`~networkx_temporal.algorithms.modularity_multislice` extension of the static metric
 introduces [3]_ interslice edges connecting temporal node copies, with the goal of better capturing
 the quality of temporal community structures. We can compute the multislice modularity :math:`Q_{ms}`
 for all partitionings:
 
 .. code-block:: python
 
-   >>> Q_ms = tx.multislice_modularity(TG, multislice_assignments, interslice_weight=1)
-   >>> print(f"{m}: Q_ms = {Q_ms:.3f}")
+   >>> Q_ms = tx.modularity_multislice(TG, multislice_assignments, interslice_weight=1)
+   >>> print(f"Multislice: Q_ms = {Q_ms:.3f}")
 
    Multislice: Q_ms = 0.212
 
@@ -271,9 +273,9 @@ node :math:`d`:
 
    >>> TG = tx.TemporalGraph()
    >>> TG.add_edges_from([
-   >>>     ("a", "b"), ("b", "c"), ('c', "a"), ("d", "a"),
-   >>>     ("e", "f"), ("f", "g"), ("g", "e"), ("d", "e"),
-   >>> ])
+   ...     ("a", "b"), ("b", "c"), ('c', "a"), ("d", "a"),
+   ...     ("e", "f"), ("f", "g"), ("g", "e"), ("d", "e"),
+   ... ])
    >>> tx.draw(TG, layout="spring", node_color=list("rrr0ggg"))
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_22_0.png
@@ -302,13 +304,13 @@ If considered to be in either one of the communities, it yields a slightly highe
 
 The :func:`~networkx_temporal.algorithms.modularity_spectral` function implements support for
 sparse adjacency matrices and mixed-memberships, where nodes may belong to multiple clusters with
-different weights. For example, a high increase in modularity is achieved by considering node :math:`d`
+different weights. For example, an increase in modularity is achieved by considering node :math:`d`
 in both communities :math:`[0, 1]`:
 
 .. code-block:: python
 
    >>> community_matrix = tx.community_matrix_from_vector(community_vector)
-   >>> community_matrix[3] = [0.5, 0.5]  # Assign node 'd' to both communities 1 and 2.
+   >>> community_matrix[3] = [0.5, 0.5]  # Assign node 'd' to both communities.
    >>> community_matrix
 
    array([[1. , 0. ],

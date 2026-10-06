@@ -345,22 +345,22 @@ Let's draw the resulting graph to visualize the node copies (in black) and edge 
 
    >>> def draw_unrolled(UTG, **kwargs):
    >>>     return tx.draw(
-   >>>         UTG,
-   >>>         layout=tx.unrolled_layout,
-   >>>         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
-   >>>         font_size=10,
-   >>>         arrowsize=15,
-   >>>         **kwargs,
-   >>>     )
+   ...         UTG,
+   ...         layout=tx.unrolled_layout,
+   ...         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
+   ...         font_size=10,
+   ...         arrowsize=15,
+   ...         **kwargs,
+   ...     )
    >>>
    >>> node_color = [
-   >>>     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
-   >>>     for n in UTG.nodes()]
+   ...     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
+   ...     for n in UTG.nodes()]
    >>>
    >>> draw_unrolled(UTG,
-   >>>               node_color=node_color,
-   >>>               connectionstyle="arc3,rad=0.25",
-   >>>               title="Unrolled Temporal Graph")
+   ...               node_color=node_color,
+   ...               connectionstyle="arc3,rad=0.25",
+   ...               title="Unrolled Temporal Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_39_0.png
    :align: center

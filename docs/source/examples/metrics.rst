@@ -365,9 +365,9 @@ respectively:
    >>> G.add_edge(0, 0)  # Edge self-loop.
    >>>
    >>> print(f"Default: {tx.degree_centralization(G)}\n"
-   >>>       f"With isolates: {tx.degree_centralization(G, isolates=True):.3f}\n"
-   >>>       f"With self-loops: {tx.degree_centralization(G, self_loops=True):.3f}\n"
-   >>>       f"With both: {tx.degree_centralization(G, isolates=True, self_loops=True):.3f}")
+   ...       f"With isolates: {tx.degree_centralization(G, isolates=True):.3f}\n"
+   ...       f"With self-loops: {tx.degree_centralization(G, self_loops=True):.3f}\n"
+   ...       f"With both: {tx.degree_centralization(G, isolates=True, self_loops=True):.3f}")
 
    Default: 1.0
    With isolates: 0.909
@@ -455,9 +455,9 @@ Let's identify the weeks with the maximum number of nodes and edges:
    >>> t_max_size = TG.size().index(max(TG.size()))
    >>>
    >>> print(f"Max nodes at t={t_max_order} "
-             f"({TG.index[t_max_order]}): V={TG[t_max_order].order()} nodes")
+   ...       f"({TG.index[t_max_order]}): V={TG[t_max_order].order()} nodes")
    >>> print(f"Max edges at t={t_max_size} "
-             f"({TG.index[t_max_size]}): E={TG[t_max_size].size()} edges")
+   ...       f"({TG.index[t_max_size]}): E={TG[t_max_size].size()} edges")
 
    Max nodes at t=6 (2004, Week 21): V=904 nodes
    Max edges at t=3 (2004, Week 18): E=10194 edges
@@ -476,13 +476,13 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> G = TG.to_static()
    >>>
    >>> fig, ax = plt.subplot_mosaic([["Left", "TopRight"],["Left", "BottomRight"]],
-   >>>                               constrained_layout=True, figsize=(8, 4), sharex=True,
-   >>>                               gridspec_kw={"width_ratios": [3, 1]})
+   ...                               constrained_layout=True, figsize=(8, 4), sharex=True,
+   ...                               gridspec_kw={"width_ratios": [3, 1]})
    >>>
    >>> def deg_plot(df, ax, color="#555", title=None, xlabel=None, ylabel=None):
    >>>    # Plot degree distribution as a line plot with log-scaled x-axis.
    >>>    df.value_counts().sort_index().plot.line(
-   >>>       ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
+   ...       ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
    >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major")
    >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which="minor")
    >>>    ax.set_title(title, fontsize=10)
@@ -513,7 +513,7 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> bins = [0, 10, 50, 100, 500, 1000, 2000]
    >>>
    >>> hist_plot(deg, bins, ax["Left"].inset_axes([0.67, 0.59, 0.3, 0.32]),
-   >>>          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
+   ...          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
    >>> hist_plot(deg_in, bins, ax["TopRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#333")
    >>> hist_plot(deg_out, bins, ax["BottomRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#777")
    >>>
@@ -583,10 +583,10 @@ Let's plot this information over time to better understand the students' activit
    >>>                    .strftime("Week %W\n(%b %d, %Y)")
    >>>
    >>> fig, axs = plt.subplots(figsize=(6, 6), nrows=3, ncols=1,
-   >>>                         constrained_layout=True, sharex=True)
+   ...                         constrained_layout=True, sharex=True)
    >>>
    >>> plt.suptitle("CollegMsg graph (%s weeks, %s nodes, %s edges)" %
-   >>>              (len(TG), TG.order(copies=False), TG.size(copies=True)))
+   ...              (len(TG), TG.order(copies=False), TG.size(copies=True)))
    >>>
    >>> df[["nodes", "edges"]].plot(ax=axs[0], color=["#1f77b4cc", "#ff7f0ecc"])
    >>> df[["deg_in_max", "deg_out_max"]].plot(ax=axs[1], color=["#2ca02ccc", "#d62728cc"])
