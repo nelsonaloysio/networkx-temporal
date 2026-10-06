@@ -1,3 +1,4 @@
+import logging as log
 from typing import List, Optional, Union
 
 from ....classes.types import is_static_graph, is_temporal_graph
@@ -191,6 +192,7 @@ def leiden_multislice_gpu(
     comm = cp.arange(n_nodes, dtype=cp.int64)     # Community of each super-node.
 
     for _iter in range(max_iter):
+        log.info(f"Leiden multislice iteration {_iter + 1}/{max_iter}...")
         n = adj.shape[0]
         diag = adj.diagonal()                     # Self-loop contributions.
 
@@ -248,6 +250,8 @@ def leiden_multislice_gpu(
                 converged = True
                 break
             comm[movers] = target[movers]
+        log.info(f"Leiden multislice iteration {_iter + 1}/{max_iter} local moving sweeps "
+                 f"{_move + 1}/{max_sweeps} done.")
 
         # Refinement phase, parallelized on the GPU.
         if refine:
@@ -330,6 +334,8 @@ def leiden_multislice_gpu(
         else:
             comm = relabel(comm, n)
             part = comm.copy()
+        log.info(f"Leiden multislice iteration {_iter + 1}/{max_iter} refinement sweeps "
+                 f"{_refine + 1}/{max_sweeps} done.")
 
         n_parts = int(part.max()) + 1
         if n_parts == n:
@@ -347,7 +353,10 @@ def leiden_multislice_gpu(
         D = volumes(part, n_parts)
         compose = part[compose]
         comm = relabel(seed_part, n)
+        log.info(f"Leiden multislice iteration {_iter + 1}/{max_iter} coarsening done: "
+                 f"{n_parts} super-nodes.")
 
+    log.info(f"Leiden multislice finished after {_iter + 1}/{max_iter} iterations.")
     labels = cp.asnumpy(relabel(comm[compose], comm.shape[0])).astype(int).tolist()
     return [labels[start:end] for start, end in zip(bounds, bounds[1:])]
 
