@@ -1,14 +1,17 @@
 from typing import List, Optional, Union
+import logging as log
+
+import numpy as np
 
 from ....classes.types import is_static_graph, is_temporal_graph
-from ....typing import StaticGraph, TemporalGraph
+from ....typing import StaticGraph, TemporalGraph, Literal
 from ....utils.graph import to_supra_adjacency_matrix
 
 _EPS = 1e-6
 _BUDGET = 1 << 22
 
 
-def leiden_multislice_gpu(
+def leiden_multislice(
     graph: Union[TemporalGraph, StaticGraph],
     offsets: Optional[List[int]] = None,
     gamma: float = 1.0,
@@ -18,21 +21,22 @@ def leiden_multislice_gpu(
     max_sweeps: int = 100,
     refine: bool = True,
     seed: Optional[int] = None,
+    device: Literal["gpu", "cpu"] = "gpu",
 ) -> List[List[int]]:
-    """ GPU-accelerated parallelized Leiden algorithm. Optimizes
+    """ Parallelized multislice Leiden algorithm. Optimizes
     :func:`~networkx_temporal.algorithms.modularity_multislice` if ``graph`` is a
     :class:`~networkx_temporal.classes.TemporalGraph` object, or
     :func:`~networkx_temporal.algorithms.modularity` if ``graph`` is a static NetworkX graph
     object instead.
 
-    Uses sparse `CuPy <https://cupy.dev/>`__ as a backend on single devices (AMD/NVIDIA).
-    For multi-GPU or distributed computing, consider using the
-    :func:`~networkx_temporal.algorithms.leiden_communities` function with ``device='gpu'``
-    set, which uses `cuGraph <https://docs.rapids.ai/api/libcugraph/stable/>`__ as a backend
-    (NVIDIA only), but optimizes global :func:`~networkx_temporal.algorithms.modularity` instead.
-
+    If ``device='gpu'``, uses sparse `CuPy <https://cupy.dev/>`__ as backend on single devices (AMD/NVIDIA).
     Note that support for AMD GPUs (ROCm) is **experimental** and requires a `separate CuPy build
     <../examples/gpu.html#accelerating-temporal-graph-algorithms>`__.
+
+    .. note::
+
+        Setting ``device='cpu'`` employs SciPy's sequential sparse product, yielding
+        slower performance compared to the GPU version, which employs synchronous sweeps.
 
     .. seealso::
 
@@ -59,16 +63,12 @@ def leiden_multislice_gpu(
         If ``False``, yields a Louvain-like algorithm that is slightly faster.
     :param seed: Random seed number for reproducibility. Note that parallelized GPU computations
         may not be fully deterministic across runs.
+    :param str device: Device to use for computation. Available choices:
+
+        - ``'cpu'``: Uses NumPy and SciPy sparse (default).
+        - ``'gpu'``: Uses CuPy and CuPy sparse.
     """
-    try:
-        import cupy as cp
-        import cupyx as cpx
-        import cupyx.scipy.sparse as csp
-    except ImportError as exc:
-        raise ImportError(
-            "GPU multislice Leiden requires cupy. Please install it via "
-            "`conda install -c conda-forge -c rapidsai -c nvidia cupy`."
-        ) from exc
+    cp, cpx, csp, to_host = _backend(device)
 
     if seed is not None:
         cp.random.seed(seed)
@@ -131,15 +131,17 @@ def leiden_multislice_gpu(
     # Build supra-adjacency matrix on device...
     adj = graph
     if is_static_graph(graph) or is_temporal_graph(graph):
+        log.debug("Building supra-adjacency matrix...")
         adj, offsets = to_supra_adjacency_matrix(
             graph,
             weight=weight,
             interslice_weight=interslice_weight,
             return_offsets=True,
-            device="gpu",
+            device=device,
         )
+        log.debug(f"Supra-adjacency matrix built: {adj.shape[0]} nodes, {adj.nnz} edges.")
 
-    # ...or assume graph is already a sparse CuPy matrix.
+    # ...or assume graph is already a sparse CuPy (GPU) or SciPy (CPU) CSR matrix.
     n_nodes = adj.shape[0]
     if offsets is None:
         offsets = [0]
@@ -191,6 +193,8 @@ def leiden_multislice_gpu(
     comm = cp.arange(n_nodes, dtype=cp.int64)     # Community of each super-node.
 
     for _iter in range(max_iter):
+        log.debug(f"Leiden multislice iteration {_iter + 1}/{max_iter}...")
+
         n = adj.shape[0]
         diag = adj.diagonal()                     # Self-loop contributions.
 
@@ -248,6 +252,8 @@ def leiden_multislice_gpu(
                 converged = True
                 break
             comm[movers] = target[movers]
+        log.debug(f"Leiden multislice iteration {_iter + 1}/{max_iter} local moving sweeps "
+                 f"{_move + 1}/{max_sweeps} done.")
 
         # Refinement phase, parallelized on the GPU.
         if refine:
@@ -330,6 +336,8 @@ def leiden_multislice_gpu(
         else:
             comm = relabel(comm, n)
             part = comm.copy()
+        log.debug(f"Leiden multislice iteration {_iter + 1}/{max_iter} refinement sweeps "
+                 f"{_refine + 1}/{max_sweeps} done.")
 
         n_parts = int(part.max()) + 1
         if n_parts == n:
@@ -347,8 +355,11 @@ def leiden_multislice_gpu(
         D = volumes(part, n_parts)
         compose = part[compose]
         comm = relabel(seed_part, n)
+        log.debug(f"Leiden multislice iteration {_iter + 1}/{max_iter} coarsening done: "
+                 f"{n_parts} super-nodes.")
 
-    labels = cp.asnumpy(relabel(comm[compose], comm.shape[0])).astype(int).tolist()
+    log.debug(f"Leiden multislice finished after {_iter + 1}/{max_iter} iterations.")
+    labels = to_host(relabel(comm[compose], comm.shape[0])).astype(int).tolist()
     return [labels[start:end] for start, end in zip(bounds, bounds[1:])]
 
 
@@ -373,7 +384,7 @@ def _csr_keys(M, n_cols, rows=None):
     an unsorted matrix yields wrong values rather than an error; ``rows`` may be
     passed pre-computed to share row expansion with other matrix per-row kernels.
     """
-    import cupy as cp
+    cp, _ = _module_of(M.data)
     if rows is None:
         rows = cp.repeat(cp.arange(M.shape[0], dtype=cp.int64),
                          cp.diff(M.indptr).astype(cp.int64))
@@ -382,7 +393,7 @@ def _csr_keys(M, n_cols, rows=None):
 
 def _gather(keys, data, query):
     """ ``M[row, col]`` for coordinate keys, zero where the entry is absent."""
-    import cupy as cp
+    cp, _ = _module_of(data)
     if keys.shape[0] == 0:
         return cp.zeros(query.shape[0], dtype=data.dtype)
     pos = cp.clip(cp.searchsorted(keys, query), 0, keys.shape[0] - 1)
@@ -403,8 +414,7 @@ def _row_dot(A, B, keys_B, rows_a, rows_b, n_cols, one_per_row=None):
     ``(diff(indptr) == 1).all()`` device sync; the ``None`` auto-detect is kept
     only as a fallback and short-circuits host-side on ``nnz != n_rows``.
     """
-    import cupy as cp
-    import cupyx as cpx
+    cp, cpx = _module_of(A.data)
     m = rows_a.shape[0]
     out = cp.zeros(m, dtype=cp.float64)
     if m == 0 or A.nnz == 0 or B.nnz == 0:
@@ -455,3 +465,67 @@ def _scale_cols(M, coef):
     out = M.copy()
     out.data = out.data * coef[M.indices]
     return out
+
+
+def _backend(device):
+    """ Resolves ``device`` into ``(cp, cpx, csp, to_host)``: the array module,
+    the scatter-reduction namespace, the sparse module and the device-to-host
+    copy. On ``'cpu'`` these are NumPy, :class:`_ScatterCPU`, ``scipy.sparse``
+    and ``np.asarray``, so the caller's code is unchanged across devices.
+    """
+    if device == "gpu":
+        try:
+            import cupy as cp
+            import cupyx as cpx
+            import cupyx.scipy.sparse as csp
+        except ImportError as exc:
+            raise ImportError(
+                "GPU multislice Leiden requires cupy. Please install it via "
+                "`conda install -c conda-forge -c rapidsai -c nvidia cupy`."
+            ) from exc
+        return cp, cpx, csp, cp.asnumpy
+    if device == "cpu":
+        import scipy.sparse as sp
+        return np, _ScatterCPU, sp, np.asarray
+    raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
+
+
+def _module_of(array):
+    """ ``(cp, cpx)`` pair matching the device ``array`` lives on, so the
+    module-level kernels follow their inputs instead of taking a device flag.
+    """
+    if isinstance(array, np.ndarray):
+        return np, _ScatterCPU
+    import cupy as cp
+    import cupyx as cpx
+    return cp, cpx
+
+
+class _ScatterCPU:
+    """ NumPy stand-ins for ``cupyx.scatter_add`` and ``cupyx.scatter_max``,
+    with the same in-place ``(out, index, values)`` signature.
+
+    Vectorized (``bincount`` and sort + ``reduceat``) rather than ``ufunc.at``,
+    so the CPU baseline is not penalized by a slow scatter. ``scatter_add``
+    accumulates in float64 before casting to ``out.dtype``, which is at least
+    as accurate as the GPU's native-dtype atomics; sums into float32 buffers
+    may therefore differ from the GPU in the last bits.
+    """
+    @staticmethod
+    def scatter_add(out, index, values):
+        if index.shape[0] == 0:
+            return
+        out += np.bincount(index, weights=values, minlength=out.shape[0])
+
+    @staticmethod
+    def scatter_max(out, index, values):
+        if index.shape[0] == 0:
+            return
+        # Segment maximum needs equal indices to be contiguous. SpGEMM triples
+        # arrive row-sorted, so the sort is skipped in the common case.
+        if not bool((index[1:] >= index[:-1]).all()):
+            order = np.argsort(index, kind="stable")
+            index, values = index[order], values[order]
+        starts = np.flatnonzero(np.concatenate(([True], index[1:] != index[:-1])))
+        heads = index[starts]
+        out[heads] = np.maximum(out[heads], np.maximum.reduceat(values, starts))

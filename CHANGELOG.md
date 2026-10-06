@@ -9,6 +9,25 @@
 ### Removed
 -->
 
+## Development
+
+## \[1.5.0\] - 31-10-2026
+
+### Added
+- Parallelized CPU implementation of `leiden_multislice` algorithm for temporal graphs.
+
+### Changed
+- Function `leiden_multislice_gpu` renamed to `leiden_multislice` for consistency with CPU implementation.
+
+### Deprecated
+- Function `leiden_multislice_gpu` deprecated in favor of `leiden_multislice`.
+
+## \[1.4.5\] - 07-10-2026
+
+### Fixed
+- Mixing pandas with turtles in `from_pandas` and `to_pandas` functions.
+
+
 ## \[1.4.4\] - 09-08-2026
 
 ### Added

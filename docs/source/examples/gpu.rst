@@ -105,16 +105,16 @@ Let's plot the ground truths and the detected clusters for each time step, so to
    >>>     y_true = tx.get_node_attributes(TG, "community", index=False)
    >>>     pos = tx.layout(TG, layout="kamada_kawai")
    >>>     temporal_node_color = [
-   >>>         [colors[m % len(colors)] for m in s]
-   >>>         for y in [y_true, y_pred]
-   >>>         for s in y
-   >>>     ]
+   ...         [colors[m % len(colors)] for m in s]
+   ...         for y in [y_true, y_pred]
+   ...         for s in y
+   ...     ]
    >>>     # Draw ground truths (top) and spectral clustering results (bottom).
    >>>     return tx.draw(
-   >>>         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
-   >>>         pos=[*pos, *pos], node_size=50, title=False,
-   >>>         suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
-   >>>         temporal_node_color=temporal_node_color)
+   ...         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
+   ...         pos=[*pos, *pos], node_size=50, title=False,
+   ...         suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
+   ...         temporal_node_color=temporal_node_color)
    >>>
    >>> plot_temporal_graph(TG, y_pred)
 
@@ -136,14 +136,14 @@ instance with all edges from all graph snapshots:
    >>>     y_true = tx.get_node_attributes(G, "community", index=False)
    >>>     pos = tx.layout(G, layout="kamada_kawai")
    >>>     node_color = [
-   >>>         [colors[m % len(colors)] for m in y]
-   >>>         for y in [y_true, y_pred]
-   >>>     ]
+   ...         [colors[m % len(colors)] for m in y]
+   ...         for y in [y_true, y_pred]
+   ...     ]
    >>>     # Draw ground truths (left) and spectral clustering results (right).
    >>>     return tx.draw(
-   >>>         [G, G], figsize=(6, 3), pos=pos, node_size=70,
-   >>>         title=["Ground Truths", "Clustering Results"],
-   >>>         temporal_node_color=node_color)
+   ...         [G, G], figsize=(6, 3), pos=pos, node_size=70,
+   ...         title=["Ground Truths", "Clustering Results"],
+   ...         temporal_node_color=node_color)
    >>>
    >>> plot_static_graph(G, y_pred)
 
@@ -308,7 +308,7 @@ for static and multislice modularity optimization.
    >>> y_cpu_TG = tx.leiden_communities(TG, device="cpu", max_iter=max_iter)
    >>> y_gpu_TG = tx.leiden_communities(TG, device="gpu", max_iter=max_iter)
    >>> y_gpu_TG_norefine = tx.leiden_communities(TG, device="gpu", max_iter=max_iter,
-   >>>                                           refine=False)
+   ...                                           refine=False)
    >>>
    >>> # Static modularity optimization.
    >>> y_cpu_G = tx.leiden_communities(G, device="cpu", max_iter=max_iter)
@@ -321,7 +321,7 @@ for static and multislice modularity optimization.
    >>> # Supra-graph (static) modularity optimization.
    >>> y_gpu_G_supra = tx.leiden_communities(G_supra, device="gpu", max_iter=max_iter)
    >>> y_gpu_G_supra = [y_gpu_G_supra[offsets[t]:offsets[t] + len(TG[t])]
-   >>>                  for t in range(len(TG))]
+   ...                  for t in range(len(TG))]
 
 
 
@@ -337,14 +337,14 @@ Let's visualize the results of Leiden optimizing static
    >>> pos = tx.layout(G, layout="kamada_kawai")
    >>>
    >>> node_color = [
-   >>>     [colors[m % len(colors)] for m in y]
-   >>>     for y in [y_true_G, y_cpu_G, y_gpu_G]
-   >>> ]
+   ...     [colors[m % len(colors)] for m in y]
+   ...     for y in [y_true_G, y_cpu_G, y_gpu_G]
+   ... ]
    >>>
    >>> tx.draw(
-   >>>     [G, G, G], figsize=(6, 2.5), pos=pos, node_size=50,
-   >>>     title=["CPU", "Ground Truth (Static)", "GPU"],
-   >>>     temporal_node_color=node_color)
+   ...     [G, G, G], figsize=(6, 2.5), pos=pos, node_size=50,
+   ...     title=["CPU", "Ground Truth (Static)", "GPU"],
+   ...     temporal_node_color=node_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_39_0.png
 
@@ -373,24 +373,24 @@ on the temporal graph:
    >>> pos = tx.layout(TG, layout="kamada_kawai")
    >>>
    >>> temporal_node_color = [
-   >>>     [colors[m % len(colors)] for m in s]
-   >>>     for y in [y_true_TG, y_cpu_TG, y_gpu_TG, y_gpu_TG_norefine, y_gpu_G_supra]
-   >>>     for s in y
-   >>> ]
+   ...     [colors[m % len(colors)] for m in s]
+   ...     for y in [y_true_TG, y_cpu_TG, y_gpu_TG, y_gpu_TG_norefine, y_gpu_G_supra]
+   ...     for s in y
+   ... ]
    >>>
    >>> title = [
-   >>>     "", "Ground Truths (Temporal)", "",
-   >>>     "", "CPU", "",
-   >>>     "", "GPU", "",
-   >>>     "", "GPU (No Refine)", "",
-   >>>     "", "GPU (Supra)", "",
-   >>> ]
+   ...     "", "Ground Truths (Temporal)", "",
+   ...     "", "CPU", "",
+   ...     "", "GPU", "",
+   ...     "", "GPU (No Refine)", "",
+   ...     "", "GPU (Supra)", "",
+   ... ]
    >>>
    >>> tx.draw(
-   >>>     [*TG, *TG, *TG, *TG, *TG], figsize=(6, 9.5), nrows=5, ncols=3,
-   >>>     pos=[*pos, *pos, *pos, *pos, *pos], node_size=50, names=False,
-   >>>     title=title,
-   >>>     temporal_node_color=temporal_node_color)
+   ...     [*TG, *TG, *TG, *TG, *TG], figsize=(6, 9.5), nrows=5, ncols=3,
+   ...     pos=[*pos, *pos, *pos, *pos, *pos], node_size=50, names=False,
+   ...     title=title,
+   ...     temporal_node_color=temporal_node_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_40_0.png
 
@@ -427,17 +427,17 @@ across slices:
    >>>
    >>> # Build supra-graph connecting nodes across 'all' time slices.
    >>> adj, offsets = tx.to_supra_adjacency_matrix(
-   >>>     TG, interslice_couple="all", interslice_weights=w, return_offsets=True)
+   ...     TG, interslice_couple="all", interslice_weights=w, return_offsets=True)
    >>>
    >>> # Supra-graph (static) modularity optimization.
    >>> G_supra_ = tx.from_scipy(adj)
    >>> y_gpu_G_supra_ = tx.leiden_communities(G_supra_, max_iter=max_iter, device="gpu")
    >>> y_gpu_G_supra_ = [y_gpu_G_supra_[offsets[t]:offsets[t] + len(TG[t])]
-   >>>                   for t in range(len(TG))]
+   ...                   for t in range(len(TG))]
    >>>
    >>> print(f"Graph:\n{G}\n",
-   >>>       f"Supra-Graph:\n{G_supra}\n",
-   >>>       f"Supra-Graph (Coupling All Slices):\n{G_supra_}", sep="\n")
+   ...       f"Supra-Graph:\n{G_supra}\n",
+   ...       f"Supra-Graph (Coupling All Slices):\n{G_supra_}", sep="\n")
 
    Graph:
    MultiGraph with 75 nodes and 589 edges
@@ -464,22 +464,22 @@ all-to-all couplings:
 .. code-block:: python
 
    >>> temporal_node_color = [
-   >>>     [colors[m % len(colors)] for m in s]
-   >>>     for y in [y_true_TG, y_gpu_G_supra, y_gpu_G_supra_]
-   >>>     for s in y
-   >>> ]
+   ...     [colors[m % len(colors)] for m in s]
+   ...     for y in [y_true_TG, y_gpu_G_supra, y_gpu_G_supra_]
+   ...     for s in y
+   ... ]
    >>>
    >>> title = [
-   >>>     "", "Ground Truths (Temporal)", "",
-   >>>     "", "GPU (Supra)", "",
-   >>>     "", "GPU (Supra, Coupling 'all' Slices, Reweighted)", "",
-   >>> ]
+   ...     "", "Ground Truths (Temporal)", "",
+   ...     "", "GPU (Supra)", "",
+   ...     "", "GPU (Supra, Coupling 'all' Slices, Reweighted)", "",
+   ... ]
    >>>
    >>> tx.draw(
-   >>>     [*TG, *TG, *TG], figsize=(6, 6), nrows=3, ncols=3,
-   >>>     pos=[*pos, *pos, *pos], node_size=50, names=False,
-   >>>     title=title,
-   >>>     temporal_node_color=temporal_node_color)
+   ...     [*TG, *TG, *TG], figsize=(6, 6), nrows=3, ncols=3,
+   ...     pos=[*pos, *pos, *pos], node_size=50, names=False,
+   ...     title=title,
+   ...     temporal_node_color=temporal_node_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_43_0.png
 

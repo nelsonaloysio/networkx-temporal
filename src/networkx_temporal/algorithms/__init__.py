@@ -6,7 +6,7 @@ Algorithms and metrics for temporal graphs.
 .. autosummary::
 
    leiden_communities
-   leiden_multislice_gpu
+   leiden_multislice
    spectral_clustering
    spectral_clustering_laplacian
    spectral_clustering_bethe_hessian
@@ -61,7 +61,7 @@ page for more details.
 """
 
 from .community import *
-from .community.leiden.multislice_gpu import leiden_multislice_gpu
+from .community.leiden.multislice import leiden_multislice
 from .gpu import NX_GPU_AUTOCONFIG
 from .graph import *
 from .node import *
@@ -70,7 +70,7 @@ is_gpu_enabled = NX_GPU_AUTOCONFIG
 
 __all__ = (
     "leiden_communities",
-    "leiden_multislice_gpu",
+    "leiden_multislice",
     "spectral_clustering",
     "spectral_clustering_laplacian",
     "spectral_clustering_bethe_hessian",

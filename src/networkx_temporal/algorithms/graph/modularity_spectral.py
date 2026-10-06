@@ -83,7 +83,7 @@ def modularity_spectral(
             C[np.arange(n_nodes), c] += 1
 
     # Modularity matrix.
-    B = adj - ((D * ggama) / ((C.T @ adj @ C).sum()))
+    B = adj - ((D * gamma) / ((C.T @ adj @ C).sum()))
 
     # Compute modularity.
     Q = np.trace((C.T @ B @ C) / adj.sum())

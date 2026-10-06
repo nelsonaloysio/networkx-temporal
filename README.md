@@ -37,7 +37,7 @@ For detailed information on using the package, please refer to its
 ```python
 >>> import networkx_temporal as tx
 >>>
->>> TG = tx.temporal_graph(directed=False)  # tx.TemporalMultiGraph()
+>>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
 >>>
 >>> TG.add_edge("a", "b", time=0)
 >>> TG.add_edge("c", "b", time=1)
@@ -52,7 +52,7 @@ For detailed information on using the package, please refer to its
 >>> TG = TG.slice(attr="time")
 >>>
 >>> # Plot resulting object.
->>> tx.draw(TG, layout="kamada_kawai", figsize=(8,2))
+>>> tx.draw(TG, layout="kamada_kawai", labels=True, figsize=(8,2))
 ```
 
 ![Temporal graph plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png)
