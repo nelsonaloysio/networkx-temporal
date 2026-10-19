@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NetworkX-Temporal — Temporal graph analysis in Python</title>
 <meta name="description" content="NetworkX-Temporal is a Python package for the creation, manipulation, and analysis of the structure and dynamics of temporal graphs.">
+<meta property="og:title" content="NetworkX-Temporal">
+<meta property="og:description" content="Temporal graph analysis in Python, extending NetworkX.">
+<meta property="og:image" content="https://networkx-temporal.org/banner.png">
+<meta property="og:url" content="https://networkx-temporal.org/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://networkx-temporal.org/">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="/logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -19,6 +25,7 @@
     --line: #e3e3e3;
     --bg: #ffffff;
     --code-bg: #f6f7f8;
+    --border: #cecece;
     --serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, "Times New Roman", serif;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
     color-scheme: light;
@@ -34,6 +41,7 @@
       --line: #33373a;
       --bg: #16181a;
       --code-bg: #202427;
+      --border: #3b4043;
       color-scheme: dark;
     }
   }
@@ -46,6 +54,7 @@
     --line: #33373a;
     --bg: #16181a;
     --code-bg: #202427;
+    --border: #3b4043;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
@@ -90,7 +99,7 @@
     width: 85%;
     font-family: var(--serif); font-size: 0.92rem;
     padding: 0.4rem 0.55rem;
-    border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--ink);
   }
   .search input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 119, 180, 0.2); }
 
@@ -98,7 +107,7 @@
     display: inline-flex; align-items: center; gap: 0.4rem;
     font-family: var(--serif); font-size: 0.92rem;
     padding: 0.4rem 0.7rem;
-    border: 1px solid var(--line); border-radius: 4px;
+    border: 1px solid var(--border); border-radius: 4px;
     background: var(--bg); color: var(--link); cursor: pointer;
   }
   .theme button:hover { color: var(--blue); border-color: var(--blue); }
@@ -160,24 +169,27 @@
 <body>
   <div class="wrap">
     <aside class="side">
-      <nav class="group" aria-label="Documentation">
-        <h2>Documentation</h2>
-        <ul>
-          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/">Stable</a></li>
-          <p class="rel"><script>
-            fetch('https://pypi.org/pypi/networkx-temporal/json')
-              .then(response => response.json())
-              .then(data => {
-                const latestVersion = data.info.version;
-                document.getElementById('version').textContent = latestVersion;
-              })
-              .catch(error => console.error('Error:', error));
-          </script>
-          <p class="rel"><span id="version">Loading...</span></p>
-          <li><a href="https://networkx-temporal.readthedocs.io/en/latest/">Latest</a></li>
-          <p class="rel">development</p>
-        </ul>
-      </nav>
+    <nav class="group" aria-label="Documentation">
+      <h2>Documentation</h2>
+      <ul>
+        <li>
+          <a href="https://networkx-temporal.readthedocs.io/en/stable/">Stable</a>
+          <div class="rel" id="version">Loading...</div>
+        </li>
+        <li>
+          <a href="https://networkx-temporal.readthedocs.io/en/latest/">Latest</a>
+          <div class="rel">development</div>
+        </li>
+        <script>
+          fetch('https://pypi.org/pypi/networkx-temporal/json')
+            .then(response => response.json())
+            .then(data => {
+              document.getElementById('version').textContent = data.info.version;
+            })
+            .catch(error => console.error('Error:', error));
+        </script>
+      </ul>
+    </nav>
 
       <nav class="group" aria-label="Project links">
         <h2>Project</h2>
@@ -185,7 +197,7 @@
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal">Source</a></li>
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal/issues">Issue tracker</a></li>
           <li><a href="https://github.com/nelsonaloysio/networkx-temporal/blob/main/CHANGELOG.md">Changelog</a></li>
-          <li><a href="mailto:nelson.reis@phd.unipi.it">Contact</a></li>
+          <li><a href="mailto:nelsonaloysio.reis@isti.cnr.it">Contact</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/cite.html">Cite</a></li>
         </ul>
       </nav>
@@ -196,7 +208,7 @@
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/#quick-start">Getting started</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/basics.html">Basic operations</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/convert.html">Convert &amp; transform</a></li>
-          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/algorithms.html">Algorithms &amp; metrics</a></li>
+          <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/metrics.html">Algorithms &amp; metrics</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/community.html">Community detection</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/examples/gpu.html">GPU acceleration</a></li>
           <li><a href="https://networkx-temporal.readthedocs.io/en/stable/api/api.html">API reference</a></li>
@@ -275,7 +287,7 @@
       function apply(theme) {
         root.dataset.theme = theme;
         var next = theme === 'dark' ? 'light' : 'dark';
-        label.textContent = next === 'dark' ? 'Dark' : 'Light';
+        label.textContent = next === 'dark' ? 'Light' : 'Dark';
         button.setAttribute('aria-label', 'Switch to ' + next + ' theme');
       }
 

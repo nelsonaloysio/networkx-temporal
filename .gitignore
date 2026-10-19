@@ -3,6 +3,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+.DS_Store
 *.egg
 *.egg-info/
 .eggs/
