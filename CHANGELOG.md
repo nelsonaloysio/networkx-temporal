@@ -9,6 +9,16 @@
 ### Removed
 -->
 
+## \[1.4.5\] - 09-11-2026
+
+### Added
+- Missing `scikit-learn` dependency for `leiden_multislice_gpu` and `spectral_clustering`.
+
+### Fixed
+- Keyword argument selection and typo in `modularity_spectral`.
+- Mixing pandas with turtles in `from_pandas` and `to_pandas`.
+
+
 ## \[1.4.4\] - 09-08-2026
 
 ### Added
