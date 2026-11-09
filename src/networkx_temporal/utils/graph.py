@@ -1,11 +1,10 @@
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
 import scipy.sparse as sp
 from networkx import NetworkXError
 
-from ..classes.functions import from_multigraph
 from ..classes.types import is_static_graph, is_temporal_graph
 from ..typing import Literal, StaticGraph, TemporalGraph
 
@@ -212,7 +211,7 @@ def to_supra_adjacency_matrix(
     graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
     weight: Optional[str] = "weight",
     interslice_weight: Optional[float] = 1.0,
-    interslice_weights: Optional[dict[tuple[int, int], float]] = None,
+    interslice_weights: Optional[Dict[Tuple[int, int], float]] = None,
     interslice_couple: Literal["all", "first", "shared"] = "shared",
     interslice_directed: bool = False,
     return_offsets: bool = False,

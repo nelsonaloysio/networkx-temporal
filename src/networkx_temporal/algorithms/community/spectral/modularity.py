@@ -9,7 +9,7 @@ DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def spectral_clustering_modularity(
-    adj: Union[sp.sparray, sp.spmatrix],
+    adj: sp.spmatrix,
     k: int,
     offsets: Optional[List[int]] = None,
     gamma: float = 1.0,

@@ -3,9 +3,11 @@ from typing import Optional, Union
 import numpy as np
 import scipy.sparse as sp
 
+from ...classes.functions import is_static_graph, is_temporal_graph
+
 
 def modularity_spectral(
-    adj: Union[np.ndarray, sp.sparray, sp.spmatrix],
+    adj: sp.spmatrix,
     communities: object,
     gamma: Optional[float] = 1,
     directed: Optional[bool] = True,
@@ -47,7 +49,7 @@ def modularity_spectral(
     :param weight: Whether to consider edge weights. If a string is provided,
         it is used as the edge attribute key. Default is ``True``.
     """
-    if type(adj) not in (np.ndarray, sp.sparray, sp.spmatrix):
+    if is_static_graph(adj) or is_temporal_graph(adj):
         raise TypeError(
             f"Expected a dense or sparse adjacency matrix, got {type(adj)}."
         )

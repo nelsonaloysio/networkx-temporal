@@ -8,7 +8,7 @@ DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def spectral_clustering_laplacian(
-    adj: Union[sp.sparray, sp.spmatrix],
+    adj: sp.spmatrix,
     k: Optional[int] = None,
     normalized: bool = True,
     n_init: int = 10,

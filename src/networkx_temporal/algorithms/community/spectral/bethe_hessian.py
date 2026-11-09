@@ -1,6 +1,6 @@
 import logging as log
 import scipy.sparse as sp
-from typing import List, Optional, Union
+from typing import List, Optional
 from warnings import warn
 
 from ...gpu import NX_GPU_AUTOCONFIG
@@ -10,7 +10,7 @@ DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def spectral_clustering_bethe_hessian(
-    adj: Union[sp.sparray, sp.spmatrix],
+    adj: sp.spmatrix,
     k: Optional[int] = None,
     r: Optional[float] = None,
     max_k: int = 64,
