@@ -1,4 +1,3 @@
-from turtle import pd
 from typing import List, Optional, Union
 
 import networkx as nx
