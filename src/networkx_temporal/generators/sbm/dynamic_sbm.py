@@ -47,7 +47,7 @@ def dynamic_stochastic_block_model(
 
     .. math::
 
-        \\mathbb{P}(z_i^{(t+1)}) = \\tau({z_i^{(t)}}),
+        P(z_i^{(t+1)}) = \\tau({z_i^{(t)}}),
 
     where :math:`\\boldsymbol{\\tau}` is the transition matrix with the same shape of the
     block matrix :math:`\\mathbf{B}`. Adjacencies :math:`\\mathbf{A}^{(t)}` at snapshot :math:`t`
@@ -57,7 +57,7 @@ def dynamic_stochastic_block_model(
 
     .. math::
 
-        \\mathbb{P}(
+        P(
         \\mathbf{A}^{(t)} \\vert \\mathbf{B}, \\mathbf{z}^{(t)}, \\mathbf{d}, \\mathbf{d_{out}}) =
         \\mathbf{\\Theta_{out}} \\; \\mathbf{C} \\; \\mathbf{B} \\;
         \\mathbf{C}^\\text{T} \\; \\mathbf{\\Theta_{in}},
@@ -116,11 +116,11 @@ def dynamic_stochastic_block_model(
         >>> tau = tx.generate_transition_matrix(k, eta)
         >>>
         >>> TG = tx.generators.dynamic_sbm(
-        >>>     B=B, z=z, d=d, t=t,
-        >>>     transition_matrix=tau,
-        >>>     fix_transition_prob=False,
-        >>>     seed=0
-        >>> )
+        ...     B=B, z=z, d=d, t=t,
+        ...     transition_matrix=tau,
+        ...     fix_transition_prob=False,
+        ...     seed=0
+        ... )
         >>> print(TG)
 
         TemporalMultiGraph (t=4) with 32 nodes and 97 edges
@@ -152,15 +152,12 @@ def dynamic_stochastic_block_model(
         >>> node_color = [[colors[x] for n, x in G.nodes(data="community")] for G in TG]
         >>>
         >>> edge_color = [[colors[community[t][u]] if community[t][u] == community[t][v]
-        >>>                else "gray" for u, v in G.edges()] for t, G in enumerate(TG)]
+        ...                else "gray" for u, v in G.edges()] for t, G in enumerate(TG)]
         >>>
-        >>> tx.draw(TG,
-        ...         figsize=(9, 2.5),
-        ...         layout="circular",
+        >>> tx.draw(TG, figsize=(9, 2.5), layout="circular",
+        ...         labels=True, node_size=120, font_size=9,
         ...         temporal_node_color=node_color,
-        ...         temporal_edge_color=edge_color,
-        ...         node_size=120,
-        ...         font_size=9)
+        ...         temporal_edge_color=edge_color)
 
     .. image:: ../../assets/figure/generators/dynamic_stochastic_block_model.png
        :align: center

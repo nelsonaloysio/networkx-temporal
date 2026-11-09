@@ -45,7 +45,7 @@ def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, *
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
     | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.to_numpy`           |
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
-    | `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
+    | `Pandas <https://pandas.pydata.org>`__                            | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
     | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.to_torch_geometric` |
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+

@@ -51,8 +51,7 @@ def example_sbm_graph() -> TemporalMultiGraph:
         ...         layout="circular",
         ...         node_size=30,
         ...         edge_color="#ccc",
-        ...         temporal_node_color=tx.get_node_attributes(TG, "community", index=False),
-        ...         with_labels=False)
+        ...         temporal_node_color=tx.get_node_attributes(TG, "community", index=False))
 
     .. image:: ../../assets/figure/generators/example_sbm_graph.png
        :align: center

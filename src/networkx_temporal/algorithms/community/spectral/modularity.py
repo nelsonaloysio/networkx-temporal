@@ -26,7 +26,7 @@ def spectral_clustering_modularity(
     .. math::
 
        \\mathcal{Q}_\\mathrm{MS} =
-       (\\frac{1}{2 \\mu})
+       \\frac{1}{2 \\mu}
        \\mathrm{Tr} (\\mathbf{C}^\\top \\mathbf{M} \\mathbf{C})
 
     where :math:`\\mathbf{M}` is the supra-modularity matrix with diagonal blocks
@@ -38,10 +38,6 @@ def spectral_clustering_modularity(
     clusters them via :math:`k`-means to produce a temporal community assignment. Note that GPU
     eigensolvers require :math:`\\mathbf{M}` to be be symmetric, so only undirected graphs are
     currently supported.
-
-    .. hint::
-
-       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. seealso::
 

@@ -12,7 +12,7 @@ def degree(
     weight: Optional[str] = None
 ) -> Union[dict, int]:
     """ Returns node degrees.
-    Defined [1]_ for temporal graphs as the degree sum over time:
+    Defined [2]_ for temporal graphs as the degree sum over time:
 
     .. math::
 
@@ -27,7 +27,7 @@ def degree(
     ``weight`` attribute. For multigraphs, adjacencies are weighted by the number of
     parallel edges, unless ``weight=False``.
 
-    .. [1] Hyoungshick, K., Anderson, R. (2012). ''Temporal node centrality in complex networks''.
+    .. [2] Hyoungshick, K., Anderson, R. (2012). ''Temporal node centrality in complex networks''.
         Physical Review E, 85(2). doi: `10.1103/PhysRevE.85.026107
         <https://doi.org/10.1103/PhysRevE.85.026107>`__
 
@@ -48,7 +48,7 @@ def in_degree(
     weight: Optional[str] = None
 ) -> Union[dict, int]:
     """ Returns node in-degrees.
-    Defined [1]_ for temporal graphs as the in-degree sum over time:
+    Defined [2]_ for temporal graphs as the in-degree sum over time:
 
     .. math::
 
@@ -79,7 +79,7 @@ def out_degree(
     weight: Optional[str] = None
 ) -> Union[dict, int]:
     """ Returns node out-degrees.
-    Defined [1]_ for temporal graphs as the out-degree sum over time:
+    Defined [2]_ for temporal graphs as the out-degree sum over time:
 
     .. math::
 
@@ -110,7 +110,7 @@ def degree_centrality(
     nbunch: Optional[Any] = None,
 ) -> Union[dict, int]:
     """ Returns node degree centralities.
-    Defined [1]_ as the fraction of connected nodes, i.e.,
+    Defined [2]_ as the fraction of connected nodes, i.e.,
 
     .. math::
 
@@ -136,7 +136,7 @@ def in_degree_centrality(
     nbunch: Optional[Any] = None,
 ) -> Union[dict, int]:
     """ Returns node in-degree centralities.
-    Defined [1]_ as the fraction of connected nodes, i.e.,
+    Defined [2]_ as the fraction of connected nodes, i.e.,
 
     .. math::
 
@@ -161,7 +161,7 @@ def out_degree_centrality(
     nbunch: Optional[Any] = None,
 ) -> Union[dict, int]:
     """ Returns node out-degree centralities.
-    Defined [1]_ as the fraction of connected nodes, i.e.,
+    Defined [2]_ as the fraction of connected nodes, i.e.,
 
     .. math::
 

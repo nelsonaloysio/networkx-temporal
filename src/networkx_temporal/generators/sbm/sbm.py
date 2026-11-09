@@ -27,7 +27,7 @@ def stochastic_block_model(
 
     .. math::
 
-        \\mathbb{P}(\\mathbf{A} \\vert \\mathbf{B}, \\mathbf{z}, \\mathbf{d}, \\mathbf{d_{out}}) =
+        P(\\mathbf{A} \\vert \\mathbf{B}, \\mathbf{z}, \\mathbf{d}, \\mathbf{d_{out}}) =
         \\mathbf{\\Theta_{out}} \\; \\mathbf{C} \\; \\mathbf{B} \\;
         \\mathbf{C}^\\text{T} \\; \\mathbf{\\Theta_{in}},
 
@@ -71,12 +71,11 @@ def stochastic_block_model(
     .. code-block:: python
 
         >>> tx.draw(G,
-        >>>         figsize=(3, 3),
-        >>>         layout="kamada_kawai",
-        >>>         node_size=75,
-        >>>         node_color=z,
-        >>>         title=str(G),
-        >>>         with_labels=False)
+        ...         figsize=(3, 3),
+        ...         layout="kamada_kawai",
+        ...         node_size=75,
+        ...         node_color=z,
+        ...         title=str(G))
 
     .. image:: ../../assets/figure/generators/stochastic_block_model.png
        :align: center

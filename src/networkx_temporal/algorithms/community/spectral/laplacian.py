@@ -20,31 +20,31 @@ def spectral_clustering_laplacian(
 
     Given a (supra-)adjacency matrix, computes the :math:`k` smallest eigenpairs of the
     graph Laplacian and clusters the resulting embedding with :math:`k`-means. With
-    ``normalized=True`` (default), is is symmetric,
+    ``normalized=True`` (default), it is symmetric,
 
     .. math::
 
-        \\tilde{L} =
+        \\hat{\\mathbf{L}} =
         \\mathbf{D}^{-1/2} \\mathbf{L} \\mathbf{D}^{-1/2} =
         \\mathbf{I} - \\mathbf{D}^{-1/2} \\mathbf{A} \\mathbf{D}^{-1/2},
 
-    where :math:`\\mathbf{L} = \\mathbf{D} - \\mathbf{A}`,
-    :math:`\\mathbf{A}` is the adjacency matrix,
-    and :math:`\\mathbf{D}` is the diagonal degree matrix.
-    If ``normalized=False``, the unnormalized Laplacian
-    :math:`\\mathbf{L} = \\mathbf{D} - \\mathbf{A}` is used instead.
+    where :math:`\\mathbf{A}` is the adjacency matrix,
+    :math:`\\mathbf{D}` is the diagonal degree matrix,
+    :math:`\\mathbf{I}` is the identity matrix,
+    and :math:`\\mathbf{L} = \\mathbf{D} - \\mathbf{A}` is the unnormalized Laplacian.
+    For the symmetric normalized Laplacian :math:`\\hat{\\mathbf{L}}`, rows are also
+    :math:`L_2`-normalized before clustering [1]_ to correct for the scaling introduced by
+    :math:`\\mathbf{D}^{-1/2}`.
 
-    The number of communities :math:`k` must be provided; the eigenvectors with smallest
-    eigenvalues form the node embedding. For the symmetric normalized Laplacian, rows are also
-    :math:`L_2`-normalized before clustering (Ng et al., 2002) to correct for the
-    :math:`D^{1/2}` scaling.
+    The eigenvectors of :math:`\\hat{\\mathbf{L}}` are used as a low-dimensional embedding for
+    :math:`k`-means clustering. The number of communities :math:`k` must be provided; the
+    eigenvectors with smallest eigenvalues form the node embedding.
+    Unlike the Bethe-Hessian, the Laplacian degrades in performance for sparse graphs.
+    Note that its construction is equivalent to the Bethe-Hessian with :math:`r = 1`.
 
-    Unlike the Bethe-Hessian, the Laplacian degrades near the community detectability threshold on
-    sparse graphs. Note that its construction is equivalent to the Bethe-Hessian with :math:`r = 1`.
-
-    .. hint::
-
-       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+    .. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). ''On spectral clustering: Analysis and an
+       algorithm''. In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural
+       Information Processing Systems. Vol. 14. MIT Press.
 
     .. seealso::
 

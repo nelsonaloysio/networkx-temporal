@@ -12,7 +12,7 @@ def brokering_centrality(
 ) -> Union[dict, List[dict]]:
     """ Returns brokering centrality of nodes.
 
-    Brokering centrality [3]_ is a measure of the node's ability to connect different parts of the
+    Brokering centrality [4]_ is a measure of the node's ability to connect different parts of the
     network and is useful for identifying nodes that play a key role in the network's structure.
     It is defined as:
 
@@ -25,7 +25,7 @@ def brokering_centrality(
     and :math:`\\text{clu}(i)` is its clustering coefficient.
 
     Clustering coefficient works as a measure of interconnectivity in a node's neighborhood and may
-    be defined [4]_ as the the number of edges between a node's neighbors divided by the
+    be defined [5]_ as the the number of edges between a node's neighbors divided by the
     number of possible edges between them. If ``clustering_coef`` is not provided, it is computed
     as:
 
@@ -44,12 +44,12 @@ def brokering_centrality(
 
         In directed graphs, connections are not necessarily reciprocal, affecting the coefficients.
 
-    .. [3] Cai, J.J., Borenstein, E., Petrov, D.A. (2010).
+    .. [4] Cai, J.J., Borenstein, E., Petrov, D.A. (2010).
         ''Broker Genes in Human Disease''.
         Genome Biology and Evolution, 2.
         doi: `10.1093/gbe/evq064 <https://doi.org/10.1093/gbe/evq064>`_.
 
-    .. [4] Watts, D.J., Strogatz, E. (1998).
+    .. [5] Watts, D.J., Strogatz, E. (1998).
         ''Collective dynamics of 'small-world' networks''.
         Nature.
         doi: `10.1038/30918 <https://doi.org/10.1038/30918>`_.

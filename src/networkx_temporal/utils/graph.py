@@ -306,7 +306,7 @@ def to_supra_adjacency_matrix(
 
         - ``'all'``: Connects all nodes across snapshots.
 
-        - ``'first'``: Connects each node to its first occurrence in the next snapshot.
+        - ``'first'``: Connects nodes to their first occurrence across snapshots.
 
         - ``'shared'``: Connects only nodes that are present in both snapshots.
 

@@ -39,9 +39,8 @@ duplicates:
    >>>
    >>> TG = tx.temporal_graph(directed=True)  # TG = tx.TemporalMultiDiGraph()
    >>>
-   >>>
    >>> TG.add_edge("a", "b", time=0)
-   >>> TG.add_edge("c", "b", time=1)
+   >>> TG.add_edge("c", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)   # <- parallel edge
    >>> TG.add_edge("d", "c", time=2)
    >>> TG.add_edge("d", "e", time=2)
@@ -79,7 +78,7 @@ number of edge interactions :math:`|\mathcal{E}|` (with parallel edges):
    Size (unique edges): 8
    Size (including copies): 9
 
-Visualizing the graph with :func:`~networkx_temporal.draw`, however, shows all nodes
+Visualizing the graph with :func:`~networkx_temporal.drawing.draw`, however, shows all nodes
 and edges, including their copies:
 
 .. code-block:: python
@@ -106,7 +105,7 @@ Node neighborhoods
 
 Edge directedness is considered when obtaining the neighbors of a node,
 either per snapshot or considering all snapshots, via
-the :func:`~networkx_temporal.classes.TemporalGraph.neighbors` method
+the `neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.neighbors.html>`_ method
 and the :func:`~networkx_temporal.classes.neighbors` function, respectively.
 
 
@@ -135,7 +134,7 @@ Converting the graph to undirected, we also obtain nodes that have node
 .. hint::
 
    The above is effectively the same as calling the
-   :func:`~networkx_temporal.classes.TemporalGraph.all_neighbors`
+   `all_neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.all_neighbors.html>`
    method instead.
 
 
@@ -189,12 +188,12 @@ for each snapshot:
    >>> import networkx as nx
    >>>
    >>> for t, G in enumerate(TG):
-   >>>     # We convert the multigraph to a simple graph first,
-   >>>     # as Katz centrality is not implemented for multigraphs.
-   >>>     G = tx.from_multigraph(G)
-   >>>     katz = nx.katz_centrality(G)
-   >>>     katz = {node: round(value, 2) for node, value in katz.items()}
-   >>>     print(f"t={t}: {katz}")
+   ...     # We convert the multigraph to a simple graph first,
+   ...     # as Katz centrality is not implemented for multigraphs.
+   ...     G = tx.from_multigraph(G)
+   ...     katz = nx.katz_centrality(G)
+   ...     katz = {node: round(value, 2) for node, value in katz.items()}
+   ...     print(f"t={t}: {katz}")
 
    t=0: {'a': 0.54, 'b': 0.65, 'c': 0.54}
    t=1: {'b': 0.74, 'c': 0.67}
@@ -202,7 +201,7 @@ for each snapshot:
    t=3: {'a': 0.51, 'b': 0.51, 'e': 0.51, 'f': 0.46}
 
 Note that we first converted the multigraph to a simple graph (without parallel edges) using the
-:func:`~networkx_temporal.utils.from_multigraph` function, as the algorithm implementation
+:func:`~networkx_temporal.classes.from_multigraph` function, as the algorithm implementation
 does not support multigraphs.
 
 .. seealso::
@@ -218,8 +217,8 @@ In addition, any `NetworkX graph methods
 <https://networkx.org/documentation/stable/reference/classes/graph.html#methods>`__
 can be called directly from the temporal graph.
 For example, the methods
-:func:`~networkx_temporal.algorithms.degree`
-:func:`~networkx_temporal.algorithms.in_degree`
+:func:`~networkx_temporal.algorithms.degree`,
+:func:`~networkx_temporal.algorithms.in_degree`,
 and
 :func:`~networkx_temporal.algorithms.out_degree`
 return the results per snapshot:
@@ -230,10 +229,10 @@ return the results per snapshot:
    >>> # TG.in_degree()
    >>> # TG.out_degree()
 
-   [DiDegreeView({'a': 1, 'b': 2, 'c': 1}),
-    DiDegreeView({'b': 1, 'c': 1}),
-    DiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
-    DiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
+   [DiMultiDegreeView({'a': 1, 'b': 2, 'c': 1}),
+    DiMultiDegreeView({'b': 1, 'c': 1}),
+    DiMultiDegreeView({'a': 1, 'c': 2, 'd': 2, 'e': 1}),
+    DiMultiDegreeView({'a': 1, 'b': 1, 'e': 1, 'f': 3})]
 
 .. code-block:: python
 
@@ -333,7 +332,7 @@ considering node degrees per snapshot:
    >>> # tx.in_degree_centralization(TG)
    >>> # tx.out_degree_centralization(TG)
 
-   [0, 0, 0.3333333333333333, 1.0]
+   [1.0, 0.0, 0.3333333333333333, 1.0]
 
 In directed graphs, the in-degree and out-degree centralization scores may differ:
 
@@ -346,9 +345,9 @@ In directed graphs, the in-degree and out-degree centralization scores may diffe
 .. code-block:: python
 
    >>> for t, G in enumerate(TG):
-   >>>     indc = tx.in_degree_centralization(G)
-   >>>     outdc = tx.out_degree_centralization(G)
-   >>>     print(f"t={t}: in={indc:.2f}, out={outdc:.2f}")
+   ...     indc = tx.in_degree_centralization(G)
+   ...     outdc = tx.out_degree_centralization(G)
+   ...     print(f"t={t}: in={indc:.2f}, out={outdc:.2f}")
 
    t=0: in=1.00, out=0.25
    t=1: in=1.00, out=1.00
@@ -361,13 +360,14 @@ respectively:
 
 .. code-block:: python
 
-   >>> G.add_node(-1)    # Disconnected node.
-   >>> G.add_edge(0, 0)  # Edge self-loop.
+   >>> G = nx.star_graph(10)  # Rebuild star graph.
+   >>> G.add_node(-1)         # Disconnected node.
+   >>> G.add_edge(0, 0)       # Edge self-loop.
    >>>
    >>> print(f"Default: {tx.degree_centralization(G)}\n"
-   >>>       f"With isolates: {tx.degree_centralization(G, isolates=True):.3f}\n"
-   >>>       f"With self-loops: {tx.degree_centralization(G, self_loops=True):.3f}\n"
-   >>>       f"With both: {tx.degree_centralization(G, isolates=True, self_loops=True):.3f}")
+   ...       f"With isolates: {tx.degree_centralization(G, isolates=True):.3f}\n"
+   ...       f"With self-loops: {tx.degree_centralization(G, self_loops=True):.3f}\n"
+   ...       f"With both: {tx.degree_centralization(G, isolates=True, self_loops=True):.3f}")
 
    Default: 1.0
    With isolates: 0.909
@@ -385,6 +385,7 @@ the centralization score for the graph.
 
 .. code-block:: python
 
+   >>> G = nx.star_graph(10)
    >>> centrality = G.degree()
    >>> scalar = sum(G.order() - 2 for n in range(G.order()-1))  # |V|-1 for DiGraph
    >>>
@@ -402,7 +403,7 @@ or eigenvector centrality, where the most centralized structure is a graph with 
 Temporal dynamics
 =================
 
-Let's take the :func:`collegemsg_graph <~networkx_temporal.generators.collegemsg_graph>` [2]_
+Let's take the :func:`collegemsg_graph <networkx_temporal.generators.collegemsg_graph>` [2]_
 dataset as an example. It represents message exchanges among students at the University of
 California, Irvine, over a period of several months in the year of 2004:
 
@@ -422,15 +423,15 @@ The dataset is sliced into :math:`t=193` daily snapshots, spanning a period from
    ('2004-04-15', '2004-10-26')
 
 Let's define a custom function to convert date timestamps to week-based intervals
-```YYYY, Week W``` (0-indexed), and use it to slice the temporal graph into weekly snapshots.
+``YYYY, Week W`` (0-indexed), and use it to slice the temporal graph into weekly snapshots.
 
 .. code-block:: python
 
    >>> from datetime import datetime
    >>>
    >>> def strftime(x, fmt="%Y, Week %W"):
-   >>>    # Convert date to weekly intervals with ascending sorting.
-   >>>    return datetime.strptime(x, "%Y-%m-%d %H:%M").strftime(fmt)
+   ...    # Convert date to weekly intervals with ascending sorting.
+   ...    return datetime.strptime(x, "%Y-%m-%d %H:%M").strftime(fmt)
    >>>
    >>> TG = tx.collegemsg_graph()
    >>> TG = TG.slice(attr="time", apply_func=strftime)
@@ -438,7 +439,7 @@ Let's define a custom function to convert date timestamps to week-based interval
 
    TemporalMultiDiGraph (t=29) with 1899 nodes and 59835 edges
 
-The result is a graph with :math:`t=29` snapshots, spanning the weeks of 15 to 43 of 2004:
+The result is a graph with :math:`t=29` snapshots, spanning the weeks 15 to 43 of 2004:
 
 .. code-block:: python
 
@@ -455,9 +456,9 @@ Let's identify the weeks with the maximum number of nodes and edges:
    >>> t_max_size = TG.size().index(max(TG.size()))
    >>>
    >>> print(f"Max nodes at t={t_max_order} "
-             f"({TG.index[t_max_order]}): V={TG[t_max_order].order()} nodes")
+   ...       f"({TG.index[t_max_order]}): V={TG[t_max_order].order()} nodes")
    >>> print(f"Max edges at t={t_max_size} "
-             f"({TG.index[t_max_size]}): E={TG[t_max_size].size()} edges")
+   ...       f"({TG.index[t_max_size]}): E={TG[t_max_size].size()} edges")
 
    Max nodes at t=6 (2004, Week 21): V=904 nodes
    Max edges at t=3 (2004, Week 18): E=10194 edges
@@ -476,31 +477,31 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> G = TG.to_static()
    >>>
    >>> fig, ax = plt.subplot_mosaic([["Left", "TopRight"],["Left", "BottomRight"]],
-   >>>                               constrained_layout=True, figsize=(8, 4), sharex=True,
-   >>>                               gridspec_kw={"width_ratios": [3, 1]})
+   ...                               constrained_layout=True, figsize=(8, 4), sharex=True,
+   ...                               gridspec_kw={"width_ratios": [3, 1]})
    >>>
    >>> def deg_plot(df, ax, color="#555", title=None, xlabel=None, ylabel=None):
-   >>>    # Plot degree distribution as a line plot with log-scaled x-axis.
-   >>>    df.value_counts().sort_index().plot.line(
-   >>>       ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
-   >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major")
-   >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which="minor")
-   >>>    ax.set_title(title, fontsize=10)
-   >>>    ax.set_xlabel(xlabel)
-   >>>    ax.set_ylabel(ylabel)
+   ...    # Plot degree distribution as a line plot with log-scaled x-axis.
+   ...    df.value_counts().sort_index().plot.line(
+   ...       ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
+   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major")
+   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which="minor")
+   ...    ax.set_title(title, fontsize=10)
+   ...    ax.set_xlabel(xlabel)
+   ...    ax.set_ylabel(ylabel)
    >>>
    >>> def hist_plot(df, bins, ax, title="", xlabel="", ylabel="", color="#555"):
-   >>>    # Plot histogram of degree distribution with log-scaled y-axis.
-   >>>    hist = pd.cut(df, bins=bins)
-   >>>    hist.value_counts().sort_index().plot.bar(ax=ax, logy=True, color=color, width=0.7)
-   >>>    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
-   >>>    ax.tick_params(axis='both', which="major", labelsize=9)
-   >>>    ax.set_title(title, fontsize=9)
-   >>>    ax.set_xlabel(xlabel, fontsize=9)
-   >>>    ax.set_xticklabels([f"<{b}" for b in bins[1:]])
-   >>>    ax.set_ylabel(ylabel, fontsize=9)
-   >>>    ax.set_yticks([], minor=True)
-   >>>    ax.set_yticks([1, 10, 100, 1000])
+   ...    # Plot histogram of degree distribution with log-scaled y-axis.
+   ...    hist = pd.cut(df, bins=bins)
+   ...    hist.value_counts().sort_index().plot.bar(ax=ax, logy=True, color=color, width=0.7)
+   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
+   ...    ax.tick_params(axis='both', which="major", labelsize=9)
+   ...    ax.set_title(title, fontsize=9)
+   ...    ax.set_xlabel(xlabel, fontsize=9)
+   ...    ax.set_xticklabels([f"<{b}" for b in bins[1:]])
+   ...    ax.set_ylabel(ylabel, fontsize=9)
+   ...    ax.set_yticks([], minor=True)
+   ...    ax.set_yticks([1, 10, 100, 1000])
    >>>
    >>> deg = pd.Series(dict(G.degree()))
    >>> deg_in = pd.Series(dict(G.in_degree()))
@@ -513,7 +514,7 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> bins = [0, 10, 50, 100, 500, 1000, 2000]
    >>>
    >>> hist_plot(deg, bins, ax["Left"].inset_axes([0.67, 0.59, 0.3, 0.32]),
-   >>>          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
+   ...          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
    >>> hist_plot(deg_in, bins, ax["TopRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#333")
    >>> hist_plot(deg_out, bins, ax["BottomRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#777")
    >>>
@@ -552,7 +553,7 @@ Let's take a glance at the weekly activity among students using Pandas to
    >>>    "cent_out": tx.out_degree_centralization(TG)},
    >>>    index=TG.index)
    >>>
-   >>>  print(df.describe().iloc[1:].round(2))
+   >>> print(df.describe().iloc[1:].round(2))
 
            nodes     edges  deg_mean  deg_in_max  deg_out_max  cent_in  cent_out
     mean  311.45   2063.28      8.66       67.62       105.38     0.06      0.15
@@ -577,16 +578,16 @@ Let's plot this information over time to better understand the students' activit
 
    >>> # Include date in x-axis labels for better readability.
    >>> def to_date(x):
-   >>>     if not x.get_text():
-   >>>         return ""
-   >>>     return datetime.strptime(f"{x.get_text()} 0", "%Y, Week %W %w")\
-   >>>                    .strftime("Week %W\n(%b %d, %Y)")
+   ...     if not x.get_text():
+   ...         return ""
+   ...     return datetime.strptime(f"{x.get_text()} 0", "%Y, Week %W %w")\
+   ...                    .strftime("Week %W\n(%b %d, %Y)")
    >>>
    >>> fig, axs = plt.subplots(figsize=(6, 6), nrows=3, ncols=1,
-   >>>                         constrained_layout=True, sharex=True)
+   ...                         constrained_layout=True, sharex=True)
    >>>
-   >>> plt.suptitle("CollegMsg graph (%s weeks, %s nodes, %s edges)" %
-   >>>              (len(TG), TG.order(copies=False), TG.size(copies=True)))
+   >>> plt.suptitle("CollegeMsg graph (%s weeks, %s nodes, %s edges)" %
+   ...              (len(TG), TG.order(copies=False), TG.size(copies=True)))
    >>>
    >>> df[["nodes", "edges"]].plot(ax=axs[0], color=["#1f77b4cc", "#ff7f0ecc"])
    >>> df[["deg_in_max", "deg_out_max"]].plot(ax=axs[1], color=["#2ca02ccc", "#d62728cc"])
@@ -597,12 +598,12 @@ Let's plot this information over time to better understand the students' activit
    >>> axs[2].legend(labels=["In-degree centralization", "Out-degree centralization"])
    >>>
    >>> for i, ax in enumerate(axs):
-   >>>     ax.set_xlim((0, df.shape[0]-1))
-   >>>     ax.set_ylim((0, ax.get_ylim()[1]))
-   >>>     ax.xaxis.set_minor_locator(MultipleLocator(1))
-   >>>     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
-   >>>     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which='major')
-   >>>     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which='minor')
+   ...     ax.set_xlim((0, df.shape[0]-1))
+   ...     ax.set_ylim((0, ax.get_ylim()[1]))
+   ...     ax.xaxis.set_minor_locator(MultipleLocator(1))
+   ...     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+   ...     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which='major')
+   ...     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which='minor')
    >>>
    >>> ax.set_xticklabels([to_date(x) for x in ax.get_xticklabels()], rotation=10)
    >>>
@@ -613,7 +614,7 @@ Let's plot this information over time to better understand the students' activit
 
 |
 
-The chart show the evolution of the network over time in terms of nodes, edges, degrees, and
+The chart shows the evolution of the network over time in terms of nodes, edges, degrees, and
 centralization. The first observed weeks show an increased number of nodes and edges and nodes with
 higher in- and out-degrees. However, the degree centralization in the same intervals remains
 relatively stable, hinting that the overall communication structure may remain relatively similar.
@@ -624,36 +625,36 @@ Temporal evolution
 
 The previous plots, however, tell little about the number of new students and newly formed
 connections at each time step. Let's instead visualize those metrics by plotting the
-intersection and similarity of node sets between snapshots. Since sets are umbalanced in size,
+intersection and similarity of node sets between snapshots. Since sets are imbalanced in size,
 let's compare their intersection against Dice coefficient (double their intersection over the sum
 of their elements):
 
 .. code-block:: python
 
    >>> def plot_heatmap(data, ax, title, cmap="turbo", vmin=0, vmax=1):
-   >>>     im = ax.imshow(data, cmap=cmap, vmin=vmin, vmax=vmax)
-   >>>     ax.spines[:].set_visible(False)
-   >>>     ax.set_title(title)
-   >>>     ax.set_xticks(range(0, len(TG), 4))
-   >>>     ax.set_yticks(range(0, len(TG), 4))
-   >>>     ax.set_xticks([i-0.5 for i in range(len(TG))], minor=True)
-   >>>     ax.set_yticks([i-0.5 for i in range(len(TG))], minor=True)
-   >>>     ax.set_xticklabels([TG.index[i] for i in ax.get_xticks()], rotation=90)
-   >>>     ax.set_yticklabels([TG.index[i] for i in ax.get_yticks()])
-   >>>     ax.tick_params(which="minor", bottom=False, left=False)
-   >>>     ax.grid(which="minor", color="w", linestyle='dotted', linewidth=0.5)
-   >>>     x0, y0, x1, y1 = ax.get_position().bounds
-   >>>     cbar = ax.figure.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-   >>>     cbar.ax.set_position([x1 + 0.01, y0, 0.02, y1 - y0])
-   >>>     return cbar
+   ...     im = ax.imshow(data, cmap=cmap, vmin=vmin, vmax=vmax)
+   ...     ax.spines[:].set_visible(False)
+   ...     ax.set_title(title)
+   ...     ax.set_xticks(range(0, len(TG), 4))
+   ...     ax.set_yticks(range(0, len(TG), 4))
+   ...     ax.set_xticks([i-0.5 for i in range(len(TG))], minor=True)
+   ...     ax.set_yticks([i-0.5 for i in range(len(TG))], minor=True)
+   ...     ax.set_xticklabels([TG.index[i] for i in ax.get_xticks()], rotation=90)
+   ...     ax.set_yticklabels([TG.index[i] for i in ax.get_yticks()])
+   ...     ax.tick_params(which="minor", bottom=False, left=False)
+   ...     ax.grid(which="minor", color="w", linestyle='dotted', linewidth=0.5)
+   ...     x0, y0, x1, y1 = ax.get_position().bounds
+   ...     cbar = ax.figure.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+   ...     cbar.ax.set_position([x1 + 0.01, y0, 0.02, y1 - y0])
+   ...     return cbar
    >>>
    >>> fig, axs = plt.subplots(figsize=(8, 4), ncols=2)
    >>>
    >>> intersect = tx.temporal_node_similarity(TG, method="intersect")
-   >>> jaccard = tx.temporal_node_similarity(TG, method="dice")
+   >>> dice = tx.temporal_node_similarity(TG, method="dice")
    >>>
    >>> plot_heatmap(intersect, axs[0], "Node set intersection")
-   >>> plot_heatmap(jaccard, axs[1], "Node set similarity (Dice)")
+   >>> plot_heatmap(dice, axs[1], "Node set similarity (Dice)")
    >>>
    >>> plt.subplots_adjust(wspace=0.8)
 

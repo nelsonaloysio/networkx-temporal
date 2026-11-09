@@ -11,7 +11,7 @@ def bridging_centrality(
     """ Returns bridging centrality of nodes.
 
     Bridging centrality measures the importance of a node in connecting different parts of a
-    network, and is defined [2]_ as the product of betweenness centrality and bridging coefficient:
+    network, and is defined [3]_ as the product of betweenness centrality and bridging coefficient:
 
     .. math::
 
@@ -31,7 +31,7 @@ def bridging_centrality(
     If ``betweenness`` is not provided, the bridging coefficient of nodes is returned instead,
     that is, consider :math:`c_{\\text{bet}}(i) = 1` for all nodes.
 
-    .. [2] Hwang, W. et al. (2006).
+    .. [3] Hwang, W. et al. (2006).
         ''Bridging Centrality: Identifying Bridging Nodes In Scale-free Networks''.
         url: `cse.buffalo.edu/tech-reports/2006-05.pdf
         <https://cse.buffalo.edu/tech-reports/2006-05.pdf>`__.

@@ -14,10 +14,10 @@ Convert and transform
    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__.
 
 This package provides a set of functions to manipulate graph classes, formats, and representations.
-In this context, :mod:`~networkx_temporal.classes.TemporalGraph.convert` refers to different graph-based libraries,
-e.g., `igraph <https://igraph.org/python>`__, and :mod:`~networkx_temporal.transform` refers to the
-underlying data structure used to store object relations, e.g.,
-`event-based temporal graphs <#event-based-temporal-graph>`__.
+In this context, :func:`~networkx_temporal.classes.TemporalGraph.convert` refers to different
+graph-based libraries, e.g., `igraph <https://igraph.org/python>`__, and
+:mod:`~networkx_temporal.transform` refers to the underlying data structure used to store object
+relations, e.g., `event-based temporal graphs <#event-based-temporal-graph>`__.
 
 
 Graph types and classes
@@ -54,8 +54,8 @@ Static or temporal multigraphs may be converted to graphs without parallel edges
 
    TemporalMultiDiGraph (t=1) with 6 nodes and 9 edges
 
-The :func:`~networkx_temporal.transform.from_multigraph` function combines parallel edges
-and sum their ``weight`` (default: :math:`1`) values. Notice that :math:`(c, b)` ``time``
+The :func:`~networkx_temporal.classes.from_multigraph` function combines parallel edges
+and sums their ``weight`` (default: :math:`1`) values. Notice that :math:`(c, b)` ``time``
 is now set to :math:`0`, as later attribute values take precedence over earlier ones:
 
 .. code-block:: python
@@ -153,11 +153,11 @@ with the :func:`~networkx_temporal.classes.TemporalGraph.to_static` method:
    >>> G = TG.to_static()
    >>> print(G)
 
-    DiGraph with 6 nodes and 9 edges
+   MultiDiGraph with 6 nodes and 9 edges
 
 .. code-block:: python
 
-   >>> tx.draw(G, layout="kamada_kawai", suptitle="Static Graph")
+   >>> tx.draw(G, layout="kamada_kawai", labels=True, suptitle="Static Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_23_0.png
    :align: center
@@ -177,7 +177,7 @@ with the :func:`~networkx_temporal.transform.from_static` function:
    >>> TG = TG.slice(attr="time")
    >>> print(TG)
 
-   TemporalDiGraph (t=4) with 6 nodes and 9 edges
+   TemporalMultiDiGraph (t=4) with 6 nodes and 9 edges
 
 
 Snapshot-based temporal graph
@@ -205,10 +205,10 @@ temporal graph with :func:`~networkx_temporal.classes.TemporalGraph.to_snapshots
    >>> STG = TG.to_snapshots()
    >>> STG
 
-   [<networkx.classes.graph.Graph at 0x7fd9132420d0>,
-    <networkx.classes.graph.Graph at 0x7fd913193710>,
-    <networkx.classes.graph.Graph at 0x7fd912906d50>,
-    <networkx.classes.graph.Graph at 0x7fd91290d350>]
+   [<networkx.classes.graph.MultiDiGraph at 0x7fd9132420d0>,
+    <networkx.classes.graph.MultiDiGraph at 0x7fd913193710>,
+    <networkx.classes.graph.MultiDiGraph at 0x7fd912906d50>,
+    <networkx.classes.graph.MultiDiGraph at 0x7fd91290d350>]
 
 
 :const:`STG` → :const:`TG`
@@ -219,7 +219,7 @@ with :func:`~networkx_temporal.transform.from_snapshots`:
 
 .. code-block:: python
 
-   >>> TG = tx.from_snapshots(STG)
+   >>> TG = tx.from_snapshots(STG).copy()
    >>> print(TG)
 
    TemporalDiGraph (t=4) with 6 nodes and 9 edges
@@ -256,6 +256,7 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
    >>> ETG
 
    [('a', 'b', 0),
+    ('c', 'b', 0)
     ('c', 'b', 1),
     ('a', 'c', 2),
     ('d', 'c', 2),
@@ -270,6 +271,7 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
    >>> ETG
 
    [('a', 'b', 0, 1),
+    ('c', 'b', 0, 1),
     ('c', 'b', 1, 1),
     ('a', 'b', 1, -1),
     ('a', 'c', 2, 1),
@@ -289,6 +291,7 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
    >>> ETG
 
    [('a', 'b', 0, 0.0),
+    ('c', 'b', 0, 1.0),
     ('c', 'b', 1, 1.0),
     ('a', 'c', 2, 0.0),
     ('d', 'c', 2, 0.0),
@@ -323,7 +326,7 @@ them. It is mainly useful for certain analysis and visualization tasks, e.g., ba
 .. seealso::
 
    For an example with temporal node centrality metrics, see
-   `Hyoungshick & Anderson, 2012 <https://doi.org/10.1103/PhysRevE.85.026107>`_ [1]_.
+   `Kim & Anderson, 2012 <https://doi.org/10.1103/PhysRevE.85.026107>`_ [1]_.
 
 
 :const:`TG` → :const:`UTG`
@@ -337,30 +340,30 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_unrolled`:
    >>> UTG = TG.to_unrolled(edge_couplings=True)
    >>> print(UTG)
 
-   DiGraph named 'UnrolledTemporalGraph' with 12 nodes and 14 edges
+   MultiDiGraph named 'UnrolledTemporalGraph' with 12 nodes and 14 edges
 
 Let's draw the resulting graph to visualize the node copies (in black) and edge couplings (dotted):
 
 .. code-block:: python
 
    >>> def draw_unrolled(UTG, **kwargs):
-   >>>     return tx.draw(
-   >>>         UTG,
-   >>>         layout=tx.unrolled_layout,
-   >>>         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
-   >>>         font_size=10,
-   >>>         arrowsize=15,
-   >>>         **kwargs,
-   >>>     )
+   ...     return tx.draw(
+   ...         UTG,
+   ...         layout=tx.unrolled_layout,
+   ...         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
+   ...         font_size=10,
+   ...         arrowsize=15,
+   ...         **kwargs,
+   ...     )
    >>>
    >>> node_color = [
-   >>>     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
-   >>>     for n in UTG.nodes()]
+   ...     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
+   ...     for n in UTG.nodes()]
    >>>
    >>> draw_unrolled(UTG,
-   >>>               node_color=node_color,
-   >>>               connectionstyle="arc3,rad=0.25",
-   >>>               title="Unrolled Temporal Graph")
+   ...               node_color=node_color,
+   ...               connectionstyle="arc3,rad=0.25",
+   ...               title="Unrolled Temporal Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_39_0.png
    :align: center
@@ -381,12 +384,12 @@ colored in black:
    >>> UTG_delta = TG.to_unrolled(delta=1)
    >>>
    >>> node_color = [
-   >>>     "tab:red" if UTG.has_node(n) else "#333"
-   >>>     for n in UTG_delta.nodes()]
+   ...     "tab:red" if UTG.has_node(n) else "#333"
+   ...     for n in UTG_delta.nodes()]
    >>>
-   >>> tx.draw_unrolled(UTG_delta,
-   >>>                  node_color=node_color,
-   >>>                  title="Unrolled Temporal Graph ($\\delta=1$)")
+   >>> draw_unrolled(UTG_delta,
+   ...               node_color=node_color,
+   ...               title="Unrolled Temporal Graph ($\\delta=1$)")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_41_0.png
    :align: center
@@ -414,18 +417,18 @@ the creation of temporal node copies and edge couplings. A comparison of the new
    >>> UTG_all = TG.to_unrolled(delta=1, node_copies="all")
    >>>
    >>> draw_unrolled(
-   >>>     UTG_fill,
-   >>>     node_size=200, fig=fig, ax=0, title="node_copies='fill'")
+   ...     UTG_fill,
+   ...     node_size=200, fig=fig, ax=0, title="node_copies='fill'")
    >>>
    >>> draw_unrolled(
-   >>>     UTG_persist,
-   >>>     node_color=["#333" if UTG_fill.has_node(n) else "tab:green" for n in UTG_persist.nodes()],
-   >>>     node_size=200, fig=fig, ax=1, title="node_copies='persist'")
+   ...     UTG_persist,
+   ...     node_color=["#333" if UTG_fill.has_node(n) else "tab:green" for n in UTG_persist.nodes()],
+   ...     node_size=200, fig=fig, ax=1, title="node_copies='persist'")
    >>>
    >>> draw_unrolled(
-   >>>     UTG_all,
-   >>>     node_color=["#333" if UTG_persist.has_node(n) else "tab:blue" for n in UTG_all.nodes()],
-   >>>     node_size=200, fig=fig, ax=2, title="node_copies='all'")
+   ...     UTG_all,
+   ...     node_color=["#333" if UTG_persist.has_node(n) else "tab:blue" for n in UTG_all.nodes()],
+   ...     node_size=200, fig=fig, ax=2, title="node_copies='all'")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_43_0.png
    :align: center
@@ -438,7 +441,7 @@ the creation of temporal node copies and edge couplings. A comparison of the new
 
 As with events, node and edge attributes are not preserved when unrolling and rerolling graphs,
 but their structural information is retained.
-Obtanining a :class:`~networkx_temporal.classes.TemporalGraph`
+Obtaining a :class:`~networkx_temporal.classes.TemporalGraph`
 with :func:`~networkx_temporal.transform.from_unrolled`:
 
 .. code-block:: python
@@ -473,7 +476,7 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.to_numpy`           |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
-| `Pandas <https://pandas.org>`__                                   | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
+| `Pandas <https://pandas.pydataorg>`__                             | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.to_torch_geometric` |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
@@ -487,7 +490,7 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 
 Graphs may be converted to a different library format with the high-level
-:func:`~networkx_temporal.utils.convert` function:
+:func:`~networkx_temporal.classes.TemporalGraph.convert` function:
 
 .. code-block:: python
 
@@ -498,7 +501,7 @@ Graphs may be converted to a different library format with the high-level
     <igraph.Graph at 0x7ff6f181c140>,
     <igraph.Graph at 0x7ff6f181c240>]
 
-By default, the amount of objects returned match the number of slices (snapshots). To return a
+By default, the number of objects returned matches the number of slices (snapshots). To return a
 single object containing all the nodes and edges found in the temporal graph:
 
 .. code-block:: python
@@ -512,7 +515,7 @@ File readers and writers
 ========================
 
 Reading and writing temporal graph data to and from external file formats is supported
-through the :mod:`~networkx_temporal.readwrite` module.
+through the :mod:`~networkx_temporal.readwrite` module,
 for which :func:`~networkx_temporal.readwrite.read_graph`
 and :func:`~networkx_temporal.readwrite.write_graph`
 offer a high-level interface:
@@ -551,5 +554,5 @@ still supported by `Gephi <https://gephi.org>`__ and other external tools.
 
 .. rubric:: References
 
-.. [1] Hyoungshick, K., Anderson, R. (2012). ''Temporal node centrality in complex networks''.
+.. [1] Kim, H. & Anderson, R. (2012). "Temporal node centrality in complex networks".
    Physical Review E, 85(2).

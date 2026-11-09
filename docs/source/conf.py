@@ -13,7 +13,7 @@ from networkx_temporal import __version__
 release = version = __version__
 
 project = "networkx-temporal"
-copyright = "2024-2026"
+copyright = "2024-2026, NetworkX-Temporal developers"
 author = "Nelson Aloysio Reis de Almeida Passos"
 
 for _ in ["-", "a", "b", "post", "rc"]:
@@ -29,7 +29,7 @@ extensions = [
     "sphinxemoji.sphinxemoji",
 ]
 exclude_patterns = []
-templates_path = ["_templates"]
+templates_path = []  # ["_templates"]
 add_module_names = False
 autosummary_generate = True
 autosummary_imported_members = True

@@ -39,6 +39,7 @@ def all_neighbors(self: TemporalGraph, node: Any) -> iter:
     )
 all_neighbors.__doc__ += "\n:meta private:"
 
+
 @wraps(nx.Graph.neighbors)
 def neighbors(self: TemporalGraph, node: Any) -> iter:
     yield from (
@@ -63,11 +64,13 @@ def degree(self: TemporalGraph, nbunch: Any = None, weight: str = None) -> Union
     return _degree(self, "degree", nbunch=nbunch, weight=weight)
 degree.__doc__ += "\n:meta private:"
 
+
 # NOTE: @wraps(nx.DiGraph.in_degree): ERROR: Unexpected indentation (sphinx docstring).
 @wraps(nx.Graph.degree)
 def in_degree(self: TemporalGraph, nbunch: Any = None, weight: str = None) -> Union[dict, int]:
     return _degree(self, "in_degree", nbunch=nbunch, weight=weight)
 in_degree.__doc__ += "\n:meta private:"
+
 
 # NOTE: @wraps(nx.DiGraph.out_degree): ERROR: Unexpected indentation (sphinx docstring).
 @wraps(nx.Graph.degree)
@@ -85,6 +88,7 @@ def remove_edges_from(self: TemporalGraph, edges: Union[list, List[list]]) -> No
         )
     for t, G in enumerate(self):
         G.remove_edges_from(edges[t] if isinstance(edges[0], list) else edges)
+remove_edges_from.__doc__ += "\n:meta private:"
 
 
 @wraps(nx.Graph.remove_nodes_from)
@@ -96,6 +100,7 @@ def remove_nodes_from(self: TemporalGraph, nodes: Union[list, List[list]]) -> No
         )
     for t, G in enumerate(self):
         G.remove_nodes_from(nodes[t] if isinstance(nodes[0], list) else nodes)
+remove_nodes_from.__doc__ += "\n:meta private:"
 
 
 @wraps(nx.Graph.to_directed)

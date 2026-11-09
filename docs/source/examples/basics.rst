@@ -70,24 +70,24 @@ Static graphs from NetworkX can be converted into temporal graphs with
    >>> G = nx.DiGraph()
    >>>
    >>> G.add_nodes_from([
-   >>>     ("a", {"time": 0}),
-   >>>     ("b", {"time": 0}),
-   >>>     ("c", {"time": 1}),
-   >>>     ("d", {"time": 2}),
-   >>>     ("e", {"time": 3}),
-   >>>     ("f", {"time": 3}),
-   >>> ])
+   ...     ("a", {"time": 0}),
+   ...     ("b", {"time": 0}),
+   ...     ("c", {"time": 1}),
+   ...     ("d", {"time": 2}),
+   ...     ("e", {"time": 3}),
+   ...     ("f", {"time": 3}),
+   ... ])
    >>>
    >>> G.add_edges_from([
-   >>>     ("a", "b", {"time": 0}),
-   >>>     ("c", "b", {"time": 1}),
-   >>>     ("d", "c", {"time": 2}),
-   >>>     ("d", "e", {"time": 2}),
-   >>>     ("a", "c", {"time": 2}),
-   >>>     ("f", "e", {"time": 3}),
-   >>>     ("f", "a", {"time": 3}),
-   >>>     ("f", "b", {"time": 3}),
-   >>> ])
+   ...     ("a", "b", {"time": 0}),
+   ...     ("c", "b", {"time": 1}),
+   ...     ("d", "c", {"time": 2}),
+   ...     ("d", "e", {"time": 2}),
+   ...     ("a", "c", {"time": 2}),
+   ...     ("f", "e", {"time": 3}),
+   ...     ("f", "a", {"time": 3}),
+   ...     ("f", "b", {"time": 3}),
+   ... ])
    >>>
    >>> TG = tx.from_static(G)
    >>> print(TG)
@@ -101,8 +101,8 @@ Let's :func:`~networkx_temporal.drawing.draw` the static graph:
 .. code-block:: python
 
    >>> tx.draw(TG, layout="kamada_kawai",
-   >>>         labels=True, edge_labels="time",
-   >>>         suptitle="Temporal Graph")
+   ...         labels=True, edge_labels="time",
+   ...         suptitle="Temporal Graph")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_8_0.png
    :align: center
@@ -126,7 +126,7 @@ graph into a number of snapshots:
 .. code-block:: python
 
    >>> for t, G in enumerate(TG):
-   >>>     print(f"Snapshot t={t}: {G.order()} nodes, {G.size()} edges")
+   ...     print(f"Snapshot t={t}: {G.order()} nodes, {G.size()} edges")
 
    Snapshot t=0: 2 nodes, 1 edges
    Snapshot t=1: 2 nodes, 1 edges
@@ -276,7 +276,7 @@ nodes, or attributes, forcing each snapshot to have approximately the same numbe
 |
 
 As ``attr`` was not set, the graph was split considering the order in which edges were added
-to the graph. Notice how each snapshot title now refer to edge intervals: :math:`e_0` to :math:`e_3`
+to the graph. Notice how each snapshot title now refers to edge intervals: :math:`e_0` to :math:`e_3`
 :math:`(0, 4]` and :math:`e_4` to :math:`e_7` :math:`(4, 8]`.
 This is useful to obtain an arbitrary number of subgraphs, independent of their temporal dynamics.
 
@@ -311,7 +311,7 @@ are here highlighted in green:
    >>> TG = TG.slice(attr="time")
    >>>
    >>> tx.draw(TG, figsize=(8,2), layout="kamada_kawai",
-   >>>         labels=True, suptitle="Original Temporal Graph")
+   ...         labels=True, suptitle="Original Temporal Graph")
 
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_31_0.png
@@ -324,17 +324,17 @@ are here highlighted in green:
    >>> TG_prop = tx.propagate_snapshots(TG, method="ffill")
    >>>
    >>> temporal_node_color = [
-   >>>     ["green" if TG_prop.index_node(n)[0] == t else "tab:red"
-   >>>      for n in G.nodes()] for t, G in enumerate(TG_prop)]
+   ...     ["green" if TG_prop.index_node(n)[0] == t else "tab:red"
+   ...      for n in G.nodes()] for t, G in enumerate(TG_prop)]
    >>>
    >>> temporal_edge_color = [
-   >>>     ["tab:green" if TG_prop.index_edge((n1, n2))[0] == t else "black"
-   >>>      for n1, n2 in G.edges()] for t, G in enumerate(TG_prop)]
+   ...     ["tab:green" if TG_prop.index_edge((n1, n2))[0] == t else "black"
+   ...      for n1, n2 in G.edges()] for t, G in enumerate(TG_prop)]
    >>>
    >>> tx.draw(TG_prop, figsize=(8, 2), layout="kamada_kawai",
-   >>>         labels=True, suptitle="Propagated Temporal Graph (ffill)",
-   >>>         temporal_node_color=temporal_node_color,
-   >>>         temporal_edge_color=temporal_edge_color)
+   ...         labels=True, suptitle="Propagated Temporal Graph (ffill)",
+   ...         temporal_node_color=temporal_node_color,
+   ...         temporal_edge_color=temporal_edge_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_32_0.png
    :align: center
@@ -399,7 +399,7 @@ Utility functions
 =================
 
 Utility functions for temporal graphs are available in the
-``~networkx_temporal.utils`` module.
+:mod:`~networkx_temporal.utils` module.
 
 .. code:: python
 
@@ -428,7 +428,7 @@ Obtaining node and edge attributes across snapshots:
 
    >>> tx.get_node_attributes(TG, "group")
 
-   [{'a': 0, 'b': 1, 'c': 1, 'd': nan}]
+   [{'a': 0, 'b': 1, 'c': 1}]
 
 .. code:: python
 
@@ -447,13 +447,13 @@ snapshot:
 
    >>> tx.partition_nodes(TG, "group", index=True, default="unknown")
 
-   [{0: ['a'], 1: ['b', 'c'], 'unknown': ['d']}]
+   [{0: {'a'}, 1: {'b','c'}, 'unknown': {'d'}}]
 
 .. code:: python
 
    >>> tx.partition_nodes(TG, "group", index=False)
 
-   [[['a'], ['c', 'b'], ['d']]]
+   [[['a'], ['b', 'c']]]
 
    >>> tx.partition_edges(TG, "time")
 
@@ -470,7 +470,7 @@ edges:
 
    >>> tx.map_edge_attr_to_nodes(TG, "time", unique=True)
 
-   [{'a': [0, 1], 'b': [0, 0], 'c': [0], 'd': [1]}]
+   [{'a': [0, 1], 'b': [0], 'c': [0], 'd': [1]}]
 
 .. code:: python
 

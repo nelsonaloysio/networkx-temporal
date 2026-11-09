@@ -83,41 +83,42 @@ def draw_networkx(
         >>> TG = tx.TemporalDiGraph()
         >>>
         >>> TG.add_edges_from([
-        >>>     ("a", "b", {"time": 0}),
-        >>>     ("c", "b", {"time": 1}),
-        >>>     ("d", "c", {"time": 2}),
-        >>>     ("d", "e", {"time": 2}),
-        >>>     ("a", "c", {"time": 2}),
-        >>>     ("f", "e", {"time": 3}),
-        >>>     ("f", "a", {"time": 3}),
-        >>>     ("f", "b", {"time": 3}),
-        >>>     ("c", "a", {"time": 4}),
-        >>>     ("f", "c", {"time": 5}),
-        >>>     ("a", "f", {"time": 5}),
-        >>>     ("f", "c", {"time": 5}),
-        >>> ])
+        ...     ("a", "b", {"time": 0}),
+        ...     ("c", "b", {"time": 1}),
+        ...     ("d", "c", {"time": 2}),
+        ...     ("d", "e", {"time": 2}),
+        ...     ("a", "c", {"time": 2}),
+        ...     ("f", "e", {"time": 3}),
+        ...     ("f", "a", {"time": 3}),
+        ...     ("f", "b", {"time": 3}),
+        ...     ("c", "a", {"time": 4}),
+        ...     ("f", "c", {"time": 5}),
+        ...     ("a", "f", {"time": 5}),
+        ...     ("f", "c", {"time": 5}),
+        ... ])
         >>>
         >>> TG = TG.slice(attr="time")
         >>>
         >>> # Plot temporal graph snapshots with node colors by time of first appearance.
         >>> temporal_node_color = {t: [colors[TG.index_node(node)[0]] for node in nodes]
-        >>>                        for t, nodes in enumerate(TG.nodes())}
+        ...                        for t, nodes in enumerate(TG.nodes())}
         >>>
         >>> fig = tx.draw(TG,
-        >>>               layout="kamada_kawai",
-        >>>               temporal_node_color=temporal_node_color,
-        >>>               figsize=(6, 4),
-        >>>               nrows=2,
-        >>>               ncols=3,
-        >>>               border=True,
-        >>>               suptitle=True)
+        ...               layout="kamada_kawai",
+        ...               temporal_node_color=temporal_node_color,
+        ...               figsize=(6, 4),
+        ...               nrows=2,
+        ...               ncols=3,
+        ...               border=True,
+        ...               labels=True,
+        ...               suptitle=True)
         >>>
         >>> # Add legend to figure.
         >>> handles = [mpatches.Patch(color=colors[i], label=f"$t$ = {i}")
-        >>>            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
+        ...            for i in range(1+max([TG.index_node(n)[0] for n in TG.temporal_nodes()]))]
         >>>
         >>> fig.legend(handles=handles, ncols=4, bbox_to_anchor=(0.5, -0.15),
-        >>>            loc="lower center", title="Time of first node appearance")
+        ...            loc="lower center", title="Time of first node appearance")
         >>>
         >>> # Save figure to file.
         >>> # fig.savefig("figure.png")
@@ -139,8 +140,8 @@ def draw_networkx(
         <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.html>`__
         and returns a `Figure
         <https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html>`__ with
-        graphs as subplots. It does not scale well to large graphs, which usually
-        require more sophisticated approaches or specialized visualization tools.
+        graphs as subplots. It does not scale well to large graphs, which require more
+        sophisticated approaches or specialized tools.
 
     .. seealso::
 
@@ -153,7 +154,7 @@ def draw_networkx(
           <https://networkx.org/documentation/stable/reference/drawing.html>`__
           and `gallery
           <https://networkx.org/documentation/stable/auto_examples/index.html#drawing>`__
-          from NetworkX for more details and plot examples.
+          from NetworkX for more details and examples.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.

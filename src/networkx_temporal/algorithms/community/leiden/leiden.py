@@ -42,7 +42,7 @@ def leiden_communities(
     .. seealso::
 
        The `Examples → GPU acceleration → Leiden communities
-       <../examples/gpu.html#leiden-communities>`__ page for examples.
+       <../examples/gpu.html#leiden-communities>`__ page for usage examples.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.

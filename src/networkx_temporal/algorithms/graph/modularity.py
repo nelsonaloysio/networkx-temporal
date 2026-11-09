@@ -19,7 +19,7 @@ def modularity(
 ) -> Union[float, List[float]]:
     """ Returns the modularity of a graph.
 
-    Modularity [7]_ measures the fraction of edges in a graph that fall within communities,
+    Modularity [8]_ measures the fraction of edges in a graph that fall within communities,
     compared to their expected number in a random graph with the same degree sequence.
     Higher values may indicate more internal connections than expected by chance.
     It is commonly defined as:
@@ -57,7 +57,7 @@ def modularity(
         The :func:`~networkx_temporal.algorithms.modularity_multislice` function for a temporal
         generalization of the metric.
 
-    .. [7] A. Clauset, M. E. J. Newman, C. Moore (2004). ''Finding community structure in very
+    .. [8] A. Clauset, M. E. J. Newman, C. Moore (2004). ''Finding community structure in very
         large networks.'' Phys. Rev. E 70.6 (2004).
         doi: `10.1103/PhysRevE.70.066111 <https://doi.org/10.1103/PhysRevE.70.066111>`__.
 

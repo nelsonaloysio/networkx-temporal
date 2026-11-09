@@ -30,13 +30,13 @@ def spectral_clustering(
     ``operator``:
 
     - ``'laplacian'``: normalized or unnormalized operator with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_laplacian`;
+      :func:`~networkx_temporal.algorithms.spectral_clustering_laplacian`;
 
     - ``'bethe_hessian'``: Bethe-Hessian operator with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_bethe_hessian`;
+      :func:`~networkx_temporal.algorithms.spectral_clustering_bethe_hessian`;
 
     - ``'modularity'``: modularity-based spectral clustering with
-      :func:`~networkx_temporal.algorithms.community.spectral.spectral_clustering_modularity`.
+      :func:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
 
     .. hint::
 
@@ -46,7 +46,6 @@ def spectral_clustering(
 
        The `Examples → GPU acceleration → Spectral clustering
        <../examples/gpu.html#spectral-clustering>`__ page for examples.
-
 
     .. rubric:: Example
 
@@ -63,8 +62,8 @@ def spectral_clustering(
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
-    :param operator: The spectral operator to use. Supported types are
-        ``'laplacian'``, ``'bethe_hessian'``, and ``'modularity'``. Default is ``'laplacian'``.
+    :param str operator: The spectral operator to use. Supported types:
+        ``'laplacian'`` (default), ``'bethe_hessian'``, and ``'modularity'``.
     :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
     :param interslice_weight: Weight of inter-slice edges connecting node copies across snapshots.
     :param str device: Device to use for computation. Available choices:

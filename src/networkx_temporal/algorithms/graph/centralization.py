@@ -19,7 +19,7 @@ def centralization(
 ) -> Union[float, List[float]]:
     """ Returns the centralization of a graph.
 
-    Centralization [5]_ is defined as the sum of differences between the most central node's
+    Centralization [6]_ is defined as the sum of differences between the most central node's
     centrality and each of the other nodes' centralities, divided by the maximum theoretical sum of
     values in a graph with the same properties, such as order, size, and edge directionality.
     It is calculated as:
@@ -75,7 +75,7 @@ def centralization(
 
         1.0
 
-    .. [5] Freeman, L.C. (1979).
+    .. [6] Freeman, L.C. (1979).
         ''Centrality in Social Networks I: Conceptual Clarification''.
         Social Networks 1, 215--239.
         doi: `10.1016/0378-8733(78)90021-7 <https://doi.org/10.1016/0378-8733(78)90021-7>`__

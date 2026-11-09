@@ -122,7 +122,7 @@ Create a directed :class:`~networkx_temporal.classes.TemporalGraph` object and
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.temporal_graph() # TG = tx.TemporalMultiGraph()
+   >>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -137,23 +137,24 @@ Create a directed :class:`~networkx_temporal.classes.TemporalGraph` object and
    >>>
    >>> print(TG)
 
-   TemporalMultiGraph (t=4) with 6 nodes and 8 edges
+   TemporalMultiDiGraph (t=4) with 6 nodes and 8 edges
 
 The ``attr`` parameter optionally defines the attribute name to use for slicing the temporal graph,
 while the number of snapshots to be created may likewise be specified with the ``bins`` parameter:
 
 .. code-block:: python
 
-   >>> TG.slice(attr="time", bins=2)
+   >>> bins = TG.slice(attr="time", bins=2)
+   >>> print(bins)
 
-   TemporalMultiGraph (t=2) with 6 nodes and 8 edges
+   TemporalMultiDiGraph (t=2) with 6 nodes and 8 edges
 
 Note that the total number of nodes may vary, while the total number of edges is preserved.
 
 .. note::
 
    The :func:`~networkx_temporal.classes.TemporalGraph.slice` method by default creates a snapshot
-   for unique time value in the temporal graph. It internally stores `views
+   for each unique time value in the temporal graph. It internally stores `views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
    of the original graph, so no data is copied unless otherwise specified.
 
@@ -166,8 +167,8 @@ functions accept compressed temporal graphs:
 
 .. code-block:: python
 
-   >>> TG = tx.read_graph("temporal-graph.graphml.zip")
    >>> tx.write_graph(TG, "temporal-graph.graphml.zip")
+   >>> TG = tx.read_graph("temporal-graph.graphml.zip")
 
 Both functions support the same `extension formats
 <https://networkx.org/documentation/stable/reference/readwrite/index.html>`__
@@ -181,7 +182,7 @@ We may visualize the resulting temporal graph using the :func:`~networkx_tempora
 
 .. code-block:: python
 
-   >>> tx.draw(TG, layout="kamada_kawai", figsize=(8, 2))
+   >>> tx.draw(TG, layout="kamada_kawai", labels=True, figsize=(8, 2))
 
 .. image:: ../assets/figure/temporal-graph.png
    :alt: Temporal graph plot
@@ -205,15 +206,16 @@ and temporal graphs, with the latter supporting parallelized multislice optimiza
    >>> y_pred = tx.algorithms.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
    >>>
    >>> tx.draw([*TG, *TG], nrows=2, ncols=3, figsize=(6, 4), title=False,
-   >>>       layout="kamada_kawai", node_size=50, temporal_node_color=[*y_true, *y_pred],
-   >>>       suptitle="Ground Truths (top) vs Spectral Clustering (bottom)")
+   ...       layout="kamada_kawai", node_size=50, temporal_node_color=[*y_true, *y_pred],
+   ...       suptitle="Ground Truths (top) vs Spectral Clustering (bottom)")
 
 .. image:: ../assets/figure/spectral-clustering.png
    :alt: Spectral clustering plot
    :align: center
 
-The library automatically detects whether a GPU is available and uses it for computation if the
-environment variable ``export NX_GPU_AUTOCONFIG=True`` is set; otherwise, defaults to CPU.
+If the environment variable ``NX_GPU_AUTOCONFIG=1`` is set, the library automatically
+switches to GPU backend (``device='gpu'``) when available. Otherwise, it defaults to CPU backend
+(``device='cpu'``).
 
 .. seealso::
 
@@ -240,9 +242,9 @@ a :class:`~networkx_temporal.classes.TemporalGraph` between different
 .. code-block:: python
 
    >>> G = TG.to_static()        # TG = tx.from_static(G)
-   >>> STG = TG.to_snapshots()   # TG = tx.from_snapshots(SG)
-   >>> ETG = TG.to_events()      # TG = tx.from_events(EG)
-   >>> UTG = TG.to_unrolled()    # TG = tx.from_unrolled(UG)
+   >>> STG = TG.to_snapshots()   # TG = tx.from_snapshots(STG)
+   >>> ETG = TG.to_events()      # TG = tx.from_events(ETG)
+   >>> UTG = TG.to_unrolled()    # TG = tx.from_unrolled(UTG)
 
 In addition, it allows to :func:`~networkx_temporal.classes.TemporalGraph.convert` both static and
 temporal graphs to the following `library formats <examples/convert.html#external-library-formats>`__:
@@ -287,4 +289,4 @@ For more information on using this package, please refer to the following sectio
 If you have questions or feedback to share, feel free to
 `open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
 or
-`contact us via e-mail <mailto:nelson.reis@phd.unipi.it>`__. |:mailbox_with_mail:|
+`contact us via e-mail <mailto:contact@networkx-temporal.org>`__. |:mailbox_with_mail:|

@@ -45,11 +45,8 @@ def spectral_clustering_bethe_hessian(
     the same estimation is employed, but is considered a heuristic approximation instead.
 
     The sign of ``r`` should be positive for assortative communities and negative for
-    disassortative communities; currently estimation only supports assortative structures.
-
-    .. hint::
-
-       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+    disassortative communities; note that the current estimation only supports assortative
+    structures.
 
     .. seealso::
 

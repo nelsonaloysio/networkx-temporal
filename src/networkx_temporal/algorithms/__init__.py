@@ -49,7 +49,7 @@ allows checking if GPU acceleration is enabled in the environment:
    >>> os.environ["NX_GPU_AUTOCONFIG"] = "1"  # Enable GPU acceleration by default.
    >>>
    >>> import networkx_temporal as tx
-   >>> tx.is_gpu_enabled  # Check whether GPU acceleration is enabled.
+   >>> tx.is_gpu_enabled                      # Check whether GPU acceleration is enabled.
 
    True
 

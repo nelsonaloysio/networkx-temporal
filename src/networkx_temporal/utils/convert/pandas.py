@@ -16,7 +16,7 @@ def to_pandas(
     dtype: Optional[object] = None,
     edge_key: Optional[str] = None,
 ) -> pd.DataFrame:
-    """ Convert from NetworkX to `Pandas <https://pandas.org>`__ edge list.
+    """ Convert from NetworkX to `Pandas <https://pandas.pydata.org>`__ edge list.
 
     :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
         a single static NetworkX graph, or a list of static NetworkX graphs as input.
@@ -57,7 +57,7 @@ def from_pandas(
     edge_attr: Optional[Union[str, List[str], bool]] = True,
     edge_key: Optional[str] = None,
 ) -> Union[TemporalGraph, StaticGraph]:
-    """ Convert from `Pandas <https://pandas.org>`__ edge list to NetworkX.
+    """ Convert from `Pandas <https://pandas.pydata.org>`__ edge list to NetworkX.
 
     :param edgelist: A pandas DataFrame or list of DataFrames representing graph edges.
     :param source: Column name for the source nodes. Default is ``'source'``.
