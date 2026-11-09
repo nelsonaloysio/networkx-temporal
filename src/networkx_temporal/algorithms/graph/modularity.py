@@ -84,13 +84,16 @@ def modularity(
     if weight is not None and type(weight) != str:
         raise TypeError("Weight expects a string.")
 
-    kwargs = {'weight': weight, 'resolution': resolution}
     to_matrix = to_scipy if sparse else to_numpy
 
     if spectral:
         fnc = modularity_spectral
         assignments = communities
-        kwargs.update({"directed": graph.is_directed()})
+        kwargs = {
+            "weight": weight,
+            "gamma": resolution,
+            "directed": graph.is_directed(),
+        }
         # Map to (n,) array or (n, k) matrix for spectral method.
         if type(communities) in (str, dict):
             assignments = map_attr_to_nodes(graph, communities, index=False)
@@ -98,11 +101,12 @@ def modularity(
         adj = to_matrix(graph, weight=weight)
     else:
         fnc = nx.algorithms.community.quality.modularity
+        kwargs = {"weight": weight, "resolution": resolution}
         assignments = partition_nodes(graph, communities, index=False)
 
     if is_static_graph(graph):
         graph = adj if spectral else graph
-        return Q(graph, assignments, **kwargs)
+        return fnc(graph, assignments, **kwargs)
 
     graph = adj if spectral else graph
     return [fnc(g, z, **kwargs) for g, z in zip(graph, assignments)]
