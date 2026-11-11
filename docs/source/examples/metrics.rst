@@ -37,7 +37,7 @@ duplicates:
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.temporal_graph(directed=True)  # TG = tx.TemporalMultiDiGraph()
+   >>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=0)
@@ -105,7 +105,7 @@ Node neighborhoods
 
 Edge directedness is considered when obtaining the neighbors of a node,
 either per snapshot or considering all snapshots, via
-the `neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.neighbors.html>`_ method
+the `neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.neighbors.html>`__ method
 and the :func:`~networkx_temporal.classes.neighbors` function, respectively.
 
 
@@ -120,7 +120,7 @@ method returns a generator over graph snapshots, respecting edge direction:
    >>> TG = TG.slice(attr="time")
    >>> list(TG.neighbors("c"))
 
-   [[], ['b'], [], []]
+   [['b'], ['b'], [], []]
 
 Converting the graph to undirected, we also obtain nodes that have node
 :math:`c` as their neighbor:
@@ -129,12 +129,12 @@ Converting the graph to undirected, we also obtain nodes that have node
 
    >>> list(TG.to_undirected().neighbors("c"))
 
-   [[], ['b'], ['a', 'd'], []]
+   [['b'], ['b'], ['a', 'd'], []]
 
 .. hint::
 
    The above is effectively the same as calling the
-   `all_neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.all_neighbors.html>`
+   `all_neighbors <https://networkx.org/documentation/stable/reference/generated/networkx.classes.function.all_neighbors.html>`__
    method instead.
 
 
@@ -412,7 +412,7 @@ California, Irvine, over a period of several months in the year of 2004:
    >>> TG = tx.collegemsg_graph()
    >>> print(TG)
 
-   TemporalMultiDiGraph (t=193) with 1899 nodes and 59835 edges
+   TemporalMultiDiGraph named 'CollegeMsg' (t=193) with 1899 nodes and 59835 edges
 
 The dataset is sliced into :math:`t=193` daily snapshots, spanning a period from April to October:
 
@@ -430,14 +430,14 @@ Let's define a custom function to convert date timestamps to week-based interval
    >>> from datetime import datetime
    >>>
    >>> def strftime(x, fmt="%Y, Week %W"):
-   ...    # Convert date to weekly intervals with ascending sorting.
-   ...    return datetime.strptime(x, "%Y-%m-%d %H:%M").strftime(fmt)
+   ...     # Convert date to weekly intervals with ascending sorting.
+   ...     return datetime.strptime(x, "%Y-%m-%d %H:%M").strftime(fmt)
    >>>
    >>> TG = tx.collegemsg_graph()
-   >>> TG = TG.slice(attr="time", apply_func=strftime)
+   >>> TG = TG.slice(attr="time", applymap=strftime)
    >>> print(TG)
 
-   TemporalMultiDiGraph (t=29) with 1899 nodes and 59835 edges
+   TemporalMultiDiGraph named 'CollegeMsg' (t=29) with 1899 nodes and 59835 edges
 
 The result is a graph with :math:`t=29` snapshots, spanning the weeks 15 to 43 of 2004:
 
@@ -477,31 +477,31 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> G = TG.to_static()
    >>>
    >>> fig, ax = plt.subplot_mosaic([["Left", "TopRight"],["Left", "BottomRight"]],
-   ...                               constrained_layout=True, figsize=(8, 4), sharex=True,
-   ...                               gridspec_kw={"width_ratios": [3, 1]})
+   ...                              constrained_layout=True, figsize=(8, 4), sharex=True,
+   ...                              gridspec_kw={"width_ratios": [3, 1]})
    >>>
    >>> def deg_plot(df, ax, color="#555", title=None, xlabel=None, ylabel=None):
-   ...    # Plot degree distribution as a line plot with log-scaled x-axis.
-   ...    df.value_counts().sort_index().plot.line(
-   ...       ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
-   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major")
-   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which="minor")
-   ...    ax.set_title(title, fontsize=10)
-   ...    ax.set_xlabel(xlabel)
-   ...    ax.set_ylabel(ylabel)
+   ...     # Plot degree distribution as a line plot with log-scaled x-axis.
+   ...     df[df > 0].value_counts().sort_index().plot.line(
+   ...         ax=ax, color=color, logx=True, marker="x", markersize=3, linewidth=.9)
+   ...     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major")
+   ...     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=0.5, which="minor")
+   ...     ax.set_title(title, fontsize=10)
+   ...     ax.set_xlabel(xlabel)
+   ...     ax.set_ylabel(ylabel)
    >>>
    >>> def hist_plot(df, bins, ax, title="", xlabel="", ylabel="", color="#555"):
-   ...    # Plot histogram of degree distribution with log-scaled y-axis.
-   ...    hist = pd.cut(df, bins=bins)
-   ...    hist.value_counts().sort_index().plot.bar(ax=ax, logy=True, color=color, width=0.7)
-   ...    ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
-   ...    ax.tick_params(axis='both', which="major", labelsize=9)
-   ...    ax.set_title(title, fontsize=9)
-   ...    ax.set_xlabel(xlabel, fontsize=9)
-   ...    ax.set_xticklabels([f"<{b}" for b in bins[1:]])
-   ...    ax.set_ylabel(ylabel, fontsize=9)
-   ...    ax.set_yticks([], minor=True)
-   ...    ax.set_yticks([1, 10, 100, 1000])
+   ...     # Plot histogram of degree distribution with log-scaled y-axis.
+   ...     hist = pd.cut(df[df > 0], bins=bins, right=False)
+   ...     hist.value_counts().sort_index().plot.bar(ax=ax, logy=True, color=color, width=0.7)
+   ...     ax.grid(color="#ccc", linestyle=":", linewidth=1, alpha=1.0, which="major", axis="y")
+   ...     ax.tick_params(axis='both', which="major", labelsize=9)
+   ...     ax.set_title(title, fontsize=9)
+   ...     ax.set_xlabel(xlabel, fontsize=9)
+   ...     ax.set_xticklabels([f"<{b}" for b in bins[1:]])
+   ...     ax.set_ylabel(ylabel, fontsize=9)
+   ...     ax.set_yticks([], minor=True)
+   ...     ax.set_yticks([1, 10, 100, 1000])
    >>>
    >>> deg = pd.Series(dict(G.degree()))
    >>> deg_in = pd.Series(dict(G.in_degree()))
@@ -511,12 +511,16 @@ Let's visualize the node degree distributions on the static graph, considering t
    >>> deg_plot(deg_in, ax["TopRight"], title="In-Degree (log)", color="#333")
    >>> deg_plot(deg_out, ax["BottomRight"], xlabel="Out-Degree (log)", color="#777")
    >>>
-   >>> bins = [0, 10, 50, 100, 500, 1000, 2000]
+   >>> bins = [0, 10, 100, 1000, 10000]
    >>>
    >>> hist_plot(deg, bins, ax["Left"].inset_axes([0.67, 0.59, 0.3, 0.32]),
    ...          title="Degree Histogram", xlabel="Degree", ylabel="Frequency (log)")
    >>> hist_plot(deg_in, bins, ax["TopRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#333")
    >>> hist_plot(deg_out, bins, ax["BottomRight"].inset_axes([0.5, 0.48, 0.45, 0.45]), color="#777")
+   >>>
+   >>> # Share y-axis between top-right and bottom-right insets.
+   >>> ax["BottomRight"].sharey(ax["TopRight"])
+   >>> ax["TopRight"].autoscale(axis="y")
    >>>
    >>> plt.suptitle("Node Degree Distributions on Static Graph", fontsize=11, y=1, fontweight="bold")
    >>> plt.show()
@@ -542,16 +546,16 @@ Let's take a glance at the weekly activity among students using Pandas to
    >>> import pandas as pd
    >>>
    >>> df = pd.DataFrame({
-   >>>    "nodes": TG.order(),
-   >>>    "edges": TG.size(),
-   >>>    "deg_mean": [sum(d[1] for d in deg)/len(deg) for deg in TG.degree()],
-   >>>    # "deg_in_min": [min(d[1] for d in deg) for deg in TG.in_degree()],
-   >>>    # "deg_out_min": [min(d[1] for d in deg) for deg in TG.out_degree()],
-   >>>    "deg_in_max": [max(d[1] for d in deg) for deg in TG.in_degree()],
-   >>>    "deg_out_max": [max(d[1] for d in deg) for deg in TG.out_degree()],
-   >>>    "cent_in": tx.in_degree_centralization(TG),
-   >>>    "cent_out": tx.out_degree_centralization(TG)},
-   >>>    index=TG.index)
+   ...     "nodes": TG.order(),
+   ...     "edges": TG.size(),
+   ...     "deg_mean": [sum(d[1] for d in deg)/len(deg) for deg in TG.degree()],
+   ...     # "deg_in_min": [min(d[1] for d in deg) for deg in TG.in_degree()],
+   ...     # "deg_out_min": [min(d[1] for d in deg) for deg in TG.out_degree()],
+   ...     "deg_in_max": [max(d[1] for d in deg) for deg in TG.in_degree()],
+   ...     "deg_out_max": [max(d[1] for d in deg) for deg in TG.out_degree()],
+   ...     "cent_in": tx.in_degree_centralization(TG),
+   ...     "cent_out": tx.out_degree_centralization(TG)},
+   ...     index=TG.index)
    >>>
    >>> print(df.describe().iloc[1:].round(2))
 
@@ -576,6 +580,8 @@ Let's plot this information over time to better understand the students' activit
 
 .. code-block:: python
 
+   >>> from matplotlib.ticker import AutoMinorLocator, MultipleLocator
+   >>>
    >>> # Include date in x-axis labels for better readability.
    >>> def to_date(x):
    ...     if not x.get_text():
@@ -703,11 +709,11 @@ understand the evolution of the network over time.
 -----
 
 .. [1] Freeman, L.C. (1979).
-       Centrality in Social Networks I: Conceptual Clarification.
-       Social Networks 1, 215--239.
-       doi: `10.1016/0378-8733(78)90021-7 <https://doi.org/10.1016/0378-8733(78)90021-7>`__
+   Centrality in Social Networks I: Conceptual Clarification.
+   Social Networks 1, 215--239.
+   doi: `10.1016/0378-8733(78)90021-7 <https://doi.org/10.1016/0378-8733(78)90021-7>`__
 
 .. [2] P. Panzarasa, T. Opsahl, and K.M. Carley (2009).
-       Patterns and dynamics of users' behavior and interaction: Network analysis of an
-       online community. Journal of the American Society for Information Science and
-       Technology 60.5: 911-932.
+   Patterns and dynamics of users' behavior and interaction: Network analysis of an
+   online community. Journal of the American Society for Information Science and
+   Technology 60(5), 911--932.

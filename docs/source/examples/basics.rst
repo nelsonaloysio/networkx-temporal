@@ -118,7 +118,7 @@ graph into a number of snapshots:
 
 .. code-block:: python
 
-   >>> TG = TG.slice(attr="time")
+   >>> TG = TG.slice(attr="time")  # level="edge" (default)
    >>> print(TG)
 
    TemporalDiGraph (t=4) with 6 nodes and 8 edges
@@ -150,9 +150,8 @@ Define number of snapshots
 
 By default, :func:`~networkx_temporal.classes.TemporalGraph.slice`
 returns snapshots based on unique attribute values, here :math:`t \in \{0,1,2,3\}`,
-which are stored in the :attr:`~networkx_temporal.classes.TemporalGraph.names` property
+which are stored in the :attr:`~networkx_temporal.classes.TemporalGraph.index` property
 of :class:`~networkx_temporal.classes.TemporalGraph` objects for future access.
-
 
 A new object can be created with a specific number of snapshots by setting the
 ``bins`` parameter:
@@ -160,7 +159,7 @@ A new object can be created with a specific number of snapshots by setting the
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2)
-   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, title=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_15_0.png
    :align: center
@@ -181,8 +180,8 @@ argument, optionally considering temporal information available as their ``attr`
 
 .. code-block:: python
 
-   >>> TG = TG.slice(3, attr="time", axis=1)  # level="edge" (default)
-   >>> tx.draw(TG, figsize=(6, 2), layout="kamada_kawai", labels=True, names=False)
+   >>> TG = TG.slice(3, attr="time", axis=1)
+   >>> tx.draw(TG, figsize=(6, 2), layout="kamada_kawai", labels=True, title=False)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_19_0.png
    :align: center
@@ -194,7 +193,7 @@ Or, to limit the maximum number of nodes allowed per snapshot, set ``axis=1`` an
 .. code-block:: python
 
    >>> TG = TG.slice(3, axis=1, level="node")
-   >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True, names=False)
+   >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True, title=False)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_21_0.png
    :align: center
@@ -209,7 +208,7 @@ considers ``level="edge"`` attribute data:
 
 .. code-block:: python
 
-   >>> TG = TG.slice(attr="time")  # level="edge" (default)
+   >>> TG = TG.slice(attr="time")
    >>> tx.draw(TG, figsize=(8, 2), layout="kamada_kawai", labels=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_23_0.png
@@ -241,7 +240,7 @@ For example:
 .. code-block:: python
 
    >>> TG = TG.slice(attr="time", bins=2, qcut=True)
-   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, title=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_27_0.png
    :align: center
@@ -268,7 +267,7 @@ nodes, or attributes, forcing each snapshot to have approximately the same numbe
 .. code-block:: python
 
    >>> TG = TG.slice(bins=2, rank_first=True)
-   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, names=True)
+   >>> tx.draw(TG, figsize=(4, 2), layout="kamada_kawai", labels=True, title=True)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-01-basics_29_0.png
    :align: center
@@ -293,7 +292,7 @@ Propagate snapshots
 Suppose connections should be instead treated as long-lasting, with future snapshots maintaining
 past observed data. The :func:`~networkx_temporal.utils.propagate_snapshots` function allows to
 merge previous snapshots forward or backward in time. New nodes and edges for each snapshot
-are here highlighted in green:
+are highlighted in green:
 
 .. code-block:: python
 
@@ -398,7 +397,7 @@ Note that both methods return new objects when called, so the original graph rem
 Utility functions
 =================
 
-Utility functions for temporal graphs are available in the
+Additional utility functions for temporal graphs are available in the
 :mod:`~networkx_temporal.utils` module.
 
 .. code:: python
@@ -445,7 +444,7 @@ snapshot:
 
 .. code:: python
 
-   >>> tx.partition_nodes(TG, "group", index=True, default="unknown")
+   >>> tx.partition_nodes(TG, "group", default="unknown")
 
    [{0: {'a'}, 1: {'b','c'}, 'unknown': {'d'}}]
 

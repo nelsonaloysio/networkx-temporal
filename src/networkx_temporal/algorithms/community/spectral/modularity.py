@@ -18,16 +18,16 @@ def spectral_clustering_modularity(
     seed: Optional[int] = None,
     device: Literal["cpu", "gpu"] = DEVICE
 ) -> List[dict]:
-    """ Spectral clustering via  multislice modularity.
+    """ Spectral clustering via multislice modularity.
 
     Multislice modularity (Mucha et al. 2010) generalizes the Newman-Girvan modularity to
     temporal graphs by introducing inter-slice couplings between node copies across snapshots,
 
     .. math::
 
-       \\mathcal{Q}_\\mathrm{MS} =
-       \\frac{1}{2 \\mu}
-       \\mathrm{Tr} (\\mathbf{C}^\\top \\mathbf{M} \\mathbf{C})
+        \\mathcal{Q}_\\mathrm{MS} =
+        \\frac{1}{2 \\mu}
+        \\mathrm{Tr} (\\mathbf{C}^\\top \\mathbf{M} \\mathbf{C})
 
     where :math:`\\mathbf{M}` is the supra-modularity matrix with diagonal blocks
     :math:`\\mathbf{B}^{(t)} = \\mathbf{A}^{(t)} - \\gamma \\frac{d^{(t)} d^{(t)T}}{2 m^{(t)}}`
@@ -36,20 +36,20 @@ def spectral_clustering_modularity(
 
     This function computes the leading :math:`k` eigenvectors of the supra-modularity matrix and
     clusters them via :math:`k`-means to produce a temporal community assignment. Note that GPU
-    eigensolvers require :math:`\\mathbf{M}` to be be symmetric, so only undirected graphs are
+    eigensolvers require :math:`\\mathbf{M}` to be symmetric, so only undirected graphs are
     currently supported.
 
     .. seealso::
 
-       The :func:`~networkx_temporal.algorithms.spectral_clustering`
-       function for a convenience wrapper around this implementation.
+        The :func:`~networkx_temporal.algorithms.spectral_clustering`
+        function for a convenience wrapper around this implementation.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
     :param k: Number of communities.
     :param offsets: List of starting indices for each snapshot in the supra-adjacency matrix.
         Obtained by :func:`~networkx_temporal.classes.TemporalGraph.offsets`, or
-        :func:`~networkx_temporal.utils.temporal.to_supra_adjacency_matrix` with
+        :func:`~networkx_temporal.utils.to_supra_adjacency_matrix` with
         ``return_offsets=True``. If ``None``, assumes a static graph.
     :param gamma: Resolution parameter :math:`\\gamma` (default: ``1.0``). Controls the size of the
         communities found, where higher values lead to smaller communities.
@@ -78,7 +78,7 @@ def spectral_clustering_modularity(
             from cupyx.scipy.sparse.linalg import eigsh, LinearOperator
         except ImportError as exc:
             raise ImportError(
-                "GPU spectral clustering requires CuPy and CuML. Please install it via"
+                "GPU spectral clustering requires CuPy and cuML. Please install it via"
                 " `conda install -c conda-forge -c rapidsai -c nvidia cupy cuml`."
             ) from exc
     else:

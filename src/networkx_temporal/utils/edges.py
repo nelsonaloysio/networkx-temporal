@@ -42,7 +42,7 @@ def get_edge_attributes(
 
         >>> tx.get_edge_attributes(TG, attr="time", default="unknown", index=False)
 
-        [[0, 1, 'unknown']]
+        [[0, 'unknown', 1]]
 
     :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -144,7 +144,7 @@ def map_attr_to_edges(
 
     The output is a list of dictionaries (if ``index=True``) or lists (if ``index=False``)
     mapping edges to attributes for each snapshot, similar to
-    :func:`~networkx_temporal.utils.edge.get_edge_attributes`.
+    :func:`~networkx_temporal.utils.get_edge_attributes`.
 
     :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -288,11 +288,10 @@ def partition_edges(
         >>> TG.add_edge("b", "c", time=1)
         >>>
         >>> TG = TG.slice(attr="time")
-        >>> print(TG)
         >>>
         >>> tx.partition_edges(TG, "time")
 
-        {0: {('a', 'b')}, 1: {('b', 'c')}}
+        [{0: [('a', 'b')]}, {1: [('b', 'c')]}]
 
     :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.

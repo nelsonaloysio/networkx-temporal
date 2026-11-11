@@ -38,7 +38,7 @@ def conductance(
     and :math:`\\text{vol}(S)` is the volume of :math:`S`, i.e., the total weight of all edges
     starting at the node subset.
 
-    .. [7] Kannan, R., Vempala, S., & Vetta, A. (2004). ''On clusterings: Good, bad and spectral''.
+    .. [7] Kannan, R., Vempala, S., & Vetta, A. (2004). On clusterings: Good, bad and spectral.
         Journal of the ACM (JACM), 51(3), 497-515.
         doi: `10.1145/990308.990313 <https://doi.org/10.1145/990308.990313>`__.
 

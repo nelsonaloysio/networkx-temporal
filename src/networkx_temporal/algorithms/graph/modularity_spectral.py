@@ -38,7 +38,7 @@ def modularity_spectral(
     and :math:`\\gamma = 1` (default) is the resolution parameter, where larger values lead to
     smaller communities.
 
-    .. [9] Newman, M. E. J. (2006). ''Modularity and community structure in networks''.
+    .. [9] Newman, M. E. J. (2006). Modularity and community structure in networks.
         Proceedings of the National Academy of Sciences, 103(23), 8577-8582.
 
     :param adj: Adjacency matrix in CSR format. Accepts dense (NumPy) or sparse (SciPy) matrices.

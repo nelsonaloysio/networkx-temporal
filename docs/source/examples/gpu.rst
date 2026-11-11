@@ -32,9 +32,9 @@ GPU-accelerated algorithms may require the installation of the following librari
 
 - `CuPy <https://docs.cupy.dev/en/stable/install.html>`__:
   Array computations on GPUs, similar to NumPy and SciPy (AMD/NVIDIA);
-- `cuGraph <https://docs.rapids.ai/api/cugraph/stable/install.html>`__:
+- `cuGraph <https://docs.rapids.ai/install/>`__:
   Graph computations part of the RAPIDS suite (NVIDIA only);
-- `cuML <https://docs.rapids.ai/api/cuml/stable/install.html>`__:
+- `cuML <https://docs.rapids.ai/install/>`__:
   Machine learning algorithms part of the same suite (NVIDIA only).
 
 .. code-block:: bash
@@ -79,7 +79,7 @@ function, based on a stochastic block model (SBM) with dynamic community assignm
    >>> TG = tx.example_sbm_graph()
    >>> print(TG)
 
-   TemporalDiGraph (t=3) with 75 nodes and 225 edges
+   TemporalMultiGraph (t=3) with 75 nodes and 589 edges
 
 
 Spectral clustering
@@ -92,7 +92,7 @@ and GPU (NVIDIA) acceleration for three graph operators: ``'laplacian'`` (defaul
 
 .. code-block:: python
 
-   >>> y_pred = tx.spectral_clustering(TG, k=3, operator="laplacian")
+   >>> y_pred = tx.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
 
 Let's plot the ground truths and the detected clusters for each time step, so to compare the results:
 
@@ -102,15 +102,15 @@ Let's plot the ground truths and the detected clusters for each time step, so to
    >>> colors = plt.cm.tab10.colors
    >>>
    >>> def plot_temporal_graph(TG, y_pred):
-   >>>     y_true = tx.get_node_attributes(TG, "community", index=False)
-   >>>     pos = tx.layout(TG, layout="kamada_kawai")
-   >>>     temporal_node_color = [
+   ...     y_true = tx.get_node_attributes(TG, "community", index=False)
+   ...     pos = tx.layout(TG, layout="kamada_kawai")
+   ...     temporal_node_color = [
    ...         [colors[m % len(colors)] for m in s]
    ...         for y in [y_true, y_pred]
    ...         for s in y
    ...     ]
-   >>>     # Draw ground truths (top) and spectral clustering results (bottom).
-   >>>     return tx.draw(
+   ...     # Draw ground truths (top) and clustering results (bottom).
+   ...     return tx.draw(
    ...         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
    ...         pos=[*pos, *pos], node_size=50, title=False,
    ...         suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
@@ -128,19 +128,19 @@ instance with all edges from all graph snapshots:
 .. code-block:: python
 
    >>> G = TG.to_static()
-   >>> y_pred = tx.spectral_clustering(G, k=3, operator="laplacian")
+   >>> y_pred = tx.spectral_clustering(G, k=3)
 
 .. code-block:: python
 
    >>> def plot_static_graph(G, y_pred):
-   >>>     y_true = tx.get_node_attributes(G, "community", index=False)
-   >>>     pos = tx.layout(G, layout="kamada_kawai")
-   >>>     node_color = [
+   ...     y_true = tx.get_node_attributes(G, "community", index=False)
+   ...     pos = tx.layout(G, layout="kamada_kawai")
+   ...     node_color = [
    ...         [colors[m % len(colors)] for m in y]
    ...         for y in [y_true, y_pred]
    ...     ]
-   >>>     # Draw ground truths (left) and spectral clustering results (right).
-   >>>     return tx.draw(
+   ...     # Draw ground truths (left) and clustering results (right).
+   ...     return tx.draw(
    ...         [G, G], figsize=(6, 3), pos=pos, node_size=70,
    ...         title=["Ground Truths", "Clustering Results"],
    ...         temporal_node_color=node_color)
@@ -301,24 +301,23 @@ for static and multislice modularity optimization.
 
    >>> max_iter = 100
    >>>
-   >>> TG = tx.example_sbm_graph()
-   >>> G = TG.to_static()
-   >>>
    >>> # Multislice modularity optimization.
+   >>> TG = tx.example_sbm_graph()
    >>> y_cpu_TG = tx.leiden_communities(TG, device="cpu", max_iter=max_iter)
    >>> y_gpu_TG = tx.leiden_communities(TG, device="gpu", max_iter=max_iter)
    >>> y_gpu_TG_norefine = tx.leiden_communities(TG, device="gpu", max_iter=max_iter,
    ...                                           refine=False)
    >>>
    >>> # Static modularity optimization.
+   >>> G = TG.to_static()
    >>> y_cpu_G = tx.leiden_communities(G, device="cpu", max_iter=max_iter)
    >>> y_gpu_G = tx.leiden_communities(G, device="gpu", max_iter=max_iter)
    >>>
    >>> # Build supra-graph connecting nodes across time slices (default interslice_weight=1.0).
    >>> adj, offsets = tx.to_supra_adjacency_matrix(TG, return_offsets=True)
-   >>> G_supra = tx.from_scipy(adj)
    >>>
    >>> # Supra-graph (static) modularity optimization.
+   >>> G_supra = tx.from_scipy(adj)
    >>> y_gpu_G_supra = tx.leiden_communities(G_supra, device="gpu", max_iter=max_iter)
    >>> y_gpu_G_supra = [y_gpu_G_supra[offsets[t]:offsets[t] + len(TG[t])]
    ...                  for t in range(len(TG))]
@@ -388,8 +387,7 @@ on the temporal graph:
    >>>
    >>> tx.draw(
    ...     [*TG, *TG, *TG, *TG, *TG], figsize=(6, 9.5), nrows=5, ncols=3,
-   ...     pos=[*pos, *pos, *pos, *pos, *pos], node_size=50, names=False,
-   ...     title=title,
+   ...     pos=[*pos, *pos, *pos, *pos, *pos], node_size=50, title=title,
    ...     temporal_node_color=temporal_node_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_40_0.png
@@ -477,8 +475,7 @@ all-to-all couplings:
    >>>
    >>> tx.draw(
    ...     [*TG, *TG, *TG], figsize=(6, 6), nrows=3, ncols=3,
-   ...     pos=[*pos, *pos, *pos], node_size=50, names=False,
-   ...     title=title,
+   ...     pos=[*pos, *pos, *pos], node_size=50, title=title,
    ...     temporal_node_color=temporal_node_color)
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_43_0.png
@@ -505,21 +502,21 @@ or multislice modularity optimization for dynamic community detection in larger 
 
 .. rubric:: References
 
-.. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). "On spectral clustering: Analysis and an algorithm".
+.. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). On spectral clustering: Analysis and an algorithm.
    In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural Information
-   Processing Systems. Vol. 14. MIT Press.
+   Processing Systems, 14. MIT Press.
 
-.. [2] V. A. Traag, L. Waltman, N. J. van Eck (2019). "From Louvain to Leiden: guaranteeing
-   well-connected communities". Scientific Reports, 9(1), 5233.
+.. [2] V. A. Traag, L. Waltman, N. J. van Eck (2019). From Louvain to Leiden: guaranteeing
+   well-connected communities. Scientific Reports, 9(1), 5233.
 
-.. [3] P. J. Mucha et al (2010). "Community Structure in Time-Dependent,
-   Multiscale, and Multiplex Networks". Science, 328, 876--878.
+.. [3] P. J. Mucha et al. (2010). Community Structure in Time-Dependent,
+   Multiscale, and Multiplex Networks. Science, 328, 876--878.
 
-.. [4] Passos, N.A.R.A.; Carlini, E.; Trani, S. (2026). "Accelerating
-   Dynamic Graph Clustering on GPU Architectures with cuGraph". The 6th
+.. [4] Passos, N.A.R.A.; Carlini, E.; Trani, S. (2026). Accelerating
+   Dynamic Graph Clustering on GPU Architectures with cuGraph. The 6th
    workshop on Flexible Resource and Application Management on the Edge
    (FRAME), co-located with Euro-Par'26. Pisa, Italy, Aug. 24--28, 2026.
 
-.. [5] Blondel, V.D.; Guillaume, J.L.; Lambiotte, R.; Lefebvre, E. (2008). "Fast unfolding of
-   communities in large networks". Journal of Statistical Mechanics: Theory and Experiment,
+.. [5] Blondel, V.D.; Guillaume, J.L.; Lambiotte, R.; Lefebvre, E. (2008). Fast unfolding of
+   communities in large networks. Journal of Statistical Mechanics: Theory and Experiment,
    2008(10), P10008.

@@ -1,5 +1,5 @@
 from .convert import convert, FORMATS
-from .cugraph import to_cugraph
+from .cugraph import to_cugraph  # , to_pylibcugraph
 from .cupy import  to_cupy
 from .dgl import to_dgl
 from .dynetx import to_dynetx
@@ -28,6 +28,7 @@ __all__ = (
     "to_networkit",
     "to_numpy",
     "to_pandas",
+    # "to_pylibcugraph",
     "to_scipy",
     "to_snap",
     "to_stellargraph",

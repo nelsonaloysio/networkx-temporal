@@ -64,7 +64,7 @@ def draw_networkx(
 
     .. code-block:: bash
 
-        $ pip install 'networkx-temporal[draw]'
+        >>> pip install 'networkx-temporal[draw]'
 
     .. rubric:: Example
 
@@ -213,13 +213,13 @@ def draw_networkx(
         * If a ``bool``, whether to show labels or not.
 
     :param node_opts: Dictionary or dictionary of dictionaries (one per snapshot) with
-        options to set :func:`~networkx_temporal.draw.networkx.nx.draw_networkx_nodes`.
+        options to set :func:`~networkx_temporal.drawing.draw_networkx_nodes`.
     :param edge_opts: Dictionary or dictionary of dictionaries (one per snapshot) with
-        options to set :func:`~networkx_temporal.draw.networkx.nx.draw_networkx_edges`.
+        options to set :func:`~networkx_temporal.drawing.draw_networkx_edges`.
     :param node_label_opts: Dictionary or dictionary of dictionaries (one per snapshot) with
-        options to set :func:`~networkx_temporal.draw.networkx.nx.draw_networkx_labels`.
+        options to set :func:`~networkx_temporal.drawing.draw_networkx_labels`.
     :param edge_label_opts: Dictionary or dictionary of dictionaries (one per snapshot) with
-        options to set :func:`~networkx_temporal.draw.networkx.nx.draw_networkx_edge_labels`.
+        options to set :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`.
     :param layout_opts: Dictionary or list of dictionaries (one per snapshot) with
         additional options for the ``layout`` algorithm. Optional.
     :param opts: Additional drawing options passed to each drawing or layout algorithm functions.
@@ -355,7 +355,7 @@ def draw_networkx_nodes(*args, **kwargs):
     .. seealso::
 
         The `draw_networkx_nodes
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.networkx.draw_networkx_nodes.html>`__
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_nodes.html>`__
         function from NetworkX for a list of accepted arguments.
 
     :param args: Positional arguments.
@@ -374,7 +374,7 @@ def draw_networkx_edges(*args, **kwargs):
     .. seealso::
 
         The `draw_networkx_edges
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.networkx.draw_networkx_edges.html>`__
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_edges.html>`__
         function from NetworkX for a list of accepted arguments.
 
     :param args: Positional arguments.
@@ -393,7 +393,7 @@ def draw_networkx_labels(*args, **kwargs):
     .. seealso::
 
         The `draw_networkx_labels
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.networkx.draw_networkx_labels.html>`__
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_labels.html>`__
         function from NetworkX for a list of accepted arguments.
 
     :param args: Positional arguments.
@@ -412,7 +412,7 @@ def draw_networkx_edge_labels(*args, **kwargs):
     .. seealso::
 
         The `draw_networkx_edge_labels
-        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw.networkx.draw_networkx_edge_labels.html>`__
+        <https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_edge_labels.html>`__
         function from NetworkX for a list of accepted arguments.
 
     :param args: Positional arguments.

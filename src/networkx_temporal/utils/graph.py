@@ -22,11 +22,6 @@ def combine_snapshots(graphs: List[TemporalGraph]) -> TemporalGraph:
     snapshots at each index :math:`t` from ``graphs``. All input temporal graphs
     must have the same number of snapshots.
 
-    .. seealso::
-
-        The `Examples → Basic operations → Combine snapshots
-        <../examples/basics.html#combine-snapshots>`__  page for an example.
-
     .. rubric:: Example
 
     .. code-block:: python
@@ -42,7 +37,7 @@ def combine_snapshots(graphs: List[TemporalGraph]) -> TemporalGraph:
         >>> TG = tx.combine_snapshots([TG1, TG2])
         >>> print(TG)
 
-        TemporalGraph with 1 snapshots and 3 nodes and 2 edges
+        TemporalMultiGraph (t=1) with 3 nodes and 2 edges
 
     :param object graphs: A list of :class:`~networkx_temporal.classes.TemporalGraph`
         objects.
@@ -137,11 +132,6 @@ def to_adjacency_matrix(
     adjacency matrix combining all snapshots; if a static
     :class:`~networkx_temporal.typing.StaticGraph`, returns a single adjacency matrix.
 
-    .. note::
-
-        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
-        or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
-
     .. rubric:: Example
 
     .. code-block:: python
@@ -153,9 +143,9 @@ def to_adjacency_matrix(
         >>> TG.remove_nodes_from(tx.isolates(TG))
         >>>
         >>> for t, G in enumerate(TG):
-        >>>     print(f"Snapshot {t}:")
-        >>>     print(f"- Nodes: {list(G.nodes())}")
-        >>>     print(f"- Edges: {list(G.edges())}")
+        ...     print(f"Snapshot {t}:")
+        ...     print(f"- Nodes: {list(G.nodes())}")
+        ...     print(f"- Edges: {list(G.edges())}")
         >>>
         >>> A = tx.to_adjacency_matrix(TG)
         >>> A.todense()
@@ -173,6 +163,12 @@ def to_adjacency_matrix(
         matrix([[0., 1., 2.],
                 [1., 0., 1.],
                 [2., 1., 0.]], dtype=float32)
+
+    .. note::
+
+        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        or ``device='gpu'``, respectively. The resulting matrix can be made dense with
+        ``.todense()``.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
             object.
@@ -255,11 +251,6 @@ def to_supra_adjacency_matrix(
     Setting ``return_offsets=True`` returns a tuple of the supra-adjacency matrix and a list of
     starting indices for each slice, to be used with specialized algorithms for temporal graphs.
 
-    .. note::
-
-        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
-        or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
-
     .. rubric:: Example
 
     .. code-block:: python
@@ -271,9 +262,9 @@ def to_supra_adjacency_matrix(
         >>> TG.remove_nodes_from(tx.isolates(TG))
         >>>
         >>> for t, G in enumerate(TG):
-        >>>     print(f"Snapshot {t}:")
-        >>>     print(f"- Nodes: {list(G.nodes())}")
-        >>>     print(f"- Edges: {list(G.edges())}")
+        ...     print(f"Snapshot {t}:")
+        ...     print(f"- Nodes: {list(G.nodes())}")
+        ...     print(f"- Edges: {list(G.edges())}")
         >>>
         >>> A = tx.to_supra_adjacency_matrix(TG)
         >>> A.todense()
@@ -291,10 +282,15 @@ def to_supra_adjacency_matrix(
         matrix([[0., 1., 1., 0., 0., 0., 0.],
                 [1., 0., 0., 1., 0., 0., 0.],
                 [1., 0., 0., 0., 1., 0., 0.],
-                [0., 0., 0., 0., 1., 0., 0.],
-                [0., 0., 0., 1., 0., 0., 1.],
+                [0., 1., 0., 0., 1., 0., 0.],
+                [0., 0., 1., 1., 0., 0., 1.],
                 [0., 0., 0., 0., 0., 0., 1.],
-                [0., 0., 0., 0., 0., 1., 0.]], dtype=float32)
+                [0., 0., 0., 0., 1., 1., 0.]], dtype=float32)
+
+    .. note::
+
+        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
@@ -314,6 +310,8 @@ def to_supra_adjacency_matrix(
 
     :param interslice_directed: If ``True``, inter-slice couplings are unidirectional (from earlier
         to later snapshots). If ``False``, inter-slice couplings are bidirectional (default).
+    :param return_offsets: If ``True``, returns a tuple of the supra-adjacency matrix and a list of
+        starting indices for each slice. Default: ``False``.
     :param str device: Device to use for computation. Available choices:
 
         - ``'cpu'``: Uses NumPy and SciPy (default).
@@ -466,11 +464,6 @@ def temporal_edge_similarity(
         - ``'geometric'``: geometric mean of set overlaps,
           :math:`\\frac{|A \\cap B|^2}{|A| |B|}`.
 
-    .. seealso::
-
-        The `Examples → Algorithms and metrics → Temporal evolution
-        <../examples/metrics.html#temporal-evolution>`__  for an example.
-
     .. rubric:: Example
 
     Loading and computing similarity among edge sets from the
@@ -483,9 +476,14 @@ def temporal_edge_similarity(
         >>> TG = tx.generators.example_sbm_graph()
         >>> tx.temporal_edge_similarity(TG, method="jaccard")
 
-        [[1.0,  0.05, 0.10],
-         [0.11, 1.0,  0.08],
-         [0.11, 0.08, 1.0 ]]
+        [[1.0,  0.08, 0.06],
+         [0.08, 1.0,  0.09],
+         [0.06, 0.09, 1.0]]
+
+    .. seealso::
+
+        The `Examples → Algorithms and metrics → Temporal evolution
+        <../examples/metrics.html#temporal-evolution>`__  for an example.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param str method: Measure to consider. Default is ``'jaccard'``. Available choices:
@@ -519,11 +517,6 @@ def temporal_node_similarity(
         - ``'geometric'``: geometric mean of set overlaps,
           :math:`\\frac{|A \\cap B|^2}{|A| |B|}`.
 
-    .. seealso::
-
-        The `Examples → Algorithms and metrics → Temporal evolution
-        <../examples/metrics.html#temporal-evolution>`__  for an example.
-
     .. rubric:: Example
 
     Loading and computing similarity among node sets from the
@@ -536,9 +529,14 @@ def temporal_node_similarity(
         >>> TG = tx.generators.example_sbm_graph()
         >>> tx.temporal_node_similarity(TG, method="jaccard")
 
-        [[1.0,  1.0,  0.99],
-         [1.0,  1.0,  0.99],
-         [0.99, 0.99, 1.0 ]]
+        [[1.0, 1.0, 1.0],
+         [1.0, 1.0, 1.0],
+         [1.0, 1.0, 1.0]]
+
+    .. seealso::
+
+        The `Examples → Algorithms and metrics → Temporal evolution
+        <../examples/metrics.html#temporal-evolution>`__  for an example.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param str method: Measure to consider. Default is ``'jaccard'``. Available choices:
@@ -565,9 +563,12 @@ def temporal_split(
     Returns ``(train_mask, val_mask, test_mask)`` where each mask is a boolean
     array indicating which edges belong to the respective split.
 
-    :param timestamps: A list of timestamps for each edge.
+    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object, or a list of timestamps corresponding to each edge in the temporal graph.
     :param train_split: Proportion of training edges.
     :param val_split: Proportion of validation edges.
+    :param attr: Edge attribute to consider as timestamps. If ``None``, uses the edge order
+        in the temporal graph as timestamps.
     """
     if is_static_graph(graph):
         if attr is not None:

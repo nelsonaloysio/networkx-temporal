@@ -19,7 +19,7 @@ def modularity_multislice(
 
     Multislice modularity [10]_ is a generalization of the metric for multiplex graphs, where each
     layer corresponds to a temporal graph snapshot. Temporal node copies are connected across time
-    by interlayer edges (''couplings''), as in an `unrolled graph
+    by interlayer edges ("couplings"), as in an `unrolled graph
     <../examples/convert.html#unrolled-temporal-graph>`__, so the expected fraction of intra-layer
     edges is adjusted to account for these added connections. It may be defined as:
 
@@ -51,8 +51,8 @@ def modularity_multislice(
     Note that if ``spectral=True``, intra-slice modularity is computed using
     :func:`~networkx_temporal.algorithms.modularity_spectral`.
 
-    .. [10] P. J. Mucha et al. (2010). ''Community Structure in Time-Dependent,
-        Multiscale, and Multiplex Networks''. Science, 328, 876--878.
+    .. [10] P. J. Mucha et al. (2010). Community Structure in Time-Dependent,
+        Multiscale, and Multiplex Networks. Science, 328, 876--878.
         doi: `10.1126/science.1184819 <https://doi.org/10.1126/science.1184819>`__.
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object.

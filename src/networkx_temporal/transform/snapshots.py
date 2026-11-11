@@ -47,12 +47,12 @@ def to_snapshots(TG: TemporalGraph, to: Optional[FORMAT] = None, as_view: bool =
 
         Internally, :class:`~networkx_temporal.classes.TemporalGraph` already stores data as a
         list of graph views on :func:`~networkx_temporal.classes.TemporalGraph.slice`. This method
-        simply returns the underlying data, unless :func:`~networkx_temporal.utils.convert`
+        simply returns the underlying data, unless :func:`~networkx_temporal.classes.TemporalGraph.convert`
         is called by setting ``to``.
 
     :param TemporalGraph TG: Temporal graph object.
-    :param str to: Package name or alias to convert the graph object
-        (see :func:`~networkx_temporal.utils.convert`). Optional.
+    :param str to: Package name to :func:`~networkx_temporal.classes.TemporalGraph.convert`
+        the graph. Optional.
     :param as_view: If ``False``, returns copies instead of views of the original graph.
         Default is ``True``.
 

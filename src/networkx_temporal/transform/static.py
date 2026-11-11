@@ -56,7 +56,8 @@ def to_static(
         representation allowing dynamic node attributes.
 
     :param TemporalGraph graph: Temporal graph object.
-    :param str to: Package name or alias to convert the graph object. Optional.
+    :param str to: Package name to :func:`~networkx_temporal.classes.TemporalGraph.convert`
+        the graph. Optional.
     :param directed: If ``True``, returns a `DiGraph
         <https://networkx.org/documentation/stable/reference/classes/digraph.html>`__.
         Optional.

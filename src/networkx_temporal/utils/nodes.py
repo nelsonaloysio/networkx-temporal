@@ -117,9 +117,9 @@ def get_unique_node_attributes(
 
         >>> tx.get_unique_node_attributes(TG, attr="group", default="unknown")
 
-        [[0, 'unknown', 1]]
+        [0, 1, 'unknown']
 
-    :param TG: :class:`~networkx_temporal.classes.TemporalGraph` object.
+    :param object graph: :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param attr: The node attribute key.
     :param default: The default value to return if the attribute is not found.
     """
@@ -150,7 +150,7 @@ def map_attr_to_nodes(
 
     The output is a list of dictionaries (if ``index=True``) or lists (if ``index=False``)
     mapping nodes to attributes for each snapshot, similar to
-    :func:`~networkx_temporal.utils.node.get_node_attributes`.
+    :func:`~networkx_temporal.utils.get_node_attributes`.
 
     :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -221,7 +221,7 @@ def map_node_attr_to_edges(
         >>>
         >>> tx.map_node_attr_to_edges(TG, attr="group", default="unknown")
 
-        [{('a', 'b'): {'group': 0}, ('b', 'c'): {'group': 1}}]
+        [{('a', 'b'): 0, ('b', 'c'): 1}]
 
     :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.

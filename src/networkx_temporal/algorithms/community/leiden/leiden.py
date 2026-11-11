@@ -31,18 +31,18 @@ def leiden_communities(
 
     The GPU-based Leiden optimization of multislice modularity is parallelized and uses sparse
     `CuPy <https://cupy.dev/>`__ as a backend on single devices (AMD/NVIDIA). The
-    `leidenalg <https://leidenalg.readthedocs.io/en/stable/api.html#leidenalg.find_partition>`__
-    backend is used on CPU instead, and is preferrable for accuracy-sensitive tasks at the cost of
+    `leidenalg <https://leidenalg.readthedocs.io/en/stable/reference.html#leidenalg.find_partition>`__
+    backend is used on CPU instead, and is preferable for accuracy-sensitive tasks at the cost of
     longer runtimes.
 
     .. hint::
 
-       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. seealso::
 
-       The `Examples → GPU acceleration → Leiden communities
-       <../examples/gpu.html#leiden-communities>`__ page for usage examples.
+        The `Examples → GPU acceleration → Leiden communities
+        <../examples/gpu.html#leiden-communities>`__ page for usage examples.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.

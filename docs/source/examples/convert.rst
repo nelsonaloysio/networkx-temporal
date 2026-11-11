@@ -32,7 +32,7 @@ Static or temporal multigraphs may be converted to graphs without parallel edges
 
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph
+   >>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
    >>>
    >>> TG.add_edge("a", "b", time=0)
    >>> TG.add_edge("c", "b", time=1)
@@ -141,6 +141,11 @@ temporal graph. It is the simplest representation of a network and is the most c
 
    Dynamic node attributes are not preserved when transforming a temporal to a static graph.
 
+.. seealso::
+
+   The `Basic operations → Import static graphs <basics.html#import-static-graphs>`__ page for
+   more static graph conversion examples.
+
 
 :const:`TG` → :const:`G`
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -222,7 +227,7 @@ with :func:`~networkx_temporal.transform.from_snapshots`:
    >>> TG = tx.from_snapshots(STG).copy()
    >>> print(TG)
 
-   TemporalDiGraph (t=4) with 6 nodes and 9 edges
+   TemporalMultiDiGraph (t=4) with 6 nodes and 9 edges
 
 
 Event-based temporal graph
@@ -237,11 +242,11 @@ An event-based temporal graph :const:`ETG` is a sequence of 3- or 4-tuple edge-b
   of the interaction (zero for a single snapshot).
 
 Depending on the temporal graph data, one of these may allow a more compact representation than the
-others. The default is to return a 3-tuple sequence, also known as a stream graph.
+others. The default is to return a 3-tuple sequence, also known as a *stream graph*.
 
 .. note::
 
-   As events are edge-based, node isolates are only preserved by means of adding self-loops.
+   As events are edge-based, node isolates without self-loops are not preserved.
 
 
 :const:`TG` → :const:`ETG`
@@ -256,7 +261,7 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
    >>> ETG
 
    [('a', 'b', 0),
-    ('c', 'b', 0)
+    ('c', 'b', 0),
     ('c', 'b', 1),
     ('a', 'c', 2),
     ('d', 'c', 2),
@@ -272,7 +277,6 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
 
    [('a', 'b', 0, 1),
     ('c', 'b', 0, 1),
-    ('c', 'b', 1, 1),
     ('a', 'b', 1, -1),
     ('a', 'c', 2, 1),
     ('d', 'c', 2, 1),
@@ -292,7 +296,6 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_events`:
 
    [('a', 'b', 0, 0.0),
     ('c', 'b', 0, 1.0),
-    ('c', 'b', 1, 1.0),
     ('a', 'c', 2, 0.0),
     ('d', 'c', 2, 0.0),
     ('d', 'e', 2, 0.0),
@@ -313,7 +316,7 @@ but topological information is retained, allowing to reconstruct its snapshots w
    >>> TG = tx.from_events(ETG, directed=True, multigraph=True)
    >>> print(TG)
 
-   TemporalDiGraph (t=4) with 6 nodes and 9 edges
+   TemporalMultiDiGraph (t=4) with 6 nodes and 9 edges
 
 
 Unrolled temporal graph
@@ -340,9 +343,9 @@ graph with :func:`~networkx_temporal.classes.TemporalGraph.to_unrolled`:
    >>> UTG = TG.to_unrolled(edge_couplings=True)
    >>> print(UTG)
 
-   MultiDiGraph named 'UnrolledTemporalGraph' with 12 nodes and 14 edges
+   MultiDiGraph named 'UnrolledTemporalGraph' with 13 nodes and 16 edges
 
-Let's draw the resulting graph to visualize the node copies (in black) and edge couplings (dotted):
+Let's draw the resulting graph with original nodes in red, copies in black, and dotted edge couplings:
 
 .. code-block:: python
 
@@ -351,6 +354,7 @@ Let's draw the resulting graph to visualize the node copies (in black) and edge 
    ...         UTG,
    ...         layout=tx.unrolled_layout,
    ...         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
+   ...         style=[':' if u.split("_", 1)[0] == v.split("_", 1)[0] else '-' for u, v in UTG.edges()],
    ...         font_size=10,
    ...         arrowsize=15,
    ...         **kwargs,
@@ -373,35 +377,28 @@ Let's draw the resulting graph to visualize the node copies (in black) and edge 
 By default, edges connect nodes in the same snapshot, e.g., from :math:`u_t` to :math:`v_t`.
 To create edges that connect nodes across time, e.g., from :math:`u_t` to
 :math:`v_{t+\delta}`, pass the ``delta`` parameter to the function
-with the desired edge-level attribute, e.g., ``delta='duration'``,
+with the desired graph- or edge-level attribute, e.g., ``delta='duration'``,
 or time difference, e.g., ``delta=1``.
 
 In the following plot with ``delta=1``, nodes that were not present in ``UTG`` graph are
-colored in black:
+colored in green:
 
 .. code-block:: python
 
    >>> UTG_delta = TG.to_unrolled(delta=1)
    >>>
    >>> node_color = [
-   ...     "tab:red" if UTG.has_node(n) else "#333"
-   ...     for n in UTG_delta.nodes()]
+   ...     "#333" if UTG.has_node(n) else "tab:green" for n in UTG_delta.nodes()]
    >>>
    >>> draw_unrolled(UTG_delta,
    ...               node_color=node_color,
+   ...               connectionstyle="arc3,rad=0.1",
    ...               title="Unrolled Temporal Graph ($\\delta=1$)")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_41_0.png
    :align: center
 
 |
-
-.. note::
-
-   New nodes and edges are created depending on the ``delta`` value passed to the
-   function, leading to graphs of different order and size. For instance, passing
-   ``delta=1`` in the example above created additional edges among node :math:`f_3`
-   and the temporal node copies :math:`a_4`, :math:`b_4`, and :math:`e_4`.
 
 Lastly, the additional parameters ``edge_couplings`` and ``node_copies`` allow further control over
 the creation of temporal node copies and edge couplings. A comparison of the newly added nodes:
@@ -418,6 +415,7 @@ the creation of temporal node copies and edge couplings. A comparison of the new
    >>>
    >>> draw_unrolled(
    ...     UTG_fill,
+   ...     node_color=["#333" if UTG.has_node(n) else "tab:green" for n in UTG_fill.nodes()],
    ...     node_size=200, fig=fig, ax=0, title="node_copies='fill'")
    >>>
    >>> draw_unrolled(
@@ -427,7 +425,7 @@ the creation of temporal node copies and edge couplings. A comparison of the new
    >>>
    >>> draw_unrolled(
    ...     UTG_all,
-   ...     node_color=["#333" if UTG_persist.has_node(n) else "tab:blue" for n in UTG_all.nodes()],
+   ...     node_color=["#333" if UTG_persist.has_node(n) else "tab:green" for n in UTG_all.nodes()],
    ...     node_size=200, fig=fig, ax=2, title="node_copies='all'")
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-02-convert_43_0.png
@@ -449,7 +447,7 @@ with :func:`~networkx_temporal.transform.from_unrolled`:
    >>> TG = tx.from_unrolled(UTG)
    >>> print(TG)
 
-   TemporalDiGraph (t=4) with 6 nodes and 9 edges
+   TemporalMultiDiGraph (t=4) with 6 nodes and 9 edges
 
 
 External library formats
@@ -460,7 +458,7 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                    |
 +===================================================================+======================================+===================================================================+
-| `CuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.to_cugraph`         |
+| `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.to_cugraph`         |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.to_cupy`            |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
@@ -476,7 +474,7 @@ Support for the following external libraries is currently implemented:
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | `NumPy <https://numpy.org>`__                                     | .. centered:: ``'numpy'``            | .. centered:: :func:`~networkx_temporal.utils.to_numpy`           |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
-| `Pandas <https://pandas.pydataorg>`__                             | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
+| `Pandas <https://pandas.pydata.org>`__                            | .. centered:: ``'pandas'``           | .. centered:: :func:`~networkx_temporal.utils.to_pandas`          |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
 | `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__  | .. centered:: ``'torch_geometric'``  | .. centered:: :func:`~networkx_temporal.utils.to_torch_geometric` |
 +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
@@ -554,5 +552,5 @@ still supported by `Gephi <https://gephi.org>`__ and other external tools.
 
 .. rubric:: References
 
-.. [1] Kim, H. & Anderson, R. (2012). "Temporal node centrality in complex networks".
+.. [1] Kim, H. & Anderson, R. (2012). Temporal node centrality in complex networks.
    Physical Review E, 85(2).

@@ -33,44 +33,44 @@ def slice(
     snapshots as unique values found in the specified node- or edge-level ``attr`` attribute data.
     Alternatively, a list of 2-tuple ``intervals`` may be provided with custom time windows.
 
-    .. hint::
-
-        By default, `views
-        <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-        of the original graph are returned to avoid memory overhead. If the resulting
-        snapshots need to be modified, set ``as_view=False`` to return copies instead.
-
     .. rubric:: Example
 
     Slicing a temporal graph into two snapshots based on the edge-level ``time`` attribute:
 
     .. code-block:: python
 
-       >>> import networkx_temporal as tx
-       >>>
-       >>> TG = tx.TemporalGraph()
-       >>>
-       >>> TG.add_edge("a", "b", time=0)
-       >>> TG.add_edge("c", "b", time=1)
-       >>>
-       >>> TG = TG.slice(attr="time")
-       >>> print(TG)
+        >>> import networkx_temporal as tx
+        >>>
+        >>> TG = tx.TemporalGraph()
+        >>>
+        >>> TG.add_edge("a", "b", time=0)
+        >>> TG.add_edge("c", "b", time=1)
+        >>>
+        >>> TG = TG.slice(attr="time")
+        >>> print(TG)
 
-       TemporalGraph (t=2) with 3 nodes and 2 edges
+        TemporalGraph (t=2) with 3 nodes and 2 edges
 
     Calling this method from the returned object, now with ``bins=1``, will
     :func:`~networkx_temporal.classes.TemporalGraph.flatten` the graph:
 
     .. code-block:: python
 
-       >>> TG = TG.slice(bins=1)
-       >>> print(TG)
+        >>> TG = TG.slice(bins=1)
+        >>> print(TG)
 
-       TemporalGraph (t=1) with 3 nodes and 2 edges
+        TemporalGraph (t=1) with 3 nodes and 2 edges
 
     Note that a :class:`~networkx_temporal.classes.TemporalMultiGraph` or
     :class:`~networkx_temporal.classes.TemporalMultiDiGraph` object is required to store multiple
     edges among pairs and allow many interactions between the same nodes.
+
+    .. hint::
+
+        By default, `views
+        <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+        of the original graph are returned to avoid memory overhead. If the resulting
+        snapshots need to be modified, set ``as_view=False`` to return copies instead.
 
     .. seealso::
 

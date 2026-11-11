@@ -25,9 +25,8 @@ def brokering_centrality(
     and :math:`\\text{clu}(i)` is its clustering coefficient.
 
     Clustering coefficient works as a measure of interconnectivity in a node's neighborhood and may
-    be defined [5]_ as the the number of edges between a node's neighbors divided by the
-    number of possible edges between them. If ``clustering_coef`` is not provided, it is computed
-    as:
+    be defined [5]_ as the number of edges between a node's neighbors divided by the number of
+    possible edges between them. If ``clustering_coef`` is not provided, it is computed as:
 
     .. math::
 
@@ -45,12 +44,12 @@ def brokering_centrality(
         In directed graphs, connections are not necessarily reciprocal, affecting the coefficients.
 
     .. [4] Cai, J.J., Borenstein, E., Petrov, D.A. (2010).
-        ''Broker Genes in Human Disease''.
+        Broker Genes in Human Disease.
         Genome Biology and Evolution, 2.
         doi: `10.1093/gbe/evq064 <https://doi.org/10.1093/gbe/evq064>`_.
 
     .. [5] Watts, D.J., Strogatz, E. (1998).
-        ''Collective dynamics of 'small-world' networks''.
+        Collective dynamics of 'small-world' networks.
         Nature.
         doi: `10.1038/30918 <https://doi.org/10.1038/30918>`_.
 

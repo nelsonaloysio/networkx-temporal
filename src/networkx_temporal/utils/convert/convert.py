@@ -29,7 +29,7 @@ def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, *
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
     | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                    |
     +===================================================================+======================================+===================================================================+
-    | `CuGraph <https://docs.nvidia.com/cugraph/latest/>`__             | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.to_cugraph`         |
+    | `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__          | .. centered:: ``'cugraph'``          | .. centered:: :func:`~networkx_temporal.utils.to_cugraph`         |
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
     | `CuPy <https://cupy.dev>`__                                       | .. centered:: ``'cupy'``             | .. centered:: :func:`~networkx_temporal.utils.to_cupy`            |
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
@@ -85,12 +85,12 @@ def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, *
 
     .. note::
 
-       To reduce package dependencies and avoid unnecessary imports, the required library is
-       imported on function call based on the ``to`` parameter and must be separately installed.
+        To reduce package dependencies and avoid unnecessary imports, the required library is
+        imported on function call based on the ``to`` parameter and must be separately installed.
 
     :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
         a single static NetworkX graph, or a list of static NetworkX graphs as input.
-    :param str to: Package name or alias to convert the graph object.
+    :param str to: Package name to convert the graph. Optional.
     :param args: Additional positional arguments for the conversion function.
     :param kwargs: Additional keyword arguments for the conversion function.
 

@@ -40,8 +40,8 @@ Algorithms and metrics for temporal graphs.
 
 .. rubric:: Note
 
-The property :mod:`~networkx_temporal.algorithms.is_gpu_enabled`
-allows checking if GPU acceleration is enabled in the environment:
+Calling :attr:`~networkx_temporal.algorithms.is_gpu_enabled`
+allows to check if GPU acceleration is enabled by default:
 
 .. code-block:: python
 

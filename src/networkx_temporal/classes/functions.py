@@ -129,29 +129,29 @@ def from_multigraph(graph: Union[TemporalGraph, StaticGraph]) -> Union[TemporalG
     attribute storing their total occurrences. If the attribute exists, their total
     sum is stored instead.
 
-    .. attention::
-
-        Converting a multigraph to a graph object may result in data loss: multiple pairwise
-        edges are merged, with later attributes other than ``weight`` taking
-        precedence over earlier ones.
-
     .. rubric:: Example
 
     Converting a static multigraph to a graph, summing the weights of parallel edges:
 
     .. code-block:: python
 
-       >>> import networkx as nx
-       >>> from networkx_temporal import from_multigraph
-       >>>
-       >>> G = nx.MultiGraph()
-       >>> G.add_edge(1, 2, weight=2)
-       >>> G.add_edge(1, 2, weight=3)
-       >>>
-       >>> H = from_multigraph(G)
-       >>> print(H.edges(data=True))
+        >>> import networkx as nx
+        >>> from networkx_temporal import from_multigraph
+        >>>
+        >>> G = nx.MultiGraph()
+        >>> G.add_edge(1, 2, weight=2)
+        >>> G.add_edge(1, 2, weight=3)
+        >>>
+        >>> H = from_multigraph(G)
+        >>> print(H.edges(data=True))
 
-       [(1, 2, {'weight': 5})]
+        [(1, 2, {'weight': 5})]
+
+    .. attention::
+
+        Converting a multigraph to a graph object may result in data loss: multiple pairwise
+        edges are merged, with later attributes other than ``weight`` taking
+        precedence over earlier ones.
 
     :param object graph: :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.
@@ -186,7 +186,7 @@ def from_multigraph(graph: Union[TemporalGraph, StaticGraph]) -> Union[TemporalG
 
 def to_multigraph(graph: Union[TemporalGraph, StaticGraph]) -> Union[TemporalGraph, StaticGraph]:
     """ Returns a multigraph from a graph object. SImilar to
-    The :func:`~networkx_temporal.utils.from_multigraph`.
+    The :func:`~networkx_temporal.classes.from_multigraph`.
 
     A multigraph is a graph that allows multiple (parallel) edges between pairwise nodes.
 

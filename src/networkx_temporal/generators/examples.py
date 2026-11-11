@@ -26,7 +26,7 @@ def example_sbm_graph() -> TemporalMultiGraph:
         >>> TG = tx.generators.example_sbm_graph()
         >>> print(TG)
 
-        TemporalMultiGraph (t=3) with 75 nodes and 563 edges
+        TemporalMultiGraph (t=3) with 75 nodes and 589 edges
 
     Which corresponds to the graph generated with
     :func:`~networkx_temporal.generators.dynamic_sbm` as follows:
@@ -40,10 +40,11 @@ def example_sbm_graph() -> TemporalMultiGraph:
         >>> t = 3         # Number of snapshots.
         >>> p_in = 0.2    # Probability of within-community edges.
         >>> p_out = 0.01  # Probability of between-community edges.
+        >>> eta = 0.9     # Probability of nodes remaining in the same community over time.
         >>>
         >>> B = tx.generate_block_matrix(k, p=p_in, q=p_out)
         >>> z = tx.generate_community_vector(nodes=n, k=k)
-        >>> tau = tx.generate_transition_matrix(k, eta=0.9)
+        >>> tau = tx.generate_transition_matrix(k, eta=eta)
         >>> TG = tx.dynamic_sbm(B, z, t=t, transition_matrix=tau, isolates=False, seed=10)
         >>>
         >>> tx.draw(TG,

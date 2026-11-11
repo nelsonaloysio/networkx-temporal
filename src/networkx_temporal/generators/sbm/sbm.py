@@ -40,12 +40,6 @@ def stochastic_block_model(
         \\theta_{in,i} = \\frac{d_i}{\\sqrt{\\sum_{j=1}^{n} d_j}} \\quad \\text{and} \\quad
         \\theta_{out,i} = \\frac{d_{out,i}}{\\sqrt{\\sum_{j=1}^{n} d_{out,j}}}.
 
-    .. seealso::
-
-        The `graph-tool <https://graph-tool.skewed.de>`__ library, which provides efficient
-        implementations of stochastic block models for graph generation and inference, with
-        features such as hierarchical community structures.
-
     .. rubric:: Example
 
     To generate an SBM with :math:`k=3` communities of :math:`n=15` nodes each, :math:`p=0.25`
@@ -74,11 +68,17 @@ def stochastic_block_model(
         ...         figsize=(3, 3),
         ...         layout="kamada_kawai",
         ...         node_size=75,
-        ...         node_color=z,
+        ...         node_color=tx.get_node_attributes(G, "community", index=False),
         ...         title=str(G))
 
     .. image:: ../../assets/figure/generators/stochastic_block_model.png
        :align: center
+
+    .. seealso::
+
+        The `graph-tool <https://graph-tool.skewed.de>`__ library, which provides efficient
+        implementations of stochastic block models for graph generation and inference, with
+        features such as hierarchical community structures.
 
     :param B: Block matrix with edge probabilities.
     :param z: Community vector assigning nodes to clusters.
@@ -92,11 +92,11 @@ def stochastic_block_model(
     :param isolates: Allows isolated nodes. Default is ``True``.
     :param selfloops: Allows self-loops. Defaults to ``False``.
     :param create_using: Graph constructor to use.
-    :param fix_transition_prob: If ``True``, node transition probabilities refer
-        to the ground truth probabilities in every snapshot. Default is ``False``.
     :param str distribution: Edge sampling distribution, either ``'poisson'`` (default) or
         ``'bernoulli'``. Poisson yields edge counts (a multigraph); Bernoulli yields a
         simple graph and requires ``B`` entries in ``[0, 1]``.
+    :param sparse: Whether to build each snapshot from a sparse adjacency matrix.
+        Deprecated and will be removed in future versions.
     :param seed: Random number generator state.
 
     :note: Wrapper for :func:`~networkx_temporal.generators.dynamic_stochastic_block_model`

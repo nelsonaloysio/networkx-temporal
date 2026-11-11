@@ -31,16 +31,16 @@ nodes each continuously mix over time (decreasing assortativity):
    >>> import networkx as nx
    >>> import networkx_temporal as tx
    >>>
-   >>> TG = tx.temporal_graph()
+   >>> TG = tx.TemporalGraph()
    >>>
    >>> for r in [0, .125, .25, .375]:
    ...     p = tx.generate_block_matrix(k=5, p=.9-r, q=.1+r)
    ...     G = nx.stochastic_block_model(p=p, sizes=[5]*5, seed=10)
-   ...     TG.add_snapshot(tx.to_multigraph(G))
+   ...     TG.add_snapshot(G)
    >>>
    >>> print(TG)
 
-   TemporalMultiGraph (t=4) with 25 nodes and 426 edges
+   TemporalGraph (t=4) with 25 nodes and 426 edges
 
 Let's plot the graphs, with colors representing communities and within-community edges:
 
@@ -91,7 +91,7 @@ The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements opt
 for community detection that may be applied on snapshot-based temporal graphs, allowing to
 capture their underlying, evolving structure.
 
-.. attention ::
+.. attention::
 
    Optimization algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
@@ -207,12 +207,12 @@ Let's compare the values obtained considering static, snapshot, and multislice g
 
 .. code-block:: python
 
-   >>> modularity = ("Static", "Snapshot", "Multislice")
-   >>> static_assignments = dict(enumerate(assignments))  # Static assignments.
+   >>> optimization = ("Static", "Snapshot", "Multislice")
+   >>> static_assignments = dict(enumerate(assignments))
    >>> partitions = (static_assignments, snapshot_assignments, multislice_assignments)
    >>>
-   >>> for m, assignments in zip(modularity, partitions):
-   ...    Q = tx.modularity(TG, assignments)
+   >>> for m, labels in zip(optimization, partitions):
+   ...    Q = tx.modularity(TG, labels)
    ...    mean = sum(Q) / len(Q)
    ...    Q = [round(q, 3) for q in Q]
    ...    print(f"{m}: Q = {Q} (mean: {mean:.3f})")
@@ -231,10 +231,8 @@ tightly knit communities, with comparatively fewer connections to the rest of th
 
 .. code-block:: python
 
-   >>> optimization = ("Static", "Snapshot", "Multislice")
-   >>>
-   >>> for m, assignments in zip(optimization, partitions):
-   ...    conductance = tx.conductance(TG, assignments)
+   >>> for m, labels in zip(optimization, partitions):
+   ...    conductance = tx.conductance(TG, labels)
    ...    mean = sum(conductance) / len(conductance)
    ...    conductance = [round(c, 3) for c in conductance]
    ...    print(f"{m}: C = {conductance} (mean: {mean:.3f})")
@@ -315,16 +313,16 @@ in both communities :math:`[0, 1]`:
 .. code-block:: python
 
    >>> community_matrix = tx.community_matrix_from_vector(community_vector)
-   >>> community_matrix[3] = [0.5, 0.5]  # Assign node 'd' to both communities.
+   >>> community_matrix[3] = [0.5, 0.5]  # Node 'd' in both communities with equal weights.
    >>> community_matrix
 
    array([[1. , 0. ],
-         [1. , 0. ],
-         [1. , 0. ],
-         [0.5, 0.5],
-         [0. , 1. ],
-         [0. , 1. ],
-         [0. , 1. ]])
+          [1. , 0. ],
+          [1. , 0. ],
+          [0.5, 0.5],
+          [0. , 1. ],
+          [0. , 1. ],
+          [0. , 1. ]])
 
 .. code-block:: python
 
@@ -345,15 +343,15 @@ including greedy optimization approaches, such as those using modularity as a qu
 
 .. rubric:: References
 
-.. [1] V. A. Traag, L. Waltman, N. J. van Eck (2019). "From Louvain to Leiden: guaranteeing
-   well-connected communities". Scientific Reports, 9(1), 5233.
+.. [1] V. A. Traag, L. Waltman, N. J. van Eck (2019). From Louvain to Leiden: guaranteeing
+   well-connected communities. Scientific Reports, 9(1), 5233.
 
-.. [2] Tiago P. Peixoto (2023). "Descriptive Vs. Inferential Community Detection in Networks:
-   Pitfalls, Myths and Half-Truths". Elements in the Structure and Dynamics of Complex Networks,
+.. [2] Tiago P. Peixoto (2023). Descriptive Vs. Inferential Community Detection in Networks:
+   Pitfalls, Myths and Half-Truths. Elements in the Structure and Dynamics of Complex Networks,
    Cambridge University Press.
 
-.. [3] P. J. Mucha et al (2010). "Community Structure in Time-Dependent,
-   Multiscale, and Multiplex Networks". Science, 328, 876--878.
+.. [3] P. J. Mucha et al. (2010). Community Structure in Time-Dependent,
+   Multiscale, and Multiplex Networks. Science, 328, 876--878.
 
-.. [4] Kannan, R., Vempala, S., & Vetta, A. (2004). "On clusterings: Good, bad and spectral".
-   Journal of the ACM (JACM), 51(3), 497-515.
+.. [4] Kannan, R., Vempala, S., & Vetta, A. (2004). On clusterings: Good, bad and spectral.
+   Journal of the ACM (JACM), 51(3), 497--515.

@@ -38,15 +38,6 @@ def spectral_clustering(
     - ``'modularity'``: modularity-based spectral clustering with
       :func:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
 
-    .. hint::
-
-       Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
-
-    .. seealso::
-
-       The `Examples → GPU acceleration → Spectral clustering
-       <../examples/gpu.html#spectral-clustering>`__ page for examples.
-
     .. rubric:: Example
 
     Computing the spectral partition of an example SBM graph:
@@ -58,7 +49,16 @@ def spectral_clustering(
         >>> TG = tx.generators.example_sbm_graph()
         >>>
         >>> y = tx.algorithms.community.spectral.spectral_clustering(
-        >>>     TG, device='cpu', operator="modularity")
+        ...     TG, k=3, device='cpu', operator="modularity")
+
+    .. hint::
+
+        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+
+    .. seealso::
+
+        The `Examples → GPU acceleration → Spectral clustering
+        <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
     :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.

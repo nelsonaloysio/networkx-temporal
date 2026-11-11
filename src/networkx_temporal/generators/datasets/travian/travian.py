@@ -16,7 +16,7 @@ def travian_graph(
     edgetype: Optional[str] = None,
     alliances_only: bool = False,
     drop_duplicates: bool = False,
-    ) -> TemporalMultiDiGraph:
+) -> TemporalMultiDiGraph:
     """ Returns the Travian temporal graph.
 
     The Travian dataset [16]_ is a graph representing interactions between players in the online
@@ -24,13 +24,13 @@ def travian_graph(
     three types: attacks, messages, and trades. The dataset spans a period of 30 days starting from
     December 1, 2009 to December 30, 2009, with daily snapshots and edge timestamps in seconds.
 
-    Some nodes have an ``'alliance'`` attribute representing the player's alliance, while edges
+    Some nodes have a ``'community'`` attribute representing the player's alliance, while edges
     have ``'date'``, ``'time'``, and ``'edgetype'`` attributes representing the original dataset
     split, interaction time, and interaction type, respectively. As alliances are dynamic, players
     may change or leave their alliances at any point, or may not belong to any alliance at all.
 
     Note that the original dataset contains duplicate edges (same source, target, and timestamp),
-    which may be removed by setting ``drop_duplicates=True``. Nodes without an ``'alliance'`` or
+    which may be removed by setting ``drop_duplicates=True``. Nodes without a ``'community'`` or
     in isolated alliances may also be removed by setting ``alliances_only=True``.
 
     .. rubric:: Example
@@ -51,11 +51,12 @@ def travian_graph(
     .. code-block:: python
 
         >>> TG = tx.generators.travian_graph(alliances_only=True)
+        >>> print(TG)
 
-        TemporalMultiDiGraph named 'Travian' (t=30) with 2732 nodes and 1004769 edges
+        TemporalMultiDiGraph named 'Travian' (t=30) with 2731 nodes and 1004769 edges
 
     .. [16] Hajibagheri, A. et al. (2015).
-        ''Conflict and Communication in Massively-Multiplayer Online Games''.
+        Conflict and Communication in Massively-Multiplayer Online Games.
         In Proceedings of the International Conference on Social Computing, Behavioral-Cultural
         Modeling, and Prediction. Washington, DC, USA, March 31-April 3, 2015.
         pdf: `ial.eecs.ucf.edu/pdf/Sukthankar-SBP2015.pdf
@@ -64,13 +65,13 @@ def travian_graph(
     :param edgetype: Filter edges by type among ``'attacks'``, ``'messages'``, and ``'trades'``.
         If ``None``, loads all edges (default).
     :param alliances_only: Whether to keep only nodes that belong to an alliance.
-        If ``True``, removes nodes without an ``'alliance'`` attribute or in isolated alliances.
+        If ``True``, removes nodes without a ``'community'`` attribute or in isolated alliances.
         Default is ``False``.
-    :param duplicates: Whether to keep duplicate edges (same source, target, and timestamp).
-        If ``False``, only the first occurrence of each edge is kept. Default is ``True``.
+    :param drop_duplicates: Whether to drop duplicate edges (same source, target, and timestamp).
+        If ``True``, only the first occurrence of each edge is kept. Default is ``False``.
 
     :note: Original dataset available at: `Intelligent Agents Lab (UCF)
-        <https://ial.eecs.ucf.edu/travian-dataset/>`__.
+        <https://ial.eecs.ucf.edu/travian.php>`__.
     """
     if edgetype not in ("attacks", "messages", "trades", None):
         raise ValueError("Invalid edge type, expects 'attacks', 'messages', or 'trades' if set.")

@@ -45,14 +45,14 @@ def pubmed_graph(features: Optional[Union[bool, str]] = False) -> TemporalDiGrap
         TemporalDiGraph (t=42) named 'PubMed' with 19717 nodes and 44335 edges
 
     .. [13] Namata et al. (2012).
-        ''Query-driven Active Surveying for Collective Classification''.
+        Query-driven Active Surveying for Collective Classification.
         Workshop on Mining and Learning with Graphs (MLG), Edinburgh, Scotland, UK, 2012.
         url: `people.cs.vt.edu/~bhuang/papers/namata-mlg12.pdf
         <https://people.cs.vt.edu/~bhuang/papers/namata-mlg12.pdf>`__.
 
     .. [14] Passos, N.A.R.A., Carlini, E., Trani, S. (2024).
-        ''Deep Community Detection in Attributed Temporal Graphs: Experimental Evaluation of
-        Current Approaches''. In Proceedings of the 3rd GNNet Workshop: Graph Neural Networking
+        Deep Community Detection in Attributed Temporal Graphs: Experimental Evaluation of
+        Current Approaches. In Proceedings of the 3rd GNNet Workshop: Graph Neural Networking
         Workshop. The 20th International Conference on emerging Networking EXperiments and
         Technologies (CoNEXT 2024), Los Angeles, CA, USA.
         doi: `10.1145/3694811.3697822 <https://doi.org/10.1145/3694811.3697822>`__.

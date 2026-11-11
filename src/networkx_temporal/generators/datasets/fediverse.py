@@ -42,7 +42,7 @@ def fediverse_graph(
     :note: Wrapper for the ``GraphLoader`` class from
         `fedivertex <https://pypi.org/project/fedivertex/>`__ (PyPI).
 
-    .. [15] Kaggle. ''Fedivertex: The Fediverse Graph Dataset''.
+    .. [15] Kaggle. Fedivertex: The Fediverse Graph Dataset.
         url: `kaggle.com/datasets/marcdamie/fediverse-graph-dataset/data
         <https://www.kaggle.com/datasets/marcdamie/fediverse-graph-dataset/data>`__.
     """

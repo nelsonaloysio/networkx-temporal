@@ -130,13 +130,15 @@ def dynamic_stochastic_block_model(
 
     .. code-block:: python
 
-        >>> community = tx.get_node_attributes(TG, "community")
+        >>> community = tx.get_node_attributes(TG, "community", index=False)
         >>> for t, G in enumerate(TG):
         ...     clusters = [len([i for i in community[t] if i == c]) for c in set(community[t])]
         ...     print(f"t={t}: {G.order()} nodes, {G.size()} edges, {clusters} community sizes")
 
-        t=0: MultiDiGraph with 60 nodes and 1453 edges, [30, 30] community sizes
-        t=1: MultiDiGraph with 60 nodes and 1492 edges, [33, 27] community sizes
+        t=0: 32 nodes, 33 edges, [8, 8, 8, 8] community sizes
+        t=1: 32 nodes, 28 edges, [9, 8, 9, 6] community sizes
+        t=2: 32 nodes, 15 edges, [9, 9, 9, 5] community sizes
+        t=3: 32 nodes, 21 edges, [11, 8, 7, 6] community sizes
 
     Let's plot the resulting temporal graph, coloring nodes and edges by community memberships.
     We observe that few nodes transition between communities over time as :math:`\\eta=0.9`, while
@@ -163,8 +165,8 @@ def dynamic_stochastic_block_model(
        :align: center
 
     .. [1] Amir Ghasemian et al. (2016).
-        ''Detectability Thresholds and Optimal Algorithms for Community Structure in Dynamic
-        Networks''. doi: `10.1103/PhysRevX.6.031005 <https://doi.org/10.1103/PhysRevX.6.031005>`__
+        Detectability Thresholds and Optimal Algorithms for Community Structure in Dynamic
+        Networks. doi: `10.1103/PhysRevX.6.031005 <https://doi.org/10.1103/PhysRevX.6.031005>`__
 
     :param B: Block matrix with edge probabilities (Bernoulli) or rates (Poisson).
     :param z: Community vector assigning nodes to clusters.
@@ -187,8 +189,8 @@ def dynamic_stochastic_block_model(
     :param str distribution: Edge sampling distribution, either ``'poisson'`` (default) or
         ``'bernoulli'``. Poisson yields edge counts (a multigraph); Bernoulli yields a
         simple graph and requires ``B`` entries in ``[0, 1]``.
-    :param sparse: Whether to build each snapshot from a sparse adjacency matrix. This affects
-        the output representation only; the rate matrix is always dense. Default is ``False``.
+    :param sparse: Whether to build each snapshot from a sparse adjacency matrix.
+        Deprecated and will be removed in future versions.
     :param seed: Random number generator state.
 
     :note: Alias to :func:`~networkx_temporal.generators.dynamic_sbm`.

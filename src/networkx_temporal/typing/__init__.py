@@ -28,12 +28,15 @@ only, and may not be used to check an object type at runtime, as demonstrated in
 
     (True, False)
 
+Note that on Python 3.11 and later, the second ``isinstance`` call above raises a ``TypeError``
+instead.
+
 .. note::
 
    The convenience functions :func:`~networkx_temporal.classes.is_temporal_graph`
    and :func:`~networkx_temporal.classes.is_static_graph`
    may be used instead to check if an object is an instance of a temporal or
-   static NetworkX graph.
+   static NetworkX graph/digraph/multigraph.
 """
 
 from .typing import (

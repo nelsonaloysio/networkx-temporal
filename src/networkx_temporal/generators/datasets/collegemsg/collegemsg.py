@@ -35,18 +35,18 @@ def collegemsg_graph() -> TemporalMultiDiGraph:
         >>> TG = tx.generators.collegemsg_graph()
         >>>
         >>> def to_date(x):
-        >>>     # Convert hourly dates to YYYY-MM-DD format, allowing to sort them by day.
-        >>>     return datetime.strptime(x.strip(), "%Y-%m-%d %H:%M").strftime("%Y-%m-%d")
+        ...     # Convert hourly dates to YYYY-MM-DD format, allowing to sort them by day.
+        ...     return datetime.strptime(x.strip(), "%Y-%m-%d %H:%M").strftime("%Y-%m-%d")
         >>>
-        >>> TG = TG.slice(attr="time", apply_func=to_date)
+        >>> TG = TG.slice(attr="time", applymap=to_date)
         >>> print(TG)
 
-        TemporalMultiDiGraph (t=193) with 1899 nodes and 59835 edges
+        TemporalMultiDiGraph named 'CollegeMsg' (t=193) with 1899 nodes and 59835 edges
 
-    .. [12] Pietro Panzarasa, Tore Opsahl, and Kathleen M. Carley.
-        ''Patterns and dynamics of users' behavior and interaction: Network analysis of an
-        online community''. Journal of the American Society for Information Science and
-        Technology 60.5 (2009): 911-932.
+    .. [12] Pietro Panzarasa, Tore Opsahl, and Kathleen M. Carley (2009).
+        Patterns and dynamics of users' behavior and interaction: Network analysis of an
+        online community. Journal of the American Society for Information Science and
+        Technology 60(5), 911--932.
         doi: `10.1002/asi.21015 <https://doi.org/10.1002/asi.21015>`__.
     """
     def to_date(x):

@@ -92,13 +92,13 @@ The package supports **Python 3.7+** and is readily available from `PyPI
 
 .. code-block:: bash
 
-   $ pip install networkx-temporal
+   >>> pip install networkx-temporal
 
 Additional support for plotting graphs may be optionally installed with:
 
 .. code-block:: bash
 
-   $ pip install 'networkx-temporal[draw]'
+   >>> pip install 'networkx-temporal[draw]'
 
 
 Quick start
@@ -154,7 +154,7 @@ Note that the total number of nodes may vary, while the total number of edges is
 .. note::
 
    The :func:`~networkx_temporal.classes.TemporalGraph.slice` method by default creates a snapshot
-   for each unique time value in the temporal graph. It internally stores `views
+   for each unique attribute value in the graph. It internally stores `views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
    of the original graph, so no data is copied unless otherwise specified.
 
@@ -248,7 +248,7 @@ a :class:`~networkx_temporal.classes.TemporalGraph` between different
 
 In addition, it allows to :func:`~networkx_temporal.classes.TemporalGraph.convert` both static and
 temporal graphs to the following `library formats <examples/convert.html#external-library-formats>`__:
-`cuGraph <https://docs.nvidia.com/cugraph/latest/>`__,
+`cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__,
 `CuPy <https://cupy.dev>`__,
 `Deep Graph Library <https://www.dgl.ai>`__,
 `DyNetX <https://dynetx.readthedocs.io>`__,
@@ -258,8 +258,8 @@ temporal graphs to the following `library formats <examples/convert.html#externa
 `NumPy <https://numpy.org/>`__,
 `Pandas <https://pandas.pydata.org>`__,
 `PyTorch Geometric <https://pytorch-geometric.readthedocs.io>`__,
-`Stanford Network Analysis Platform <https://snap.stanford.edu>`__,
 `SciPy <https://scipy.org>`__,
+`SNAP <https://snap.stanford.edu>`__,
 `StellarGraph <https://stellargraph.readthedocs.io>`__,
 and `Teneto <https://teneto.readthedocs.io>`__.
 
@@ -281,12 +281,13 @@ For more information on using this package, please refer to the following sectio
 
 - `Index <genindex.html>`__ for a complete list of all functions, classes, and methods implemented.
 
+If you have questions or feedback to share, feel free to
+`open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
+or
+`contact us via e-mail <mailto:contact@networkx-temporal.org>`__. |:mailbox_with_mail:|
+
 .. seealso::
 
    The package's `GitHub repository <https://github.com/nelsonaloysio/networkx-temporal>`__
    for the latest updates and issues. Contributions are welcome!
 
-If you have questions or feedback to share, feel free to
-`open a ticket <https://github.com/nelsonaloysio/networkx-temporal/issues>`__
-or
-`contact us via e-mail <mailto:contact@networkx-temporal.org>`__. |:mailbox_with_mail:|

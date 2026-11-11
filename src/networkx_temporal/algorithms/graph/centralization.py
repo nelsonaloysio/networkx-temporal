@@ -76,7 +76,7 @@ def centralization(
         1.0
 
     .. [6] Freeman, L.C. (1979).
-        ''Centrality in Social Networks I: Conceptual Clarification''.
+        Centrality in Social Networks I: Conceptual Clarification.
         Social Networks 1, 215--239.
         doi: `10.1016/0378-8733(78)90021-7 <https://doi.org/10.1016/0378-8733(78)90021-7>`__
 
@@ -141,12 +141,6 @@ def degree_centralization(
     and :math:`\\text{deg}^\\star_{\\text{max}} = |V|-1`
     the maximum theoretical node degree.
 
-    .. seealso::
-
-       The `igraph R manual pages - Centralization of a graph
-       <https://igraph.org/r/doc/centralize.html>`__
-       (package version 1.3.5).
-
     .. rubric:: Example
 
     .. code-block:: python
@@ -167,7 +161,13 @@ def degree_centralization(
         ... ])
         >>> tx.degree_centralization(TG)
 
-        [1.0, 0.75]
+        [1.0, 0.0]
+
+    .. seealso::
+
+        The `igraph R manual pages - Centralization of a graph
+        <https://igraph.org/r/doc/centralize.html>`__
+        (package version 1.3.5).
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.

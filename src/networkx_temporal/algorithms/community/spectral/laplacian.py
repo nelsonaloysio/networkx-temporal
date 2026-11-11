@@ -42,21 +42,19 @@ def spectral_clustering_laplacian(
     Unlike the Bethe-Hessian, the Laplacian degrades in performance for sparse graphs.
     Note that its construction is equivalent to the Bethe-Hessian with :math:`r = 1`.
 
-    .. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). ''On spectral clustering: Analysis and an
-       algorithm''. In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural
-       Information Processing Systems. Vol. 14. MIT Press.
+    .. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). On spectral clustering: Analysis and an
+       algorithm. In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural
+       Information Processing Systems, 14. MIT Press.
 
     .. seealso::
 
-       The :func:`~networkx_temporal.algorithms.spectral_clustering`
-       function for a convenience wrapper around this implementation.
+        The :func:`~networkx_temporal.algorithms.spectral_clustering`
+        function for a convenience wrapper around this implementation.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
     :param k: Number of communities. If unset, estimate from the number of negative eigenvalues.
     :param normalized: Whether to use the normalized Laplacian construction.
-    :param max_k: Maximum number of eigenpairs to compute when ``k`` is None.
-    :param negative_tol: Tolerance for counting negative eigenvalues when ``k`` is None.
     :param n_init: Number of random initializations for :math:`k`-means.
     :param max_iter: Maximum number of iterations for :math:`k`-means.
     :param seed: Random seed for :math:`k`-means.
@@ -82,7 +80,7 @@ def spectral_clustering_laplacian(
             from cupyx.scipy.sparse.linalg import eigsh
         except ImportError as exc:
             raise ImportError(
-                "GPU spectral clustering requires CuPy and CuML. Please install it via"
+                "GPU spectral clustering requires CuPy and cuML. Please install it via"
                 " `conda install -c conda-forge -c rapidsai -c nvidia cupy cuml`."
             ) from exc
     else:

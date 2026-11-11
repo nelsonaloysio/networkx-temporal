@@ -266,7 +266,7 @@ class TemporalABC(metaclass=ABCMeta):
         """ The ``names`` property of the temporal graph.\n:meta private:
         """
         warn("TemporalGraph `names` property is deprecated in favor of `index` and will be removed"
-             "in a future release.", DeprecationWarning)
+             " in a future release.", DeprecationWarning)
         return self.index
 
     @names.setter
@@ -274,7 +274,7 @@ class TemporalABC(metaclass=ABCMeta):
         """ Setter for the ``names`` property of the temporal graph.\n:meta private:
         """
         warn("TemporalGraph `names` setter is deprecated in favor of `index` and will be removed"
-             "in a future release.", DeprecationWarning)
+             " in a future release.", DeprecationWarning)
         self.index = names
 
     # -- Graph-specific methods -- #
@@ -341,7 +341,7 @@ class TemporalABC(metaclass=ABCMeta):
             self.insert(len(self), G)
 
     def flatten(self) -> TemporalGraph:
-        """ Returns ''flattened'' version of temporal graph.
+        """ Returns "flattened" version of temporal graph.
         Equivalent to :func:`~networkx_temporal.classes.TemporalGraph.slice` with ``bins=1``.
 
         This method differs from :func:`~networkx_temporal.classes.TemporalGraph.to_static` only in
@@ -350,8 +350,8 @@ class TemporalABC(metaclass=ABCMeta):
 
         .. attention::
 
-           As each node in a flattened graph is unique, dynamic node attributes are not preserved.
-           Parallel edges from different snapshots are also not preserved, except for multigraphs.
+            As each node in a flattened graph is unique, dynamic node attributes are not preserved.
+            Parallel edges from different snapshots are also not preserved, except for multigraphs.
         """
         return self.slice(bins=1)
 

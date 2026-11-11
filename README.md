@@ -15,12 +15,12 @@ Python package to build and manipulate temporal graphs using [NetworkX](https://
 Available for **Python 3.7+** from [PyPI](https://pypi.org/project/networkx-temporal/):
 
 ```bash
-$ pip install 'networkx-temporal[draw]'
+pip install 'networkx-temporal[draw]'
 ```
 
 > The `[draw]` extra includes additional libraries required to plot graphs with NetworkX.
 
-Requires `networkx >=2.1`, `numpy >=1.17.3`, `pandas >=1.1.0`, `scipy >=1.7.3`.
+Requires `networkx >=2.1`, `numpy >=1.17.3`, `pandas >=1.1.0`, `scipy >=1.7.3`, `scikit-learn >=1.0.2`.
 
 Optional dependencies can be installed from the groups `all`, `docs`, `draw`, `ipynb`.
 
@@ -35,24 +35,24 @@ For detailed information on using the package, please refer to its
 > ([open on Colab](https://colab.research.google.com/github/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-01-basics.ipynb)).
 
 ```python
->>> import networkx_temporal as tx
+import networkx_temporal as tx
 >>>
->>> TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
+TG = tx.temporal_graph(directed=True)  # tx.TemporalMultiDiGraph()
 >>>
->>> TG.add_edge("a", "b", time=0)
->>> TG.add_edge("c", "b", time=1)
->>> TG.add_edge("d", "c", time=2)
->>> TG.add_edge("d", "e", time=2)
->>> TG.add_edge("a", "c", time=2)
->>> TG.add_edge("f", "e", time=3)
->>> TG.add_edge("f", "a", time=3)
->>> TG.add_edge("f", "b", time=3)
+TG.add_edge("a", "b", time=0)
+TG.add_edge("c", "b", time=1)
+TG.add_edge("d", "c", time=2)
+TG.add_edge("d", "e", time=2)
+TG.add_edge("a", "c", time=2)
+TG.add_edge("f", "e", time=3)
+TG.add_edge("f", "a", time=3)
+TG.add_edge("f", "b", time=3)
 >>>
->>> # Obtain snapshots as subgraph views.
->>> TG = TG.slice(attr="time")
+# Obtain snapshots as subgraph views.
+TG = TG.slice(attr="time")
 >>>
->>> # Plot resulting object.
->>> tx.draw(TG, layout="kamada_kawai", labels=True, figsize=(8,2))
+# Plot resulting object.
+tx.draw(TG, layout="kamada_kawai", labels=True, figsize=(8, 2))
 ```
 
 ![Temporal graph plot](https://github.com/nelsonaloysio/networkx-temporal/raw/main/docs/assets/figure/temporal-graph.png)
@@ -60,16 +60,16 @@ For detailed information on using the package, please refer to its
 ## Contributing
 
 Contributions are welcome! If you find any bugs or have any suggestions, feel free to
-[open a ticket](issues/new),
-[fork the repository](fork) and create a
-[pull request](compare), or simply
-[send an e-mail](mailto:nelson.reis@phd.unipi.it).
+[open a ticket](https://github.com/nelsonaloysio/networkx-temporal/issues/new),
+[fork the repository](https://github.com/nelsonaloysio/networkx-temporal/fork) and create a
+[pull request](https://github.com/nelsonaloysio/networkx-temporal/compare), or simply
+[send an e-mail](mailto:contact@networkx-temporal.org).
 Please keep in mind that any out-of-scope contributions (not regarding temporal networks)
 should instead be directed to the [NetworkX](https://github.com/networkx/networkx) repository.
 
 ## License
 
-This package is released under the [BSD License](LICENSE.md).
+This package is released under the [BSD License](https://github.com/nelsonaloysio/networkx-temporal/LICENSE.md).
 
 ## Cite
 

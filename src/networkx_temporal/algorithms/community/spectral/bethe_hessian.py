@@ -50,8 +50,8 @@ def spectral_clustering_bethe_hessian(
 
     .. seealso::
 
-       The :func:`~networkx_temporal.algorithms.spectral_clustering`
-       function for a convenience wrapper around this implementation.
+        The :func:`~networkx_temporal.algorithms.spectral_clustering`
+        function for a convenience wrapper around this implementation.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
@@ -84,7 +84,7 @@ def spectral_clustering_bethe_hessian(
             from cupyx.scipy.sparse.linalg import eigsh
         except ImportError as exc:
             raise ImportError(
-                "GPU spectral clustering requires CuPy and CuML. Please install it via"
+                "GPU spectral clustering requires CuPy and cuML. Please install it via"
                 " `conda install -c conda-forge -c rapidsai -c nvidia cupy cuml`."
             ) from exc
     else:

@@ -21,15 +21,6 @@ def temporal_graph(
     :class:`~networkx_temporal.classes.TemporalMultiDiGraph`
     object, depending on the choice of parameters.
 
-    .. hint::
-
-       Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
-       representing a snapshot in time. Unless dynamic node attributes are required, it is
-       recommended to use the :func:`~networkx_temporal.classes.TemporalGraph.slice` method instead,
-       allowing to create less resource-demanding graph `views
-       <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-       on the fly.
-
     .. rubric:: Example
 
     Creating a temporal directed multigraph with a single snapshot:
@@ -41,7 +32,16 @@ def temporal_graph(
         >>> TG = tx.temporal_graph(directed=True, multigraph=True)
         >>> print(TG)
 
-        TemporalMultiDiGraph (t=1) with 0 nodes and 0 edges
+        TemporalMultiDiGraph (t=0) with 0 nodes and 0 edges
+
+    .. hint::
+
+        Setting ``t`` as greater than ``1`` initializes a list of NetworkX graph objects, each
+        representing a snapshot in time. Unless dynamic node attributes are required, it is
+        recommended to use the :func:`~networkx_temporal.classes.TemporalGraph.slice` method
+        instead, allowing to create less resource-demanding graph `views
+        <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
+        on the fly.
 
     :param int t: Number of snapshots to initialize. Optional. Default is ``1``.
     :param directed: If ``True``, inherits a

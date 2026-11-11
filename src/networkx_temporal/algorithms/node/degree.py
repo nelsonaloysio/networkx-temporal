@@ -1,7 +1,5 @@
-from functools import reduce
 from typing import Any, Optional, Union
 
-from ...classes.functions import from_multigraph
 from ...classes.types import is_static_graph
 from ...typing import TemporalGraph, StaticGraph, Literal
 
@@ -27,9 +25,9 @@ def degree(
     ``weight`` attribute. For multigraphs, adjacencies are weighted by the number of
     parallel edges, unless ``weight=False``.
 
-    .. [2] Hyoungshick, K., Anderson, R. (2012). ''Temporal node centrality in complex networks''.
-        Physical Review E, 85(2). doi: `10.1103/PhysRevE.85.026107
-        <https://doi.org/10.1103/PhysRevE.85.026107>`__
+    .. [2] Kim, H. & Anderson, R. (2012). Temporal node centrality in complex networks.
+       Physical Review E, 85(2). doi: `10.1103/PhysRevE.85.026107
+       <https://doi.org/10.1103/PhysRevE.85.026107>`__
 
     :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
@@ -120,13 +118,15 @@ def degree_centrality(
         {|\\mathcal{V}|},
 
     where
-    :math:`c_{\\text{deg}}(i)` is the degree centrality of node :math:`i`,,
+    :math:`c_{\\text{deg}}(i)` is the degree centrality of node :math:`i`,
     :math:`G` is a snapshot in the temporal graph :math:`\\mathcal{G}`,
     :math:`j` is a node in the neighborhood :math:`\\mathcal{N}(i)`,
     :math:`\\mathbf{A}` is the adjacency matrix,
     and :math:`|\\mathcal{V}|` is the order of the graph :math:`\\mathcal{G}`.
     Note that this function does not consider node copies or edge weights in the adjacency matrix.
 
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param nbunch: One or more nodes to return. Optional.
     """
     return _degree_centrality(TG, degree="degree", nbunch=nbunch)
@@ -152,6 +152,8 @@ def in_degree_centrality(
     and :math:`|\\mathcal{V}|` is the order of the graph :math:`\\mathcal{G}`.
     Note that this function does not consider node copies or edge weights in the adjacency matrix.
 
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param nbunch: One or more nodes to return. Optional.
     """
     return _degree_centrality(TG, degree="in_degree", nbunch=nbunch)
@@ -170,13 +172,15 @@ def out_degree_centrality(
         {|\\mathcal{V}|},
 
     where
-    :math:`c_{\\text{in}}(i)` is the degree centrality of node :math:`i`,
+    :math:`c_{\\text{out}}(i)` is the degree centrality of node :math:`i`,
     :math:`G` is a snapshot in the temporal graph :math:`\\mathcal{G}`,
     :math:`j` is a node in the neighborhood :math:`\\mathcal{N}(i)`,
     :math:`\\mathbf{A}` is the adjacency matrix,
     and :math:`|\\mathcal{V}|` is the order of the graph :math:`\\mathcal{G}`.
     Note that this function does not consider node copies or edge weights in the adjacency matrix.
 
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param nbunch: One or more nodes to return. Optional.
     """
     return _degree_centrality(TG, degree="out_degree", nbunch=nbunch)

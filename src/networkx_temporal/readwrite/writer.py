@@ -114,12 +114,12 @@ def write_graph(
 
     if makedirs and name is not None:
         os.makedirs(osp.dirname(file), exist_ok=True)
-    if type(file) == str and not file.lower().endswith('.zip'):
+    if type(file) == str and not file.lower().endswith(".zip"):
         file += '.zip'
 
     compression = getattr(zipfile, (compression or DEFAULT_COMPRESSION).upper())
     file, nofile = (BytesIO(), True) if file is None else (file, False)
-    name = osp.basename((TG.name if is_temporal_graph(TG) else None) or name or 'snapshot')
+    name = osp.basename((TG.name if is_temporal_graph(TG) else None) or name or "snapshot")
     ext = _get_format_ext(frmt)
 
     with zipfile.ZipFile(file, "w",

@@ -33,6 +33,8 @@ def to_numpy(
         ``None``, all edge weights are considered as ``1``.
     :param interslice_weight: Weight of inter-snapshot edges in the supra-adjacency matrix.
         Only used if ``supra=True``.
+    :param nodelist: List of nodes to consider when constructing the adjacency matrix.
+        If ``None``, all nodes are considered.
     :param dtype: Data type of the intermediate adjacency matrix. Defaults to ``float32``.
     """
     if not (is_temporal_graph(graph) or is_static_graph(graph)):

@@ -32,7 +32,7 @@ def bridging_centrality(
     that is, consider :math:`c_{\\text{bet}}(i) = 1` for all nodes.
 
     .. [3] Hwang, W. et al. (2006).
-        ''Bridging Centrality: Identifying Bridging Nodes In Scale-free Networks''.
+        Bridging Centrality: Identifying Bridging Nodes In Scale-free Networks.
         url: `cse.buffalo.edu/tech-reports/2006-05.pdf
         <https://cse.buffalo.edu/tech-reports/2006-05.pdf>`__.
 

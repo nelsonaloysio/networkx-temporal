@@ -27,29 +27,29 @@ def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGrap
         >>> import networkx_temporal as tx
         >>>
         >>> TG = tx.from_events([
-        >>>     ('a', 'b', 0),
-        >>>     ('c', 'b', 1),
-        >>>     ('a', 'c', 2),
-        >>>     ('d', 'c', 2),
-        >>>     ('d', 'e', 2),
-        >>>     ('f', 'e', 3),
-        >>>     ('f', 'a', 3),
-        >>>     ('f', 'b', 3)
-        >>> ])
+        ...     ('a', 'b', 0),
+        ...     ('c', 'b', 1),
+        ...     ('a', 'c', 2),
+        ...     ('d', 'c', 2),
+        ...     ('d', 'e', 2),
+        ...     ('f', 'e', 3),
+        ...     ('f', 'a', 3),
+        ...     ('f', 'b', 3)
+        ... ])
         >>>
         >>> UTG = TG.to_unrolled()
         >>>
         >>> node_color = [
-        >>>     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
-        >>>     for n in UTG.nodes()]
+        ...     "tab:red" if int(n.split("_")[1]) == TG.index_node(n.split("_")[0])[0] else "#333"
+        ...     for n in UTG.nodes()]
         >>>
         >>> tx.draw(UTG,
-        >>>         layout=tx.unrolled_layout,
-        >>>         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
-        >>>         node_color=node_color,
-        >>>         font_size=10,
-        >>>         title="Unrolled Temporal Graph",
-        >>>         connectionstyle="arc3,rad=0.25")
+        ...         layout=tx.unrolled_layout,
+        ...         labels={n: f"{n.split('_')[0]}$_{n.split('_')[1]}$" for n in UTG.nodes()},
+        ...         node_color=node_color,
+        ...         font_size=10,
+        ...         title="Unrolled Temporal Graph",
+        ...         connectionstyle="arc3,rad=0.25")
 
     .. image:: ../../assets/figure/transform/from_unrolled.png
         :align: center
@@ -116,7 +116,7 @@ def to_unrolled(
     snapshots, plus time-adjacent node copies and edge couplings which connect these copies.
 
     If ``delta`` is set, edges are added between temporal nodes in sequential time steps,
-    :math:`(u_{t}, v_{t+\\delta})`, resulting in time series representations [0]_ of temporal
+    :math:`(u_{t}, v_{t+\\delta})`, resulting in time series representations [1]_ of temporal
     networks.
 
     .. seealso::
@@ -125,12 +125,12 @@ def to_unrolled(
         <../examples/convert.html#tg-utg>`__
         page for examples.
 
-    .. [0] Hyoungshick, K., Anderson, R. (2012). ''Temporal node centrality in complex networks''.
+    .. [1] Kim, H. & Anderson, R. (2012). Temporal node centrality in complex networks.
         Physical Review E, 85(2). doi: `10.1103/PhysRevE.85.026107
         <https://doi.org/10.1103/PhysRevE.85.026107>`__
 
     :param TemporalGraph TG: Temporal graph object.
-    :param str to: Package name or alias to :func:`~networkx_temporal.utils.convert`
+    :param str to: Package name to :func:`~networkx_temporal.classes.TemporalGraph.convert`
         the graph. Optional.
     :param delta: Time step between temporal nodes. Accepts an integer or a string
         with the edge-level attribute key name. Default: ``0``.

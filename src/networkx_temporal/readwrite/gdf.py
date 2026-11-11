@@ -21,8 +21,8 @@ def read_gdf(
 
     .. seealso::
 
-       The `API Reference <https://networkx-gdf.readthedocs.io/en/stable/api.html>`__
-       of the ``networkx_gdf`` package for format details.
+        The `API Reference <https://networkx-gdf.readthedocs.io/en/stable/api.html>`__
+        of the ``networkx_gdf`` package for format details.
 
     :param object file: File object or string containing path to GDF file.
     :param directed: Consider edges as directed or undirected. Optional. Default is ``None``.
@@ -124,8 +124,8 @@ def write_gdf(
 
     .. seealso::
 
-       The `API Reference <https://networkx-gdf.readthedocs.io/en/stable/api.html>`__
-       of the ``networkx_gdf`` package for format details.
+        The `API Reference <https://networkx-gdf.readthedocs.io/en/stable/api.html>`__
+        of the ``networkx_gdf`` package for format details.
 
     :param graph: NetworkX graph object.
     :param object file: File object or string containing path to GDF file. Optional. If ``None``

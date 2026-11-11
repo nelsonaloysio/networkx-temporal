@@ -16,7 +16,7 @@ def to_igraph(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
 
     :note: Wrapper function for
         `igraph.Graph.from_networkx
-        <https://igraph.org/python/doc/api/igraph.Graph.html#from_networkx>`__.
+        <https://python.igraph.org/en/stable/api/igraph.Graph.html#from_networkx>`__.
     """
     import igraph as ig
 

@@ -19,8 +19,8 @@ class TemporalMultiGraph(TemporalABC, nx.MultiGraph if nx.__version__ >= "2.8.1"
 
     .. seealso::
 
-       The :class:`~networkx_temporal.classes.TemporalGraph` class documentation
-       for details on its implemented methods.
+        The :class:`~networkx_temporal.classes.TemporalGraph` class documentation
+        for details on its implemented methods.
 
     :param int t: Number of temporal graphs to initialize. Optional. Default is ``1``.
 
