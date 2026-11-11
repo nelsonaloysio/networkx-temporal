@@ -5,7 +5,7 @@ from typing import Callable, Optional, Union
 
 import networkx as nx
 
-from .readwrite import _get_filepath, _get_filename, _get_format, _get_function
+from .readwrite import _get_filepath, _get_format, _get_function
 from ..transform import from_snapshots, from_static
 from ..typing import TemporalGraph
 
@@ -60,7 +60,6 @@ def read_graph(
         return func(file, **kwargs)
 
     path = _get_filepath(file)
-    name = _get_filename(path)
 
     if type(file) == str and osp.isdir(file):
         raise FileNotFoundError("Argument `file` must be a file path or object, not a directory.")
@@ -102,5 +101,4 @@ def read_graph(
     else:
         TG = from_static(read(file, format, **kwargs))
 
-    TG.name = name
     return TG
