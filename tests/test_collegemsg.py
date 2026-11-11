@@ -9,14 +9,14 @@ import networkx as nx
 import networkx_temporal as tx
 import pandas as pd
 
-DATA_PATH = Path(__file__).parent.resolve() / "../src/networkx_temporal/generators/data"
+DATA_PATH = Path(__file__).parent.resolve() / "../src/networkx_temporal/generators/datasets"
 
 
 def test_collegemsg():
     """ Test College Message dataset.
     https://stackoverflow.com/questions/72976127/how-to-create-a-temporal-network-using-networkx
     """
-    with gzip.open(DATA_PATH / "collegemsg.csv.gz", "r") as f:
+    with gzip.open(DATA_PATH / "collegemsg" / "collegemsg.csv.gz", "r") as f:
         # First two lines from file:
         # Source,Target,Timestamp
         # 1,2,4/15/04 2:56 PM
@@ -37,13 +37,13 @@ def test_collegemsg():
 
     TG = TG.slice(attr="Timestamp",
                   level="edge",
-                  apply_func=to_date)
+                  applymap=to_date)
 
     print(TG)
 
     t = TG.order().index(max(TG.order()))
 
-    print(f"t={t} ({TG.names[t]}) has V={TG[t].order()} nodes and E={TG[t].size()} edges")
+    print(f"t={t} ({TG.index[t]}) has V={TG[t].order()} nodes and E={TG[t].size()} edges")
 
     df = pd.DataFrame({"nodes": TG.order(),
                        "edges": TG.size(),
@@ -58,7 +58,7 @@ def test_collegemsg():
 
     fig, ax = plt.subplots(figsize=(7, 6), nrows=2, ncols=1, constrained_layout=True)
 
-    df.index = TG.names
+    df.index = TG.index
 
     df.iloc[:, :2].plot(ax=ax[0], color=["#1f77b4cc", "#ff7f0ecc"])
     df.iloc[:, 2:4].plot(ax=ax[1], color=["#2ca02ccc", "#d62728cc"])
