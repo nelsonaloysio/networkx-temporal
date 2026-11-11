@@ -14,6 +14,7 @@ lib/
 lib64/
 *.manifest
 MANIFEST
+notebook/temporal-graph.graphml.zip
 parts/
 pip-delete-this-directory.txt
 pip-log.txt
@@ -28,7 +29,7 @@ sdist/
 share/python-wheels/
 *.spec
 target/
-test/
-tests/
+tests/collegemsg.png
+tests/temporal-graph.graphml.zip
 var/
 wheels/
