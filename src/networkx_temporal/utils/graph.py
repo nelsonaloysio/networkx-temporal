@@ -5,11 +5,14 @@ import numpy as np
 import scipy.sparse as sp
 from networkx import NetworkXError
 
+from ..algorithms.gpu import NX_GPU_AUTOCONFIG
 from ..classes.types import is_static_graph, is_temporal_graph
 from ..typing import Literal, StaticGraph, TemporalGraph
 
 FORMAT = Literal["csr", "csc", "dok", "lil"]
 FORMATS = list(FORMAT.__args__)
+
+DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def combine_snapshots(graphs: List[TemporalGraph]) -> TemporalGraph:
@@ -124,7 +127,7 @@ def propagate_snapshots(
 def to_adjacency_matrix(
     graph: Union[TemporalGraph, StaticGraph],
     weight: Optional[str] = "weight",
-    device: Literal["cpu", "gpu"] = "cpu",
+    device: Literal["cpu", "gpu"] = DEVICE,
     dtype: Optional[object] = None,
     format: FORMAT = "csr",
 ) -> sp.spmatrix:
@@ -215,7 +218,7 @@ def to_supra_adjacency_matrix(
     interslice_couple: Literal["all", "first", "shared"] = "shared",
     interslice_directed: bool = False,
     return_offsets: bool = False,
-    device: Literal["cpu", "gpu"] = "cpu",
+    device: Literal["cpu", "gpu"] = DEVICE,
     dtype: Optional[object] = None,
     format: FORMAT = "csr",
 ) -> Union[sp.spmatrix, Tuple[sp.spmatrix, List[int]]]:
