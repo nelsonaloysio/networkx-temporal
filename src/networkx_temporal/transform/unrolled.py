@@ -65,7 +65,8 @@ def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGrap
     temporal_edges = {}
 
     # Use `delta` attribute from graph if not provided as argument.
-    delta = UTG.graph.get("delta", None) or getattr(UTG, "delta", 0)
+    if delta is None:
+        delta = UTG.graph.get("delta", None) or getattr(UTG, "delta", 0)
 
     # Use `keys` argument if graph is a multigraph, to preserve edge keys in the mapping.
     edge_kwargs = {"data": True, **({"keys": True} if UTG.is_multigraph() else {})}
