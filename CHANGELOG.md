@@ -9,6 +9,20 @@
 ### Removed
 -->
 
+## \[X.Y.Z\] - DD-MM-YYYY
+
+### Added
+- Partially parallelized Leiden algorithm for temporal graphs with `leiden_multislice` (CPU).
+
+### Changed
+- Automatic device selection based on `NX_GPU_AUTOCONFIG` for adjacency matrix transformations.
+- File name not anymore assigned to graph `name` attribute by default when calling `read_graph`.
+- Graph-level `delta` attribute is now only read if `delta=None` when calling `from_unrolled`.
+
+### Deprecated
+- Function `leiden_multislice_gpu` deprecated in favor of `leiden_multislice` with `device='gpu'`.
+
+
 ## \[1.4.5\] - 09-11-2026
 
 ### Added
