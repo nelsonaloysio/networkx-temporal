@@ -48,7 +48,9 @@ def modularity(
         \\left( \\frac{d_c}{2m} \\right)^2 \\right],
 
     where :math:`L_c` is the number of within-community edges
-    and :math:`d_c` is the sum of degrees of nodes in community :math:`c`.
+    :math:`d_c` is the sum of degrees of nodes in community :math:`c`,
+    :math:`C` is the set of communities,
+    and :math:`\\gamma` is the resolution parameter.
     If ``spectral=True``, modularity is computed using
     :func:`~networkx_temporal.algorithms.modularity_spectral` instead.
 
@@ -84,29 +86,24 @@ def modularity(
     if weight is not None and type(weight) != str:
         raise TypeError("Weight expects a string.")
 
-    to_matrix = to_scipy if sparse else to_numpy
-
     if spectral:
         fnc = modularity_spectral
+        kwargs = {"weight": weight, "gamma": resolution, "directed": graph.is_directed()}
+
         assignments = communities
-        kwargs = {
-            "weight": weight,
-            "gamma": resolution,
-            "directed": graph.is_directed(),
-        }
-        # Map to (n,) array or (n, k) matrix for spectral method.
         if type(communities) in (str, dict):
+            # Map to (n,) array or (n, k) matrix.
             assignments = map_attr_to_nodes(graph, communities, index=False)
-        # Convert to sparse matrix if specified, otherwise dense array for spectral method.
-        adj = to_matrix(graph, weight=weight)
+
+        to_matrix = to_scipy if sparse else to_numpy
+        graph = to_matrix(graph, weight=weight)
+
     else:
         fnc = nx.algorithms.community.quality.modularity
         kwargs = {"weight": weight, "resolution": resolution}
         assignments = partition_nodes(graph, communities, index=False)
 
     if is_static_graph(graph):
-        graph = adj if spectral else graph
         return fnc(graph, assignments, **kwargs)
 
-    graph = adj if spectral else graph
     return [fnc(g, z, **kwargs) for g, z in zip(graph, assignments)]

@@ -1,14 +1,14 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from ..classes.types import is_static_graph, is_temporal_graph
-from ..typing import TemporalGraph
+from ..typing import TemporalGraph, StaticGraph
 from ..utils.convert import convert
 from ..utils.convert.convert import FORMAT
 
 from networkx import NetworkXError
 
 
-def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
+def from_snapshots(graphs: Union[dict, List[StaticGraph]]) -> TemporalGraph:
     """ Returns :class:`~networkx_temporal.classes.TemporalGraph` from snapshots.
 
     .. seealso::
@@ -34,7 +34,12 @@ def from_snapshots(graphs: Union[dict, list]) -> TemporalGraph:
 
     from .. import empty_graph
     TG = empty_graph(directed=directed, multigraph=multigraph)
-    list(TG.add_snapshot(graphs[t]) if is_static_graph(graphs[t]) else TG.add_snapshots_from(graphs[t]) for t in T)
+    list(
+        TG.add_snapshot(graphs[t])
+        if is_static_graph(graphs[t]) else
+        TG.add_snapshots_from(graphs[t])
+        for t in T
+    )
     TG.index = list(T) if type(graphs) == dict else None
     return TG
 

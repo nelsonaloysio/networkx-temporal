@@ -8,7 +8,7 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_pandas(
-    graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     source: str = "source",
     target: str = "target",
     nodelist: Optional[list] = None,
@@ -17,8 +17,8 @@ def to_pandas(
 ) -> pd.DataFrame:
     """ Convert from NetworkX to `Pandas <https://pandas.pydata.org>`__ edge list.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param source: Column name for the source nodes (default: ``'source'``).
     :param target: Column name for the target nodes (default: ``'target'``).
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
@@ -27,9 +27,6 @@ def to_pandas(
 
     :note: Wrapper for `to_pandas_edgelist <https://networkx.org/documentation/stable/reference/generated/networkx.convert_matrix.to_pandas_edgelist.html>`__.
     """
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
     kwargs = {
         "source": source,
         "target": target,
@@ -41,9 +38,7 @@ def to_pandas(
     if is_static_graph(graph):
         return nx.to_pandas_edgelist(graph, **kwargs)
 
-    return pd.concat([
-        nx.to_pandas_edgelist(g, **kwargs) for g in graph
-    ]).reset_index(drop=True)
+    return pd.concat([to_pandas(g, **kwargs) for g in graph]).reset_index(drop=True)
 
 
 def from_pandas(

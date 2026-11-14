@@ -1,14 +1,14 @@
 from typing import Union
 
-from ...classes.types import is_static_graph, is_temporal_graph
+from ...classes.types import is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
-def to_torch_geometric(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
+def to_torch_geometric(graph: Union[StaticGraph, TemporalGraph], *args, **kwargs):
     """ Convert from NetworkX to `PyTorch Geometric <https://pytorch-geometric.readthedocs.io/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 
@@ -20,10 +20,7 @@ def to_torch_geometric(graph: Union[StaticGraph, TemporalGraph, list], *args, **
     """
     import torch_geometric as pyg
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
-    if is_temporal_graph(graph) or type(graph) == list:
+    if is_temporal_graph(graph):
         return [to_torch_geometric(g, *args, **kwargs) for g in graph]
 
     return pyg.utils.convert.from_networkx(graph, *args, **kwargs)

@@ -24,8 +24,8 @@ def to_numpy(
 ) -> Union[np.ndarray, List[np.ndarray]]:
     """ Convert from NetworkX to dense `NumPy <https://numpy.org>`__ array.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param supra: If ``True`` and a temporal graph is provided, returns the supra-adjacency
         matrix of the temporal graph instead of a list of adjacency matrices, one per snapshot.
         Default: ``False``.
@@ -37,9 +37,6 @@ def to_numpy(
         If ``None``, all nodes are considered.
     :param dtype: Data type of the intermediate adjacency matrix. Defaults to ``float32``.
     """
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
     kwargs.update({"weight": weight, "nodelist": nodelist, "dtype": dtype})
 
     if is_static_graph(graph):
@@ -53,8 +50,8 @@ def to_numpy(
             )
             .todense()
         )
-    return [to_numpy(g, **kwargs) for g in graph]
 
+    return [to_numpy(g, **kwargs) for g in graph]
 
 
 def from_numpy(

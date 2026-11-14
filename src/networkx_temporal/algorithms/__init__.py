@@ -6,7 +6,7 @@ Algorithms and metrics for temporal graphs.
 .. autosummary::
 
    leiden_communities
-   leiden_multislice_gpu
+   leiden_communities_parallel
    spectral_clustering
    spectral_clustering_laplacian
    spectral_clustering_bethe_hessian
@@ -40,7 +40,7 @@ Algorithms and metrics for temporal graphs.
 
 .. rubric:: Note
 
-Calling :attr:`~networkx_temporal.algorithms.is_gpu_enabled`
+The :attr:`~networkx_temporal.algorithms.is_gpu_enabled` property
 allows to check if GPU acceleration is enabled by default:
 
 .. code-block:: python
@@ -53,15 +53,14 @@ allows to check if GPU acceleration is enabled by default:
 
    True
 
-Note that a compatible GPU device and the required libraries must be installed for GPU acceleration
+Note that a compatible device and the required libraries must be installed for GPU acceleration
 to work. See the `GPU acceleration <../examples/gpu.html#accelerating-temporal-graph-algorithms>`__
-page for more details.
+page for installation instructions and more examples of usage.
 
 .. rubric:: Functions
 """
 
 from .community import *
-from .community.leiden.multislice_gpu import leiden_multislice_gpu
 from .gpu import NX_GPU_AUTOCONFIG
 from .graph import *
 from .node import *
@@ -70,7 +69,7 @@ is_gpu_enabled = NX_GPU_AUTOCONFIG
 
 __all__ = (
     "leiden_communities",
-    "leiden_multislice_gpu",
+    "leiden_communities_parallel",
     "spectral_clustering",
     "spectral_clustering_laplacian",
     "spectral_clustering_bethe_hessian",

@@ -1,6 +1,7 @@
 from importlib import import_module
-from typing import Any, Union
+from typing import Any, Sequence, Union
 
+from ...classes.functions import is_static_graph, is_temporal_graph
 from ...typing import Literal, StaticGraph, TemporalGraph
 
 FORMAT = Literal[
@@ -22,7 +23,12 @@ FORMAT = Literal[
 FORMATS = list(FORMAT.__args__)
 
 
-def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, **kwargs) -> Any:
+def convert(
+    graph: Union[StaticGraph, TemporalGraph, Sequence[StaticGraph]],
+    to: FORMAT,
+    *args,
+    **kwargs
+) -> Any:
     """ High-level conversion function to other libraries. Calls the appropriate function based on the
     received ``to`` parameter. The following libraries are currently supported for conversion:
 
@@ -103,6 +109,13 @@ def convert(graph: Union[StaticGraph, TemporalGraph, list], to: FORMAT, *args, *
         raise ValueError(
             f"Argument `to` must be among {FORMATS}."
         )
+
+    if hasattr(graph, "__iter__") and is_static_graph(graph[0]):
+        from ...transform import from_snapshots
+        graph = from_snapshots(graph)
+
+    if not is_static_graph(graph) and not is_temporal_graph(graph):
+        raise TypeError("Input expects a temporal, static, or sequence of NetworkX graph objects.")
 
     func = import_module(f".", package=__package__).__dict__["to_%s" % to]
     return func(graph, *args, **kwargs)

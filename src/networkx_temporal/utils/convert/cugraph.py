@@ -5,15 +5,15 @@ from ...typing import StaticGraph, TemporalGraph
 
 
 def to_cugraph(
-    graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     weight: Optional[str] = "weight",
     nodelist: Optional[list] = None,
     use_compat_graph: bool = True,
 ) -> Union[object, List[object]]:
     """ Convert from NetworkX to `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``. Ignored if ``use_compat_graph=False``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
@@ -32,34 +32,28 @@ def to_cugraph(
             "cugraph nx-cugraph pylibcugraph`."
         ) from exc
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
-    def _to_cugraph(g):
-        return nxcg.from_networkx(
-            g,
-            edge_attrs=weight,
-            use_compat_graph=use_compat_graph,
-        )
+    if is_temporal_graph(graph):
+        return [_to_cugraph(g) for g in graph]
 
     if nodelist:
         graph = graph.subgraph(nodelist)
 
-    if is_static_graph(graph):
-        return _to_cugraph(graph)
-
-    return [_to_cugraph(g) for g in graph]
+    return nxcg.from_networkx(
+        graph,
+        edge_attrs=weight,
+        use_compat_graph=use_compat_graph,
+    )
 
 
 def to_pylibcugraph(
-    graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     weight: Optional[str] = "weight",
     nodelist: Optional[list] = None,
 ) -> Union[object, List[object]]:
     """ Convert from NetworkX to `pylibcugraph <https://docs.nvidia.com/cugraph/latest/api_docs/plc/pylibcugraph/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``. Ignored if ``use_compat_graph=False``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
@@ -77,33 +71,27 @@ def to_pylibcugraph(
             "cugraph nx-cugraph pylibcugraph`."
         ) from exc
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
-    def _to_pylibcugraph(edgelist):
-        srcs = cp.array([e[0] for e in edgelist for e in e], dtype=np.int32)
-        dsts = cp.array([e[1] for e in edgelist for e in e], dtype=np.int32)
-        weights = cp.array([e[-1] for e in edgelist for e in e], dtype=np.float32)
-
-        graph_props = plc.GraphProperties(
-            is_symmetric=not graph.is_directed(),
-            is_multigraph=graph.is_multigraph(),
-        )
-
-        return plc.SGGraph(
-            plc.ResourceHandle(),
-            graph_props,
-            srcs,
-            dsts,
-            weight_array=weights,
-            store_transposed=True,
-            renumber=False,
-            do_expensive_check=False,
-        )
-
     edgelist = graph.edges(nodelist, data=weight)
 
     if is_static_graph(graph):
-        return _to_pylibcugraph([edgelist])
+        edgelist = [edgelist]
 
-    return _to_pylibcugraph(edgelist)
+    srcs = cp.array([e[0] for e in edgelist for e in e], dtype=np.int32)
+    dsts = cp.array([e[1] for e in edgelist for e in e], dtype=np.int32)
+    weights = cp.array([e[-1] for e in edgelist for e in e], dtype=np.float32)
+
+    graph_props = plc.GraphProperties(
+        is_symmetric=not graph.is_directed(),
+        is_multigraph=graph.is_multigraph(),
+    )
+
+    return plc.SGGraph(
+        plc.ResourceHandle(),
+        graph_props,
+        srcs,
+        dsts,
+        weight_array=weights,
+        store_transposed=True,
+        renumber=False,
+        do_expensive_check=False,
+    )

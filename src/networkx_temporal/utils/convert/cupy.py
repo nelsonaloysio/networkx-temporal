@@ -1,8 +1,6 @@
 from typing import List, Optional, Union
 
-import networkx as nx
-
-from ...classes.types import is_static_graph, is_temporal_graph
+from ...classes.types import is_static_graph
 from ...typing import Literal, StaticGraph, TemporalGraph
 
 FORMAT = Literal["csr", "csc"]  # "dok", "lil": NotImplementedError (cupy <= 8.6.0)
@@ -10,7 +8,7 @@ FORMATS = list(FORMAT.__args__)
 
 
 def to_cupy(
-    graph: Union[TemporalGraph, StaticGraph, List[StaticGraph]],
+    graph: Union[TemporalGraph, StaticGraph],
     supra: Optional[bool] = False,
     weight: Optional[str] = "weight",
     interslice_weight: Optional[float] = 1.0,
@@ -20,8 +18,8 @@ def to_cupy(
 ) -> Union[object, List[object]]:
     """ Convert from NetworkX to sparse `CuPy <https://cupy.dev>`__ matrix.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param supra: If ``True`` and a temporal graph is provided, returns the supra-adjacency
         matrix of the temporal graph instead of a list of adjacency matrices, one per snapshot.
         Default: ``False``.
@@ -36,10 +34,7 @@ def to_cupy(
 
         - ``'csc'``: Compressed Sparse Column.
     """
-    from ..graph import to_supra_adjacency_matrix
-
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
+    from ..graph import to_adjacency_matrix, to_supra_adjacency_matrix
 
     kwargs = {"weight": weight, "dtype": dtype, "format": format, "device": "gpu"}
 
@@ -47,7 +42,7 @@ def to_cupy(
         graph = graph.subgraph(nodelist)
 
     if is_static_graph(graph):
-        return to_supra_adjacency_matrix(graph, **kwargs)
+        return to_adjacency_matrix(graph, **kwargs)
 
     if supra:
         return to_supra_adjacency_matrix(graph, interslice_weight=interslice_weight, **kwargs)

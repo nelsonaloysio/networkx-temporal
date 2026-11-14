@@ -60,7 +60,7 @@ def spectral_clustering(
         The `Examples → GPU acceleration → Spectral clustering
         <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
-    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
     :param str operator: The spectral operator to use. Supported types:
         ``'laplacian'`` (default), ``'bethe_hessian'``, and ``'modularity'``.
