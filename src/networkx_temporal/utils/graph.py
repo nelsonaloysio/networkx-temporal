@@ -292,7 +292,7 @@ def to_supra_adjacency_matrix(
         Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
         or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
-    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``.
