@@ -1,14 +1,14 @@
 from typing import Union
 
-from ...classes.types import is_static_graph, is_temporal_graph
+from ...classes.types import is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
-def to_dgl(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
+def to_dgl(graph: Union[StaticGraph, TemporalGraph], *args, **kwargs):
     """ Convert from NetworkX to `Deep Graph Library <https://www.dgl.ai/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 
@@ -20,10 +20,7 @@ def to_dgl(graph: Union[StaticGraph, TemporalGraph, list], *args, **kwargs):
     """
     import dgl
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph) or type(graph) != list):
-        raise TypeError("Input must be one or a sequence of temporal or static NetworkX graphs.")
-
-    if is_temporal_graph(graph) or type(graph) == list:
-        return [dgl.from_networkx(g, *args, **kwargs) for g in graph]
+    if is_temporal_graph(graph):
+        return [to_dgl(g, *args, **kwargs) for g in graph]
 
     return dgl.from_networkx(graph, *args, **kwargs)

@@ -1,6 +1,6 @@
 from typing import Any, Union
 
-from ...classes.types import is_static_graph, is_temporal_graph
+from ...classes.types import is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
@@ -22,15 +22,15 @@ NUM_TYPE = {
 
 
 def to_graph_tool(
-    graph: Union[StaticGraph, TemporalGraph, list],
+    graph: Union[StaticGraph, TemporalGraph],
     index: str = "id",
     encoding: str = "ascii",
     errors: str = "strict",
 ):
     """ Convert from NetworkX to `graph-tool <https://graph-tool.skewed.de/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param index: Property name to use as the node identifier.
         Default is ``'id'``.
     :param encoding: Encoding to use for string conversion.
@@ -46,11 +46,8 @@ def to_graph_tool(
     """
     import graph_tool as gt
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
-    if is_temporal_graph(graph) or type(graph) == list:
-        return [to_graph_tool(H, index=index, encoding=encoding, errors=errors) for H in graph]
+    if is_temporal_graph(graph):
+        return [to_graph_tool(g, index=index, encoding=encoding, errors=errors) for g in graph]
 
     gtG = gt.Graph(directed=graph.is_directed())
 

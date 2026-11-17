@@ -1,21 +1,19 @@
 from typing import Optional, Union
 
-import networkx as nx
-
-from ...classes.types import is_static_graph, is_temporal_graph
+from ...classes.types import is_temporal_graph
 from ...typing import StaticGraph, TemporalGraph
 
 
 def to_snap(
-    graph: Union[StaticGraph, TemporalGraph, list],
+    graph: Union[StaticGraph, TemporalGraph],
     node_id: Optional[str] = "id",
     node_attrs: Optional[Union[bool, list]] = True,
     edge_attrs: Optional[Union[bool, list]] = True,
 ):
     """ Convert from NetworkX to `SNAP <https://snap.stanford.edu/>`__.
 
-    :param object graph: Graph object. Accepts a :class:`~networkx_temporal.classes.TemporalGraph`,
-        a single static NetworkX graph, or a list of static NetworkX graphs as input.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+        object.
     :param node_id: Attribute key to use as node identifier. Optional. Default is ``'id'``.
     :param node_attrs: Boolean or list of node attributes to include in the conversion.
         Optional. Default is ``True``.
@@ -26,12 +24,11 @@ def to_snap(
     """
     import snap
 
-    if not (is_temporal_graph(graph) or is_static_graph(graph)):
-        raise TypeError("Input must be a temporal or static NetworkX graph.")
-
-    if is_temporal_graph(graph) or type(graph) == list:
-        return [to_snap(g, node_id=node_id, node_attrs=node_attrs, edge_attrs=edge_attrs)
-                for g in graph]
+    if is_temporal_graph(graph):
+        return [
+            to_snap(g, node_id=node_id, node_attrs=node_attrs, edge_attrs=edge_attrs)
+            for g in graph
+        ]
 
     if type(node_id) != str:
         raise TypeError(
