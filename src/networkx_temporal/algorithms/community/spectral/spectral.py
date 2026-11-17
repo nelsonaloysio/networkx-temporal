@@ -1,5 +1,7 @@
+import logging as log
 from inspect import signature
 from typing import List, Optional, Union
+from warnings import warn
 
 from .bethe_hessian import spectral_clustering_bethe_hessian
 from .laplacian import spectral_clustering_laplacian
@@ -60,7 +62,7 @@ def spectral_clustering(
         The `Examples → GPU acceleration → Spectral clustering
         <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
-    :param graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
         object.
     :param str operator: The spectral operator to use. Supported types:
         ``'laplacian'`` (default), ``'bethe_hessian'``, and ``'modularity'``.
@@ -70,14 +72,14 @@ def spectral_clustering(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (RAPIDS).
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
 
     :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
     """
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
     if graph.is_directed():
-        raise ValueError("GPU spectral clustering requires an undirected graph.")
+        raise NotImplementedError("GPU spectral clustering is implemented for undirected graphs.")
 
     if operator == "laplacian":
         fnc = spectral_clustering_laplacian
@@ -87,14 +89,6 @@ def spectral_clustering(
         fnc = spectral_clustering_modularity
     else:
         raise ValueError(f"Invalid operator: '{operator}' not in {OPERATORS}.")
-
-    adj, offsets = to_supra_adjacency_matrix(
-        graph,
-        weight=weight,
-        interslice_weight=interslice_weight,
-        device=device,
-        return_offsets=True,
-    )
 
     # Inspect function signature, filter kwargs and raise an error for unsupported arguments.
     sig = signature(fnc)
@@ -111,9 +105,19 @@ def spectral_clustering(
             f"Supported keywords are: {set(sig.parameters)}."
         )
 
+    # Build adjacency matrix from graph.
+    adj, offsets = to_supra_adjacency_matrix(
+        graph,
+        weight=weight,
+        interslice_weight=interslice_weight,
+        device=device,
+        return_offsets=True,
+    )
+
     # Compute the spectral partition using the specified device and operator.
     assignments = fnc(adj, **fnc_kwargs)
 
+    # Return assignments per snapshot based on node offsets.
     if is_temporal_graph(graph):
         return [
             assignments[offsets[t]:offsets[t] + len(graph[t])]
@@ -121,3 +125,36 @@ def spectral_clustering(
         ]
 
     return assignments
+
+
+def _resolve_pathway(device):
+    """ Resolves pathway based on device and backend.
+    """
+    if device == "cpu":
+        import numpy as np
+        import scipy.sparse as sp
+        from scipy.sparse.linalg import eigsh, LinearOperator
+        from sklearn.cluster import KMeans  # MiniBatchKMeans as KMeans
+        return np, sp, KMeans, eigsh, LinearOperator
+    if device == "gpu":
+        try:
+            # Override numpy -> cupy, scipy -> cupyx, sklearn -> cuml for GPU acceleration.
+            import cupy as cp
+            import cupyx.scipy.sparse as cpx
+            from cupyx.scipy.sparse.linalg import eigsh, LinearOperator
+        except ImportError as exc:
+            raise ImportError(
+                "Spectral clustering on GPU requires CuPy. Available from: "
+                "`conda install -c conda-forge cupy`."
+            ) from exc
+        try:
+            from cuml.cluster import KMeans
+        except ImportError:
+            warn(
+                "Failed to import KMeans from cuml.cluster, falling back to sklearn.cluster (CPU)."
+                " Available from: `conda install -c conda-forge -c rapidsai -c nvidia cuml.`",
+                ImportWarning
+            )
+            log.error("ImportError: spectral._resolve_pathway(): from cuml.cluster import KMeans")
+        return cp, cpx, KMeans, eigsh, LinearOperator
+    raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")

@@ -1,5 +1,5 @@
 import scipy.sparse as sp
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from ...gpu import NX_GPU_AUTOCONFIG
 from ....typing import Literal
@@ -18,38 +18,37 @@ def spectral_clustering_laplacian(
 ) -> List[int]:
     """ Spectral clustering via the Laplacian operator.
 
-    Given a (supra-)adjacency matrix, computes the :math:`k` smallest eigenpairs of the
-    graph Laplacian and clusters the resulting embedding with :math:`k`-means. With
-    ``normalized=True`` (default), it is symmetric,
+    Given a (supra-)adjacency matrix, computes the eigenvectors associated with the :math:`k`
+    smallest eigenvalues of the graph Laplacian and clusters the resulting embedding with
+    :math:`k`-means. If ``normalized=True`` (default), the symmetric normalized Laplacian matrix
+    is used, that is,
 
     .. math::
 
         \\hat{\\mathbf{L}} =
-        \\mathbf{D}^{-1/2} \\mathbf{L} \\mathbf{D}^{-1/2} =
+        \\mathbf{D}^{-1/2} \\mathbf{L} \\mathbf{D}^{-1/2} \\; = \\;
         \\mathbf{I} - \\mathbf{D}^{-1/2} \\mathbf{A} \\mathbf{D}^{-1/2},
 
     where :math:`\\mathbf{A}` is the adjacency matrix,
     :math:`\\mathbf{D}` is the diagonal degree matrix,
     :math:`\\mathbf{I}` is the identity matrix,
     and :math:`\\mathbf{L} = \\mathbf{D} - \\mathbf{A}` is the unnormalized Laplacian.
-    For the symmetric normalized Laplacian :math:`\\hat{\\mathbf{L}}`, rows are also
-    :math:`L_2`-normalized before clustering [1]_ to correct for the scaling introduced by
-    :math:`\\mathbf{D}^{-1/2}`.
+    In this case, rows of the embeddings are also rescaled to unit :math:`\\ell_2`-norm before
+    clustering to correct for the degree-dependent factor :math:`\\sqrt{d_i}` carried by the
+    eigenvectors of :math:`\\hat{\\mathbf{L}}` [1]_. The number of communities/clusters :math:`k`
+    must be provided in advance.
 
-    The eigenvectors of :math:`\\hat{\\mathbf{L}}` are used as a low-dimensional embedding for
-    :math:`k`-means clustering. The number of communities :math:`k` must be provided; the
-    eigenvectors with smallest eigenvalues form the node embedding.
-    Unlike the Bethe-Hessian, the Laplacian degrades in performance for sparse graphs.
-    Note that its construction is equivalent to the Bethe-Hessian with :math:`r = 1`.
+    Unlike the Bethe-Hessian, spectral clustering of the Laplacian yields decreasing performance
+    in sparse graphs. Note that the construction is equivalent to the Bethe-Hessian with
+    :math:`r = 1`.
+
+    .. hint::
+
+        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). On spectral clustering: Analysis and an
        algorithm. In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural
        Information Processing Systems, 14. MIT Press.
-
-    .. seealso::
-
-        The :func:`~networkx_temporal.algorithms.spectral_clustering`
-        function for a convenience wrapper around this implementation.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
@@ -62,29 +61,12 @@ def spectral_clustering_laplacian(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (RAPIDS).
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
 
     :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
     """
-    if device == "cpu":
-        import numpy as xp
-        import scipy.sparse as xsp
-        from sklearn.cluster import KMeans
-        from scipy.sparse.linalg import eigsh
-    elif device == "gpu":
-        # Override numpy -> cupy, scipy -> cupyx, sklearn -> cuml for GPU acceleration.
-        try:
-            import cupy as xp
-            import cupyx.scipy.sparse as xsp
-            from cuml.cluster import KMeans
-            from cupyx.scipy.sparse.linalg import eigsh
-        except ImportError as exc:
-            raise ImportError(
-                "GPU spectral clustering requires CuPy and cuML. Please install it via"
-                " `conda install -c conda-forge -c rapidsai -c nvidia cupy cuml`."
-            ) from exc
-    else:
-        raise ValueError(f"Invalid device '{device}'. Supported devices are: 'cpu', 'gpu'.")
+    from .spectral import _resolve_pathway
+    xp, xsp, KMeans, eigsh, _ = _resolve_pathway(device)
 
     n_nodes = adj.shape[0]
     if n_nodes == 0:

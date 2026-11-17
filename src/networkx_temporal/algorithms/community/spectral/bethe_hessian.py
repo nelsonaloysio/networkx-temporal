@@ -34,24 +34,26 @@ def spectral_clustering_bethe_hessian(
     the number of communities is estimated as the number of negative Bethe-Hessian eigenvalues
     among the computed eigenpairs.
 
-    The regularizer parameter ``r``, if unset, is estimated from the graph's
-    degree distribution as :math:`r = \\sqrt{\\langle d^2 \\rangle / \\langle d \\rangle - 1}`,
-    which is the non-backtracking spectral radius and accounts for degree heterogeneity; it
-    approximates :math:`\\sqrt{d}` for near-regular graphs, where :math:`d` is the mean degree.
+    The regularizer ``r``, if unset, is estimated from the degree distribution as
+    :math:`r = \\sqrt{\\langle d^2 \\rangle / \\langle d \\rangle - 1}`, which is the
+    non-backtracking spectral radius and accounts for degree heterogeneity and approximates
+    :math:`\\sqrt{d}` for near-regular graphs, where :math:`d` is the mean degree.
+    Note that the sign of :math:`r` should be positive for assortative communities, or negative
+    for disassortative communities.
 
     Asymptotically, the number of negative Bethe-Hessian eigenvalues estimates the number of
     communities and attains the information-theoretic detectability threshold on sparse SBM
     graphs. Note that this guarantee only holds for unweighted graphs; for weighted graphs,
     the same estimation is employed, but is considered a heuristic approximation instead.
 
-    The sign of ``r`` should be positive for assortative communities and negative for
-    disassortative communities; note that the current estimation only supports assortative
-    structures.
+    .. attention::
 
-    .. seealso::
+        Current estimation of the regularizer parameter :math:`r` supports only assortative
+        structures.
 
-        The :func:`~networkx_temporal.algorithms.spectral_clustering`
-        function for a convenience wrapper around this implementation.
+    .. hint::
+
+        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
@@ -66,29 +68,12 @@ def spectral_clustering_bethe_hessian(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (RAPIDS).
+        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
 
     :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
     """
-    if device == "cpu":
-        import numpy as xp
-        import scipy.sparse as xsp
-        from sklearn.cluster import KMeans
-        from scipy.sparse.linalg import eigsh
-    elif device == "gpu":
-        try:
-            # Override numpy -> cupy, scipy -> cupyx, sklearn -> cuml for GPU acceleration.
-            import cupy as xp
-            import cupyx.scipy.sparse as xsp
-            from cuml.cluster import KMeans
-            from cupyx.scipy.sparse.linalg import eigsh
-        except ImportError as exc:
-            raise ImportError(
-                "GPU spectral clustering requires CuPy and cuML. Please install it via"
-                " `conda install -c conda-forge -c rapidsai -c nvidia cupy cuml`."
-            ) from exc
-    else:
-        raise ValueError(f"Invalid device '{device}'. Supported devices are: 'cpu', 'gpu'.")
+    from .spectral import _resolve_pathway
+    xp, xsp, KMeans, eigsh, _ = _resolve_pathway(device)
 
     n_nodes = adj.shape[0]
     if n_nodes == 0:
