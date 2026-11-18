@@ -5,14 +5,14 @@ Top-level module for the package.
 
 .. autosummary::
 
-   algorithms
-   classes
-   drawing
-   generators
-   readwrite
-   transform
-   typing
-   utils
+    algorithms
+    classes
+    drawing
+    generators
+    readwrite
+    transform
+    typing
+    utils
 
 .. rubric:: Note
 

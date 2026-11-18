@@ -50,8 +50,8 @@ def spectral_clustering_modularity(
         Obtained by :func:`~networkx_temporal.classes.TemporalGraph.offsets`, or
         :func:`~networkx_temporal.utils.to_supra_adjacency_matrix` with
         ``return_offsets=True``. If ``None``, assumes a static graph.
-    :param gamma: Resolution parameter :math:`\\gamma` (default: ``1.0``). Controls the size of the
-        communities found, where higher values lead to smaller communities.
+    :param gamma: Resolution parameter :math:`\\gamma = 1` (default).
+        Controls the size of communities, where higher values lead to smaller communities.
     :param n_init: Number of random initializations for :math:`k`-means.
     :param max_iter: Maximum number of iterations for :math:`k`-means.
     :param seed: Random seed for :math:`k`-means.
@@ -59,9 +59,10 @@ def spectral_clustering_modularity(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
     xp, _, KMeans, _, LinearOperator = _resolve_pathway(device)

@@ -24,44 +24,48 @@ Accelerating temporal graph algorithms
 
 Some algorithms for temporal networks can be computationally intensive,
 especially for large-scale networks. To address this, NetworkX-Temporal
-integrates some GPU-accelerated algorithm implementations using the
-open-source libraries CuPy, cuGraph, and cuML, substantially reducing
-their computation time. This guide illustrates some common usage examples.
-
-GPU-accelerated algorithms may require the installation of the following libraries:
+integrates GPU-accelerated implementations with the open-source libraries
+CuPy, cuML, and cuGraph, substantially reducing their computation time.
 
 - `CuPy <https://docs.cupy.dev/en/stable/install.html>`__:
-  Array computations on GPUs, similar to NumPy and SciPy (AMD/NVIDIA);
-- `cuGraph <https://docs.rapids.ai/install/>`__:
-  Graph computations part of the RAPIDS suite (NVIDIA only);
+  Array computations on GPUs, similar to NumPy and SciPy (required -- AMD/NVIDIA);
 - `cuML <https://docs.rapids.ai/install/>`__:
-  Machine learning algorithms part of the same suite (NVIDIA only).
+  Machine learning algorithms part of the RAPIDS suite (optional -- NVIDIA only);
+- `cuGraph <https://docs.nvidia.com/cugraph/latest/installation/getting_cugraph/>`__:
+  Graph computations part of the same suite (optional -- NVIDIA only).
 
 .. code-block:: bash
 
-   # Spectral clustering and Leiden algorithm (RAPIDS/NVIDIA only)
-   conda install -c conda-forge -c rapidsai -c nvidia cupy cuml cugraph nx-cugraph pylibcugraph
+   # Required for all accelerated algorithms on NVIDIA GPUs (CUDA)...
+   conda install -c conda-forge cupy
 
-   # Parallelized multislice Leiden via CuPy on NVIDIA GPUs (CUDA)...
-   # conda install -c conda-forge cupy
-
-   # ...or on AMD GPUs (ROCm, experimental; separate build)
+   # ...or on AMD GPUs (ROCm, experimental; separate build).
    # pip install amd-cupy --extra-index-url=https://pypi.amd.com/simple
 
-Once installed, GPU acceleration in NetworkX-Temporal may be enabled by passing the parameter
-``device='gpu'`` in the relevant functions; or by setting ``NX_GPU_AUTOCONFIG=1`` in the
-environment, allowing zero-code configuration and automatic switch to GPU device when supported.
-To verify it:
+   # (Optional) Required for accelerated k-means (NVIDIA only).
+   conda install -c rapidsai -c nvidia -c conda-forge cuml
+
+Once installed, GPU acceleration may be enabled by passing the parameter
+``device='gpu'`` to the relevant functions, or by setting ``NX_GPU_AUTOCONFIG=1`` in the
+environment, allowing zero-code configuration and automatic switch to GPU device when supported
+by the function. To verify it:
 
 .. code-block:: python
 
+   >>> # Enables GPU acceleration by default for supported algorithms.
+   >>> import os
+   >>> os.environ["NX_GPU_AUTOCONFIG"] = "1"
+
+.. code-block:: python
+
+   >>> # Verify GPU acceleration is enabled by default.
    >>> import networkx_temporal as tx
    >>> tx.is_gpu_enabled
 
    True
 
 Currently, only algorithms relevant for temporal community detection are implemented with
-support for GPU acceleration: `spectral <#spectral-clustering>`_ [1]_ clustering and the
+support for GPU acceleration: `spectral clustering <#spectral-clustering>`_ [1]_ and the
 `Leiden <#leiden-communities>`_ [2]_ algorithm. Details on both are provided next, using the
 :func:`~networkx_temporal.algorithms.spectral_clustering` and
 :func:`~networkx_temporal.algorithms.leiden_communities` high-level functions.
@@ -120,35 +124,6 @@ Let's plot the ground truths and the detected clusters for each time step, so to
 
 .. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_16_0.png
 
-The function can also be used to cluster the aggregated (static) graph obtained by the
-:func:`~networkx_temporal.classes.TemporalGraph.to_static` method, which returns a NetworkX
-`MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__
-instance with all edges from all graph snapshots:
-
-.. code-block:: python
-
-   >>> G = TG.to_static()
-   >>> y_pred = tx.spectral_clustering(G, k=3)
-
-.. code-block:: python
-
-   >>> def plot_static_graph(G, y_pred):
-   ...     y_true = tx.get_node_attributes(G, "community", index=False)
-   ...     pos = tx.layout(G, layout="kamada_kawai")
-   ...     node_color = [
-   ...         [colors[m % len(colors)] for m in y]
-   ...         for y in [y_true, y_pred]
-   ...     ]
-   ...     # Draw ground truths (left) and clustering results (right).
-   ...     return tx.draw(
-   ...         [G, G], figsize=(6, 3), pos=pos, node_size=70,
-   ...         title=["Ground Truths", "Clustering Results"],
-   ...         temporal_node_color=node_color)
-   >>>
-   >>> plot_static_graph(G, y_pred)
-
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_13_0.png
-
 
 Leiden communities
 ------------------
@@ -174,24 +149,47 @@ modularity [3]_ objective is optimized instead:
    the number of communities is known in advance, yielding a fast and accurate detection method.
 
 
+Static graph clustering
+-----------------------
+
+Both algorithms can also be used to cluster aggregated (static) graphs obtained from
+:func:`~networkx_temporal.classes.TemporalGraph.to_static`:
+
+.. code-block:: python
+
+   >>> G = TG.to_static()
+   >>> y_spectral = tx.spectral_clustering(G, k=3)
+   >>> y_leiden = tx.leiden_communities(G)
+
+.. code-block:: python
+
+   >>> def plot_static_graph(G, y_spectral, y_leiden):
+   >>>     y_true = tx.get_node_attributes(G, "community", index=False)
+   >>>     pos = tx.layout(G, layout="kamada_kawai")
+   >>>     node_color = [
+   >>>         [colors[m % len(colors)] for m in y]
+   >>>         for y in [y_true, y_spectral, y_leiden]
+   >>>     ]
+   >>>     # Draw ground truths (left) and clustering results (middle/right).
+   >>>     return tx.draw(
+   >>>         [G, G, G], figsize=(9, 3), pos=pos, node_size=70,
+   >>>         title=["Ground Truths", "Spectral Clustering", "Leiden Communities"],
+   >>>         temporal_node_color=node_color)
+   >>>
+   >>> plot_static_graph(G, y_spectral, y_leiden)
+
+.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_13_0.png
+
+Note that although the obtained results (middle/right) agree among the two algorithms, neither fully match the ground truths (left) due to the graph's evolving topology and community structure.
+
 Compare running times
 =====================
 
-The CPU and GPU implementations of the Leiden [2]_ algorithm run through different backends
-depending on both the selected ``device`` and graph type (a
-:class:`~networkx_temporal.typing.StaticGraph` or a
-:class:`~networkx_temporal.classes.TemporalGraph`):
-
-- ``'cpu'``: uses `leidenalg <https://github.com/vtraag/leidenalg>`__
-  and `igraph <https://igraph.org/python/>`__
-  as backends, implemented in Python and C++.
-- ``'gpu'``: uses `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__
-  for static and a parallelized `CuPy <https://cupy.dev/>`__
-  implementation for temporal graphs.
+The :func:`~networkx_temporal.algorithms.leiden_communities` function accepts alternative ``backend`` implementations. If unset, the parallelized :func:`~networkx_temporal.algorithms.leiden_communities_temporal` implementation is used by default (CPU/GPU devices). Alternative backends include ``'leidenalg'`` (sequential, CPU only) and ``'cugraph'`` (NVIDIA only).
 
 
-Temporal multislice optimization
---------------------------------
+Temporal (multislice) optimization
+----------------------------------
 
 Overall, the GPU implementations are significantly faster for large-scale graphs.
 Runtimes for the PubMed temporal graph are shown

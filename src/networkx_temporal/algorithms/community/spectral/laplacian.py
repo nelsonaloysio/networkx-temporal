@@ -61,9 +61,10 @@ def spectral_clustering_laplacian(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
     xp, xsp, KMeans, eigsh, _ = _resolve_pathway(device)

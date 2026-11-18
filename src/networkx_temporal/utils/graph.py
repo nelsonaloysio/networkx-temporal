@@ -176,9 +176,9 @@ def to_adjacency_matrix(
         ``None`` treats all weights as 1. Default: ``'weight'``.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy and SciPy (default).
+        - ``'cpu'``: Uses NumPy and SciPy.
 
-        - ``'gpu'``: Uses CuPy and CuPy sparse.
+        - ``'gpu'``: Uses CuPy.
 
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).
@@ -292,8 +292,8 @@ def to_supra_adjacency_matrix(
         Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
         or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``.
     :param interslice_weight: Inter-slice coupling strength for temporal graphs. Default: ``1.0``.
@@ -314,9 +314,9 @@ def to_supra_adjacency_matrix(
         starting indices for each slice. Default: ``False``.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy and SciPy (default).
+        - ``'cpu'``: Uses NumPy and SciPy.
 
-        - ``'gpu'``: Uses CuPy and CuPy sparse.
+        - ``'gpu'``: Uses CuPy.
 
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).

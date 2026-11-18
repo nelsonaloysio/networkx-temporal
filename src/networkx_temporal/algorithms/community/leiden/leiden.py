@@ -248,4 +248,4 @@ def _leiden_multislice_gpu(graph: Union[TemporalGraph, StaticGraph], **kwargs):
         "(..., backend='cupy', device='gpu')` and will be removed in a future release.",
         DeprecationWarning
     )
-    return leiden_communities_temporal(graph, **{"device": "gpu", **kwargs})
+    return leiden_communities_temporal(graph, **{**kwargs, "device": "gpu"})

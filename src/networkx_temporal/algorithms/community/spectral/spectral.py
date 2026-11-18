@@ -62,8 +62,8 @@ def spectral_clustering(
         The `Examples → GPU acceleration → Spectral clustering
         <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param str operator: The spectral operator to use. Supported types:
         ``'laplacian'`` (default), ``'bethe_hessian'``, and ``'modularity'``.
     :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
@@ -72,9 +72,10 @@ def spectral_clustering(
 
         - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
