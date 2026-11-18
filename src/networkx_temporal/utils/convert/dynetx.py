@@ -7,8 +7,8 @@ from ...typing import StaticGraph, TemporalGraph
 def to_dynetx(graph: Union[StaticGraph, TemporalGraph], attr: Optional[str] = None, **kwargs):
     """ Convert from NetworkX to `DyNetX <https://dynetx.readthedocs.io/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param attr: Attribute name for the temporal edges. Optional.
     :param kwargs: Keyword arguments for the DyNetX graph object.
 

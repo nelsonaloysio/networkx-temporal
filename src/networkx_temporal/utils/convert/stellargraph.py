@@ -7,8 +7,8 @@ from ...typing import StaticGraph, TemporalGraph
 def to_stellargraph(graph: Union[StaticGraph, TemporalGraph], *args, **kwargs):
     """ Convert from NetworkX to `StellarGraph <https://stellargraph.readthedocs.io/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 

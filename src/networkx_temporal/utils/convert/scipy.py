@@ -27,8 +27,8 @@ def to_scipy(
 ) -> Union[sp.spmatrix, List[sp.spmatrix]]:
     """ Convert from NetworkX to sparse `SciPy <https://scipy.org>`__ matrix.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param supra: If ``True`` and a temporal graph is provided, returns the supra-adjacency
         matrix of the temporal graph instead of a list of adjacency matrices, one per snapshot.
         Default: ``False``.

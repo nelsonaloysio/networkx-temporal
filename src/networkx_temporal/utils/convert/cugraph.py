@@ -12,8 +12,8 @@ def to_cugraph(
 ) -> Union[object, List[object]]:
     """ Convert from NetworkX to `cuGraph <https://docs.rapids.ai/api/cugraph/stable/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``. Ignored if ``use_compat_graph=False``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.
@@ -52,8 +52,8 @@ def to_pylibcugraph(
 ) -> Union[object, List[object]]:
     """ Convert from NetworkX to `pylibcugraph <https://docs.nvidia.com/cugraph/latest/api_docs/plc/pylibcugraph/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``. Ignored if ``use_compat_graph=False``.
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.

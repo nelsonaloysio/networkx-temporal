@@ -7,8 +7,8 @@ from ...typing import StaticGraph, TemporalGraph
 def to_teneto(graph: Union[StaticGraph, TemporalGraph], attr: str = "time"):
     """ Convert from NetworkX to `Teneto <https://teneto.readthedocs.io>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param attr: Attribute name for the temporal edges. Default is ``'time'``.
 
     :rtype: teneto.TemporalNetwork

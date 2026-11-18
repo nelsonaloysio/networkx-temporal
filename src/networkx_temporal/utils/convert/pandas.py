@@ -17,8 +17,8 @@ def to_pandas(
 ) -> pd.DataFrame:
     """ Convert from NetworkX to `Pandas <https://pandas.pydata.org>`__ edge list.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param source: Column name for the source nodes (default: ``'source'``).
     :param target: Column name for the target nodes (default: ``'target'``).
     :param nodelist: List of nodes to consider for conversion. If unset, all nodes are considered.

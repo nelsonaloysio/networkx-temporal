@@ -18,6 +18,8 @@
 - Automatic device selection based on `NX_GPU_AUTOCONFIG` for adjacency matrix transformations.
 - File name not anymore assigned to graph `name` attribute by default when calling `read_graph`.
 - Graph-level `delta` attribute is now only read if `delta=None` when calling `from_unrolled`.
+- High-level `convert` function loads sequences of static graphs into a temporal graph by default.
+- Module `convert` functions accept either a static or temporal graph object as input (not lists).
 
 ### Deprecated
 - Function `leiden_multislice_gpu` deprecated in favor of `leiden_multislice` with `device='gpu'`.

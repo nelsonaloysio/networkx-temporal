@@ -7,8 +7,8 @@ from ...typing import StaticGraph, TemporalGraph
 def to_torch_geometric(graph: Union[StaticGraph, TemporalGraph], *args, **kwargs):
     """ Convert from NetworkX to `PyTorch Geometric <https://pytorch-geometric.readthedocs.io/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 

@@ -7,8 +7,8 @@ from ...typing import StaticGraph, TemporalGraph
 def to_networkit(graph: Union[StaticGraph, TemporalGraph], *args, **kwargs):
     """ Convert from NetworkX to `Networkit <https://networkit.github.io/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param args: Positional arguments.
     :param kwargs: Keyword arguments.
 

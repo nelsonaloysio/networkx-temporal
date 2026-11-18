@@ -12,8 +12,8 @@ def to_snap(
 ):
     """ Convert from NetworkX to `SNAP <https://snap.stanford.edu/>`__.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param node_id: Attribute key to use as node identifier. Optional. Default is ``'id'``.
     :param node_attrs: Boolean or list of node attributes to include in the conversion.
         Optional. Default is ``True``.
