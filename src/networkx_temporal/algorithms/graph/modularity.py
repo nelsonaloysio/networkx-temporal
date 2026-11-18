@@ -1,4 +1,5 @@
 from typing import List, Optional, Union
+from warnings import warn
 
 import networkx as nx
 import numpy as np
@@ -15,7 +16,7 @@ def modularity(
     graph: Union[TemporalGraph, StaticGraph],
     communities: Union[str, list, dict],
     weight: Optional[str] = "weight",
-    resolution: Optional[float] = 1,
+    resolution: Optional[float] = 1.0,
     spectral: bool = False,
     sparse: bool = False,
 ) -> Union[float, List[float]]:
@@ -91,7 +92,7 @@ def modularity(
 
     if spectral:
         fnc = modularity_spectral
-        kwargs = {"weight": weight, "gamma": resolution, "directed": graph.is_directed()}
+        kwargs = {"weight": weight, "resolution": resolution, "directed": graph.is_directed()}
         assignments = communities
         if type(communities) in (str, dict):
             # Map to (n,) array or (n, k) matrix.
@@ -169,6 +170,7 @@ def modularity_multislice(
         If ``False`` (default), use `NetworkX modularity
         <https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.quality.modularity.html>`__.
     """
+    resolution = 1 if resolution is None else resolution
     interslice_weight = 1 if interslice_weight is None else interslice_weight
 
     if not is_temporal_graph(TG):
@@ -213,9 +215,10 @@ def modularity_multislice(
 def modularity_spectral(
     adj: sp.spmatrix,
     communities: object,
-    resolution: Optional[float] = 1,
+    resolution: Optional[float] = 1.0,
     directed: Optional[bool] = True,
     weight: Optional[Union[str, bool]] = True,
+    gamma: Optional[float] = None,
 ) -> float:
     """ Calculates modularity on the graph spectrum. Expects a dense or sparse ``adj``
     matrix from :func:`~networkx_temporal.utils.to_numpy` or
@@ -253,13 +256,22 @@ def modularity_spectral(
     :param directed: Whether the graph is directed. Default is ``True``.
     :param weight: Whether to consider edge weights. If a string is provided,
         it is used as the edge attribute key. Default is ``True``.
+    :param gamma: Deprecated in favor of ``resolution``.
     """
     if is_static_graph(adj) or is_temporal_graph(adj):
         raise TypeError(
             f"Expected a dense or sparse adjacency matrix, got {type(adj)}."
         )
+    if gamma is not None:
+        warn(
+            "Parameter `gamma` for `modularity_spectral` is deprecated in favor of `resolution` "
+            "and will be removed in a future release.",
+            DeprecationWarning
+        )
+        if resolution != 1.0:
+            resolution = gamma
 
-    gamma = 1 if gamma is None else gamma
+    resolution = 1.0 if resolution is None else resolution
     directed = True if directed is None else directed
     weight = True if weight is None else weight
 
@@ -290,7 +302,7 @@ def modularity_spectral(
             C[np.arange(n_nodes), c] += 1
 
     # Modularity matrix.
-    B = adj - ((D * gamma) / ((C.T @ adj @ C).sum()))
+    B = adj - ((D * resolution) / ((C.T @ adj @ C).sum()))
 
     # Compute modularity.
     Q = np.trace((C.T @ B @ C) / adj.sum())

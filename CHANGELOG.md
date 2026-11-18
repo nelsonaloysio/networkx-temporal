@@ -22,7 +22,7 @@
 - Module `convert` functions accept either a static or temporal graph object as input (not lists).
 
 ### Deprecated
-- Function `leiden_multislice_gpu` deprecated in favor of `leiden_multislice` with `device='gpu'`.
+- Parameter `gamma` from `modularity_spectral` deprecated for `resolution` (submodule convention).
 
 
 ## \[1.4.5\] - 09-11-2026
