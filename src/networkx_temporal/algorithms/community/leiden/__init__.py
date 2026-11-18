@@ -1,4 +1,5 @@
 from .leiden import leiden_communities
-from .multislice_gpu import leiden_multislice_gpu
+from .leiden import _leiden_multislice_gpu as leiden_multislice_gpu
+from .temporal import leiden_communities_temporal
 
-__all__ = ("leiden_communities",)
+__all__ = ("leiden_communities", "leiden_communities_temporal")
