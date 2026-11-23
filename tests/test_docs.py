@@ -828,10 +828,6 @@ def test_gpu(gpu: bool = False, pubmed: bool = False) -> None:
     TG = tx.example_sbm_graph()
     assert str(TG) == "TemporalMultiGraph (t=3) with 75 nodes and 589 edges"
 
-    log.info("Spectral clustering")
-    y_pred = tx.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
-    assert [len(y) for y in y_pred] == TG.order()
-
     colors = plt.cm.tab10.colors
 
     def plot_temporal_graph(TG, y_pred):
@@ -849,8 +845,17 @@ def test_gpu(gpu: bool = False, pubmed: bool = False) -> None:
             suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
             temporal_node_color=temporal_node_color)
 
+    log.info("Leiden communities")
+    y_pred = tx.leiden_communities(TG)
+    assert [len(y) for y in y_pred] == TG.order()
     plot_temporal_graph(TG, y_pred)
 
+    log.info("Spectral graph clustering")
+    y_pred = tx.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
+    assert [len(y) for y in y_pred] == TG.order()
+    plot_temporal_graph(TG, y_pred)
+
+    log.info("Static graph clustering")
     G = TG.to_static()
     y_spectral = tx.spectral_clustering(G, k=3)
     y_leiden = tx.leiden_communities(G)
@@ -871,12 +876,6 @@ def test_gpu(gpu: bool = False, pubmed: bool = False) -> None:
             temporal_node_color=node_color)
 
     plot_static_graph(G, y_spectral, y_leiden)
-
-    log.info("Leiden communities")
-    y_pred = tx.leiden_communities(TG)
-    assert [len(y) for y in y_pred] == TG.order()
-
-    plot_temporal_graph(TG, y_pred)
 
     if pubmed:
         log.info("Temporal multislice optimization")

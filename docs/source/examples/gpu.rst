@@ -65,7 +65,7 @@ by the function. To verify it:
    True
 
 Currently, only algorithms relevant for temporal community detection are implemented with
-support for GPU acceleration: `spectral clustering <#spectral-clustering>`_ [1]_ and the
+support for GPU acceleration: `spectral clustering <#spectral-graph-clustering>`_ [1]_ and the
 `Leiden <#leiden-communities>`_ [2]_ algorithm. Details on both are provided next, using the
 :func:`~networkx_temporal.algorithms.spectral_clustering` and
 :func:`~networkx_temporal.algorithms.leiden_communities` high-level functions.
@@ -86,45 +86,6 @@ function, based on a stochastic block model (SBM) with dynamic community assignm
    TemporalMultiGraph (t=3) with 75 nodes and 589 edges
 
 
-Spectral clustering
--------------------
-
-The :func:`~networkx_temporal.algorithms.spectral_clustering` high-level function supports both CPU
-and GPU (NVIDIA) acceleration for three graph operators: ``'laplacian'`` (default),
-``'bethe_hessian'``, and ``'modularity'``, which internally call their corresponding
-:mod:`~networkx_temporal.algorithms` depending on the parameter passed as ``operator``:
-
-.. code-block:: python
-
-   >>> y_pred = tx.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
-
-Let's plot the ground truths and the detected clusters for each time step, so to compare the results:
-
-.. code-block:: python
-
-   >>> import matplotlib.pyplot as plt
-   >>> colors = plt.cm.tab10.colors
-   >>>
-   >>> def plot_temporal_graph(TG, y_pred):
-   ...     y_true = tx.get_node_attributes(TG, "community", index=False)
-   ...     pos = tx.layout(TG, layout="kamada_kawai")
-   ...     temporal_node_color = [
-   ...         [colors[m % len(colors)] for m in s]
-   ...         for y in [y_true, y_pred]
-   ...         for s in y
-   ...     ]
-   ...     # Draw ground truths (top) and clustering results (bottom).
-   ...     return tx.draw(
-   ...         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
-   ...         pos=[*pos, *pos], node_size=50, title=False,
-   ...         suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
-   ...         temporal_node_color=temporal_node_color)
-   >>>
-   >>> plot_temporal_graph(TG, y_pred)
-
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_16_0.png
-
-
 Leiden communities
 ------------------
 
@@ -137,16 +98,63 @@ modularity [3]_ objective is optimized instead:
 
    >>> y_pred = tx.leiden_communities(TG)
 
+Let's plot the ground truths and the detected clusters for each time step, so to compare the results:
+
+.. code-block:: python
+
+   >>> import matplotlib.pyplot as plt
+   >>> colors = plt.cm.tab10.colors
+   >>>
+   >>> def plot_temporal_graph(TG, y_pred):
+   ...     pos = tx.layout(TG, layout="kamada_kawai")
+   ...     y_true = tx.get_node_attributes(TG, "community", index=False)
+   ...     temporal_node_color = [
+   ...         [colors[m % len(colors)] for m in s]
+   ...         for y in [y_true, y_pred]
+   ...         for s in y
+   ...     ]
+   ...     return tx.draw(
+   ...         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
+   ...         pos=[*pos, *pos], node_size=50, title=False,
+   ...         suptitle=f"Ground Truths (top) vs. Clustering Results (bottom)",
+   ...         temporal_node_color=temporal_node_color)
+   ...
+   >>> plot_temporal_graph(TG, y_pred)
+
+.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_13_0.png
+
+.. note::
+
+   The :func:`~networkx_temporal.algorithms.leiden_communities` function accepts alternative
+   ``backend`` implementations. If unset, the parallelized
+   :func:`~networkx_temporal.algorithms.leiden_communities_temporal` implementation is used by
+   default on CPU or GPU. Alternative backends include ``'leidenalg'`` (sequential, CPU only) and
+   ``'cugraph'`` (NVIDIA only).
+
+Unless needed, spectral clustering is often preferred over greedy optimization algorithms for more
+accurate results, especially when the number of communities in the graph is known in advance.
+
+
+Spectral decomposition
+----------------------
+
+The :func:`~networkx_temporal.algorithms.spectral_clustering` high-level function supports both CPU
+and GPU (NVIDIA) acceleration for three graph operators: ``'laplacian'`` (default),
+``'bethe_hessian'``, and ``'modularity'``, which internally call their corresponding
+:mod:`~networkx_temporal.algorithms` depending on the parameter passed as ``operator``:
+
+.. code-block:: python
+
+   >>> y_pred = tx.spectral_clustering(TG, k=3)  # operator="laplacian" (default)
+
 .. code-block:: python
 
    >>> plot_temporal_graph(TG, y_pred)
 
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_19_0.png
+.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_16_0.png
 
-.. hint::
-
-   Unless needed, spectral clustering is often preferred over greedy optimization, especially when
-   the number of communities is known in advance, yielding a fast and accurate detection method.
+We see that even in this small temporal graph, spectral clustering of the Laplacian matrix yields
+a more consistent partitioning in comparison to Leiden optimization of multislice modularity.
 
 
 Static graph clustering
@@ -164,107 +172,41 @@ Both algorithms can also be used to cluster aggregated (static) graphs obtained 
 .. code-block:: python
 
    >>> def plot_static_graph(G, y_spectral, y_leiden):
-   >>>     y_true = tx.get_node_attributes(G, "community", index=False)
-   >>>     pos = tx.layout(G, layout="kamada_kawai")
-   >>>     node_color = [
-   >>>         [colors[m % len(colors)] for m in y]
-   >>>         for y in [y_true, y_spectral, y_leiden]
-   >>>     ]
-   >>>     # Draw ground truths (left) and clustering results (middle/right).
-   >>>     return tx.draw(
-   >>>         [G, G, G], figsize=(9, 3), pos=pos, node_size=70,
-   >>>         title=["Ground Truths", "Spectral Clustering", "Leiden Communities"],
-   >>>         temporal_node_color=node_color)
-   >>>
+   ...     pos = tx.layout(G, layout="kamada_kawai")
+   ...     y_true = tx.get_node_attributes(G, "community", index=False)
+   ...     node_color = [
+   ...         [colors[m % len(colors)] for m in y]
+   ...         for y in [y_true, y_spectral, y_leiden]
+   ...     ]
+   ...     # Draw ground truths (left) and clustering results (middle/right).
+   ...     return tx.draw(
+   ...         [G, G, G], figsize=(9, 3), pos=pos, node_size=70,
+   ...         title=["Ground Truths", "Spectral Clustering", "Leiden Communities"],
+   ...         temporal_node_color=node_color)
+   ...
    >>> plot_static_graph(G, y_spectral, y_leiden)
 
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_13_0.png
+.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_19_0.png
 
-Note that although the obtained results (middle/right) agree among the two algorithms, neither fully match the ground truths (left) due to the graph's evolving topology and community structure.
+On this :func:`~networkx_temporal.generators.example_sbm_graph` generated with a
+:func:`~networkx_temporal.generators.dynamic_stochastic_block_model`, node affiliations change
+over time, so their assignments at the last time step are here considered as ground truth.
+Tracking community dynamics with static community detection methods therefore require running an
+algorithm on each snapshot and matching the obtained partitions with a post-processing step, which
+the optimization of time-aware metrics such as multislice modularity allow to avoid entirely.
 
-Compare running times
-=====================
-
-The :func:`~networkx_temporal.algorithms.leiden_communities` function accepts alternative ``backend`` implementations. If unset, the parallelized :func:`~networkx_temporal.algorithms.leiden_communities_temporal` implementation is used by default (CPU/GPU devices). Alternative backends include ``'leidenalg'`` (sequential, CPU only) and ``'cugraph'`` (NVIDIA only).
-
-
-Temporal (multislice) optimization
-----------------------------------
-
-Overall, the GPU implementations are significantly faster for large-scale graphs.
-Runtimes for the PubMed temporal graph are shown
-below, with a fixed budget of ``max_iter=2`` optimization passes for both CPU and GPU implementations.
-
-.. code-block:: python
-
-   >>> TG = tx.pubmed_graph()
-   >>> print(TG)
-
-   TemporalDiGraph named 'PubMed' (t=42) with 19717 nodes and 44335 edges
-
-.. code-block:: python
-
-   >>> y = tx.leiden_communities(TG, max_iter=2, device="cpu")
-
-   # 52.2 s ± 1.42 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-.. code-block:: python
-
-   >>> y = tx.leiden_communities(TG, max_iter=2, device="gpu")
-
-   # 1.36 s ± 40.7 ms per loop (mean ± std. dev. of 20 runs, 1 loop each)
+Note that even if the obtained results fully agree among the two algorithms used (middle/right),
+neither fully match the ground truths (left) due to the graph's evolving topology and community
+structure, showcasing the importance of considering its temporal dimension for clustering tasks.
 
 
-When efficiency is a topmost concern, it is possible to disable the refinement phase of Leiden
-algorithm by setting ``refine=False``, yielding a parallelized Louvain-like multislice modularity
-optimization that is ~20% faster, but does not optimize for internally connected communities.
+Supra-graph clustering
+-----------------------
 
-.. code-block:: python
-
-   >>> y = tx.leiden_communities(TG, max_iter=2, device="gpu", refine=False)
-
-   # 1.23 s ± 5.89 ms per loop (mean ± std. dev. of 20 runs, 1 loop each)
-
-
-Static modularity optimization
-------------------------------
-
-On static graphs, the GPU advantage emerges only at scale, with the CPU implementation being faster
-for smaller graphs due to kernel launch overheads and host-device transfers:
-
-.. code-block:: python
-
-   >>> G = TG.to_static()
-   >>> print(G)
-
-   DiGraph named 'PubMed' with 19717 nodes and 44335 edges
-
-.. code-block:: python
-
-   >>> y = tx.leiden_communities(G, max_iter=2, device="cpu")
-
-   # 1.11 s ± 25.9 ms per loop (mean ± std. dev. of 20 runs, 1 loop each)
-
-.. code-block:: python
-
-   >>> y = tx.leiden_communities(G, max_iter=2, device="gpu")
-
-   # 74.9 ms ± 15.5 ms per loop (mean ± std. dev. of 20 runs, 1 loop each)
-
-.. note::
-
-   The default number of iterations differs among CPU (``2``) and GPU
-   (``500``) implementations. Note that parallelization, random seed state, and different backends
-   may also affect the results.
-
-
-Static supra-graph optimization
--------------------------------
-
-Alternatively, it is possible to optimize (static) modularity on a supra-graph representation. This
-approach is substantially faster [4]_ than the temporal (multislice) implementation, and allows for
-multi-GPU execution by loading the supra-graph into a distributed GPU cluster with
+Alternatively, a supra-graph representation may also be used with Leiden, allowing for multi-GPU
+execution with the ``'cugraph'`` backend by loading it into a distributed cluster with
 `Dask-cuGraph <https://docs.rapids.ai/api/cugraph/legacy/api_docs/cugraph/dask-cugraph/>`__.
+However, this approach is not as accurate and may return overly fragmented [4]_ node partitions:
 
 .. code-block:: python
 
@@ -276,40 +218,109 @@ multi-GPU execution by loading the supra-graph into a distributed GPU cluster wi
 
 .. code-block:: python
 
-   >>> y = tx.leiden_communities(G_supra, max_iter=2, device="gpu")
+   >>> y_supra = tx.leiden_communities(G_supra)
 
-   # 303 ms ± 60.8 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+.. code-block:: python
+
+   >>> def plot_supra_graph(TG, y_supra):
+   ...     pos = tx.layout(TG, layout="kamada_kawai")
+   ...     y_true = tx.get_node_attributes(TG, "community", index=False)
+   ...     y_pred = tx.map_to_offsets(TG, y_supra)
+   ...     temporal_node_color = [
+   ...         [colors[m % len(colors)] for m in s]
+   ...         for y in [y_true, y_pred]
+   ...         for s in y
+   ...     ]
+   ...     return tx.draw(
+   ...         [*TG, *TG], figsize=(6, 3.5), nrows=2, ncols=3,
+   ...         pos=[*pos, *pos], node_size=50, title=False,
+   ...         suptitle=f"Ground Truth (top) vs. Supra-graph Results (bottom)",
+   ...         temporal_node_color=temporal_node_color)
+   ...
+   >>> plot_supra_graph(TG, y_supra)
 
 .. attention::
 
    This approach optimizes a global null model on the entire supra-graph, instead of per-slice null
    models, i.e., :func:`~networkx_temporal.algorithms.modularity` and not
    :func:`~networkx_temporal.algorithms.modularity_multislice`; see the
-   `next section <#supra-graph-optimization>`_ for details.
+   `next section <#compare-detection-accuracy>`_ for details.
+
+Although `edge reweighting <#supra-graph-edge-reweighting>`_ allows to partially circumvent the issue,
+note that the number of nodes and edges in the graph increases due to temporal node copies
+and edge couplings added to the supra-graph, which quickly becomes prohibite for networks with a
+large number of snapshots.
+
+
+Compare running times
+=====================
+
+Overall, GPU implementations are significantly faster for large networks, but such advantage
+emerges only at scale due to kernel launch overheads and host-device (CPU to GPU) transfers.
+
+The :func:`~networkx_temporal.generators.pubmed_graph` is a relatively small network that
+allows an illustrative runtime comparison:
+
+.. code-block:: python
+
+   >>> import timeit
+   >>> import matplotlib.pyplot as plt
+   >>>
+   >>> TG = tx.pubmed_graph()
+   >>> graphs = {f"Temporal (t={len(TG)})": TG, "Static": TG.to_static()}
+   >>> devices = ["cpu", "gpu"]
+   >>>
+   >>> # Best of 5 runs per graph and device.
+   >>> runtimes = {
+   ...     device: [
+   ...         min(timeit.repeat(
+   ...             lambda: tx.leiden_communities(G, max_iter=2, device=device),
+   ...             number=1, repeat=5))
+   ...         for G in graphs.values()
+   ...     ]
+   ...     for device in devices
+   ... }
+   >>>
+   >>> fig, ax = plt.subplots(figsize=(5, 3))
+   >>> width = 0.4
+   >>> for i, device in enumerate(devices):
+   ...     x = [j + (i - 0.5) * width for j in range(len(graphs))]
+   ...     bars = ax.bar(x, runtimes[device], width=width, label=device.upper())
+   ...     ax.bar_label(bars, fmt="%.3g s", padding=2)
+   ...
+   >>> ax.set_xticks(range(len(graphs)), list(graphs))
+   >>> ax.set_yscale("log")
+   >>> ax.set_ylabel("Runtime (s, log scale)")
+   >>> ax.set_title("Leiden on PubMed (max_iter=2)")
+   >>> ax.margins(y=0.15)
+   >>> ax.legend(loc="upper left", bbox_to_anchor=(1, 1), frameon=False)
+   >>> plt.show()
+
 
 Compare detection accuracy
 ==========================
 
-Let's now compare the clustering results of the different techniques shown above on
-the same network graph, using the ground truth communities as reference. We'll
-employ a fixed budget of ``max_iter=100`` for all implementations, both
-for static and multislice modularity optimization.
+Let's now compare the clustering results of the different techniques shown above on the same
+example SBM graph, using the ground truth communities and Leiden algorithm as reference. We'll
+employ a fixed budget of 100 maximum iterations for all implementations, which is enough to reach
+convergence for both static and multislice modularity optimization, across CPU and GPU backends.
 
 .. code-block:: python
 
    >>> max_iter = 100
    >>>
-   >>> # Multislice modularity optimization.
+   >>> # Multislice modularity optimization ('cugraph' does not support temporal graphs).
    >>> TG = tx.example_sbm_graph()
    >>> y_cpu_TG = tx.leiden_communities(TG, device="cpu", max_iter=max_iter)
    >>> y_gpu_TG = tx.leiden_communities(TG, device="gpu", max_iter=max_iter)
-   >>> y_gpu_TG_norefine = tx.leiden_communities(TG, device="gpu", max_iter=max_iter,
-   ...                                           refine=False)
+   >>> y_leidenalg_TG = tx.leiden_communities(TG, backend="leidenalg", n_iterations=max_iter)
    >>>
    >>> # Static modularity optimization.
    >>> G = TG.to_static()
    >>> y_cpu_G = tx.leiden_communities(G, device="cpu", max_iter=max_iter)
    >>> y_gpu_G = tx.leiden_communities(G, device="gpu", max_iter=max_iter)
+   >>> y_leidenalg_G = tx.leiden_communities(G, backend="leidenalg", n_iterations=max_iter)
+   >>> y_cugraph_G = tx.leiden_communities(G, backend="cugraph", max_level=max_iter)
    >>>
    >>> # Build supra-graph connecting nodes across time slices (default interslice_weight=1.0).
    >>> adj, offsets = tx.to_supra_adjacency_matrix(TG, return_offsets=True)
@@ -319,14 +330,43 @@ for static and multislice modularity optimization.
    >>> y_gpu_G_supra = tx.leiden_communities(G_supra, device="gpu", max_iter=max_iter)
    >>> y_gpu_G_supra = [y_gpu_G_supra[offsets[t]:offsets[t] + len(TG[t])]
    ...                  for t in range(len(TG))]
+   >>> y_cugraph_G_supra = tx.leiden_communities(G_supra, backend="cugraph", max_level=max_iter)
+   >>> y_cugraph_G_supra = [y_cugraph_G_supra[offsets[t]:offsets[t] + len(TG[t])]
+   ...                      for t in range(len(TG))]
 
 
+Let's first plot the results of Leiden optimizing
+:func:`~networkx_temporal.algorithms.modularity_multislice`
+on the temporal graph:
 
-Static graph optimization
--------------------------
+.. code-block:: python
 
-Let's visualize the results of Leiden optimizing static
-:func:`~networkx_temporal.algorithms.modularity` on the aggregated (static) graph:
+   >>> y_true_TG = tx.get_node_attributes(TG, "community", index=False)
+   >>> pos = tx.layout(TG, layout="kamada_kawai")
+   >>>
+   >>> temporal_node_color = [
+   ...     [colors[m % len(colors)] for m in s]
+   ...     for y in [y_true_TG, y_cpu_TG, y_gpu_TG, y_leidenalg_TG]
+   ...     for s in y
+   ... ]
+   >>>
+   >>> title = [
+   ...     "", "Ground Truths (Temporal)", "",
+   ...     "", "CPU", "",
+   ...     "", "GPU", "",
+   ...     "", "leidenalg (CPU)", "",
+   ... ]
+   >>>
+   >>> tx.draw(
+   ...     [*TG, *TG, *TG, *TG], figsize=(6, 7.6), nrows=4, ncols=3,
+   ...     pos=[*pos, *pos, *pos, *pos], node_size=50, title=title,
+   ...     temporal_node_color=temporal_node_color)
+
+.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_40_0.png
+
+Now let's visualize the results of Leiden optimizing
+:func:`~networkx_temporal.algorithms.modularity`
+on the aggregated (static) graph:
 
 .. code-block:: python
 
@@ -343,66 +383,39 @@ Let's visualize the results of Leiden optimizing static
    ...     title=["CPU", "Ground Truth (Static)", "GPU"],
    ...     temporal_node_color=node_color)
 
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_39_0.png
-
-On this synthetic SBM instance, the predicted communities differ among implementations under a fixed
-budget of ``max_iter=100`` optimization passes, with the GPU implementation yielding a more accurate
-partitioning. Note that the :func:`~networkx_temporal.generators.example_sbm_graph` is generated
-with a dynamic SBM model, in which the community assignments of nodes may change over time, and the
-ground truths here consider the node assignments at the last time step. For dynamic community
-detection, it would be required to run the algorithm on each snapshot and track their evolution
-with a post-processing step.
-
-To avoid this, it is preferred to optimize multislice modularity on the temporal graph directly,
-which yields a more consistent partitioning across time slices, as shown in the next examples.
-
-
-Temporal graph optimization
----------------------------
-
-Let's now plot the results of Leiden optimizing
-:func:`~networkx_temporal.algorithms.modularity_multislice`
-on the temporal graph:
+For a comparison, let's also draw the results of
+:func:`~networkx_temporal.algorithms.modularity`
+optimization on the supra-graph:
 
 .. code-block:: python
 
-   >>> y_true_TG = tx.get_node_attributes(TG, "community", index=False)
    >>> pos = tx.layout(TG, layout="kamada_kawai")
    >>>
    >>> temporal_node_color = [
    ...     [colors[m % len(colors)] for m in s]
-   ...     for y in [y_true_TG, y_cpu_TG, y_gpu_TG, y_gpu_TG_norefine, y_gpu_G_supra]
+   ...     for y in [y_true_TG, y_gpu_G_supra, y_cugraph_G_supra]
    ...     for s in y
    ... ]
    >>>
    >>> title = [
    ...     "", "Ground Truths (Temporal)", "",
-   ...     "", "CPU", "",
-   ...     "", "GPU", "",
-   ...     "", "GPU (No Refine)", "",
+   ...     "", "CPU (Supra)", "",
    ...     "", "GPU (Supra)", "",
+   ...     "", "leidenalg (Supra)", "",
+   ...     "", "cuGraph (Supra)", "",
    ... ]
    >>>
    >>> tx.draw(
-   ...     [*TG, *TG, *TG, *TG, *TG], figsize=(6, 9.5), nrows=5, ncols=3,
+   ...     [*TG, *TG, *TG, *TG, *TG], figsize=(6, 6), nrows=3, ncols=3,
    ...     pos=[*pos, *pos, *pos, *pos, *pos], node_size=50, title=title,
    ...     temporal_node_color=temporal_node_color)
 
-.. image:: ../../assets/figure/notebook/networkx-temporal-05-gpu_40_0.png
 
-On the synthetic SBM instance, the predicted communities are visually similar to the ground truth
-in all cases, with the exception of the static supra-graph optimization, which yields a suboptimal
-partitioning. This is expected, as the approach optimizes the static objective function instead.
-Meanwhile, the CPU and GPU implementations of multislice modularity optimization yield similar
-results, with the parallel GPU implementation being significantly faster and slightly more accurate.
-
-Note also that the GPU implementation with ``refine=False``, in which the refinement phase of
-Leiden that guarantees internally connected communities is skipped (corresponding therefore to
-the Louvain [5]_ algorithm), yielded slightly more accurate results than with refinement enabled.
+Overall...
 
 
-Supra-graph optimization
-------------------------
+Supra-graph edge reweighting
+----------------------------
 
 On the supra-graph case, inter-slice couplings inflate node degrees under the global null model,
 shifting the optimal partitioning away from the one obtained by the multislice modularity model.

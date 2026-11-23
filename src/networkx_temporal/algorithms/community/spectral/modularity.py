@@ -23,7 +23,8 @@ def spectral_clustering_modularity(
 
     Given a (supra-)adjacency matrix, computes the eigenvectors associated with the :math:`k`
     largest eigenvalues of the (supra-)modularity matrix and clusters the resulting embedding with
-    :math:`k`-means. This is a spectral relaxation of :func:`~networkx_temporal.algorithms.modularity_multislice` maximization, that is,
+    :math:`k`-means. This is a spectral relaxation of
+    :func:`~networkx_temporal.algorithms.modularity_multislice` maximization, that is,
 
     .. math::
 
@@ -50,7 +51,8 @@ def spectral_clustering_modularity(
     are rescaled to unit :math:`\\ell_2`-norm before clustering [1]_.
     The null model is applied implicitly as a linear operator to avoid materializing
     :math:`\\mathbf{M}` as a dense matrix. Requires ``adj`` to be symmetric (undirected graph)
-    and specifying the number of communities ``k`` in advance. Reduces to :func:`~networkx_temporal.algorithms.modularity` maximization if ``offsets`` is unset.
+    and specifying the number of communities ``k`` in advance. Reduces to
+    :func:`~networkx_temporal.algorithms.modularity` maximization if ``offsets`` is unset.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
@@ -75,15 +77,13 @@ def spectral_clustering_modularity(
     :note: Full GPU acceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
-    xp, _, KMeans, _, LinearOperator = _resolve_pathway(device)
+    xp, _, KMeans, eigsh, LinearOperator = _resolve_pathway(device)
 
     if offsets is None:
-        T = 1
-        offsets = [0, adj.shape[0]]
-    else:
-        T = len(offsets) - 1
+        offsets = [0]
+    T = len(offsets)
 
-    n_t = [offsets[t + 1] - offsets[t] for t in range(T)] + [adj.shape[0] - offsets[-1]]
+    n_t = [offsets[t + 1] - offsets[t] for t in range(T - 1)] + [adj.shape[0] - offsets[-1]]
     n_nodes = sum(n_t)
 
     # Recover intra-slice degrees and edge counts from diagonal blocks only,
@@ -98,6 +98,7 @@ def spectral_clustering_modularity(
         d.append(d_t)
         m.append(max(m_t, 1e-12))
 
+    # Matrix-vector product.
     def _matvec(v):
         v = v.ravel().astype(xp.float32)
         result = (adj @ v).ravel() # full supra-adjacency term

@@ -20,9 +20,9 @@ BACKENDS = list(BACKEND.__args__)
 def leiden_communities(
     graph: Union[TemporalGraph, StaticGraph],
     device: Optional[Literal["cpu", "gpu"]] = None,
-    backend: Optional[BACKEND] = "networkx_temporal",
-    **kwargs,
-) -> Union[List[int], List[List[int]]]:
+    backend: Optional[BACKEND] = None,
+    **kwargs
+) -> Union[dict, List[dict]]:
     """ Leiden algorithm for community detection.
     Optimizes
     :func:`~networkx_temporal.algorithms.modularity_multislice` if ``graph`` is a
@@ -78,29 +78,30 @@ def leiden_communities(
         - ``'cugraph'``: Calls
           `cuGraph Leiden <https://docs.nvidia.com/cugraph/latest/api_docs/api/cugraph/cugraph.leiden/>`__.
           Not available for temporal graphs.
+
     :param kwargs: Keyword arguments to pass to the backend caller.
     """
-    if device is None:
-        device = "cpu"
-        if NX_GPU_AUTOCONFIG and backend not in ("leidenalg",):
-            device = "gpu"
-        elif NX_CUGRAPH_AUTOCONFIG and backend == "cugraph":
-            device = "gpu"
+    device, backend = _resolve_pathway(device, backend)
+
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
 
     if backend == "networkx_temporal":
         fnc = leiden_communities_temporal
+        kwargs["device"] = device
     elif backend == "leidenalg":
+        if device != "cpu":
+            raise ValueError(f"Unsupported device for '{backend}' backend: '{device}'.")
         fnc = _leiden_communities_leidenalg
     elif backend == "cugraph":
-        if is_temporal_graph(backend):
-            raise ValueError(f"Unsupported backend for temporal graphs: '{backend}")
+        if device != "gpu":
+            raise ValueError(f"Unsupported device for '{backend}' backend: '{device}'.")
+        if is_temporal_graph(graph):
+            raise ValueError(f"Unsupported backend for temporal graphs: '{backend}'.")
         fnc = _leiden_communities_cugraph
     else:
         raise ValueError(f"Invalid backend: '{backend}' not in {BACKENDS}.")
 
-    # Compute the spectral partition using the specified device and backend.
     assignments = fnc(graph, **kwargs)
     return assignments
 
@@ -133,13 +134,13 @@ def _leiden_communities_leidenalg(graph: Union[TemporalGraph, StaticGraph], **kw
 
     defaults = {
         "vertex_id_attr": vertex_id_attr,  #   str
-        "initial_membership": None,        #   OptionalList[int]]
         "n_iterations": 2,                 #   int
         "max_comm_size": 0,                #   int
         "interslice_weight": 1.0,          #   float
         "slice_attr": "slice",             #   str
         "edge_type_attr": "type",          #   str
         "weight_attr": "weight",           #   str
+        "initial_membership": None,        #   Optional[List[int]]
         "weights": None,                   #   Optional[str]
         "seed": None,                      #   Optional[int]
     }
@@ -238,6 +239,7 @@ def _leiden_communities_cugraph(graph: StaticGraph, **kwargs):
 
 def _leiden_multislice_gpu(graph: Union[TemporalGraph, StaticGraph], **kwargs):
     """ Parallelized multislice Leiden algorithm on GPU.
+
     :meta private:
     """
     warn(
@@ -246,3 +248,26 @@ def _leiden_multislice_gpu(graph: Union[TemporalGraph, StaticGraph], **kwargs):
         DeprecationWarning
     )
     return leiden_communities_temporal(graph, **{**kwargs, "device": "gpu"})
+
+
+def _resolve_pathway(device, backend):
+    """ Resolves device and backend into ``str, str`` tuple.
+    """
+    cpu_only = ("leidenalg",)
+    gpu_only = ("cugraph",)
+
+    if backend is None:
+        if NX_CUGRAPH_AUTOCONFIG:
+            backend = "cugraph"
+        else:
+            backend = "networkx_temporal"
+
+    if device is None:
+        if backend in gpu_only:
+            device = "gpu"
+        elif NX_GPU_AUTOCONFIG and backend not in cpu_only:
+            device = "gpu"
+        else:
+            device = "cpu"
+
+    return device, backend

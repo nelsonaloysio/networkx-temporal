@@ -68,8 +68,9 @@ def spectral_clustering(
     """
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
-    if graph.is_directed():
-        raise NotImplementedError("GPU spectral clustering is implemented for undirected graphs.")
+
+    if (is_static_graph(graph) or is_temporal_graph(graph)) and graph.is_directed():
+        raise NotImplementedError("Spectral clustering is not implemented for directed graphs.")
 
     if operator == "laplacian":
         fnc = spectral_clustering_laplacian
@@ -116,7 +117,7 @@ def spectral_clustering(
 
 
 def _resolve_pathway(device):
-    """ Resolves pathway based on device and backend.
+    """ Resolves ``device`` into ``(xp, xpx, KMeans, eigsh, LinearOperator)``.
     """
     if device == "cpu":
         import numpy as np
@@ -126,7 +127,7 @@ def _resolve_pathway(device):
         return np, sp, KMeans, eigsh, LinearOperator
     if device == "gpu":
         try:
-            # Override numpy -> cupy, scipy -> cupyx, sklearn -> cuml for GPU acceleration.
+            # numpy -> cupy, scipy -> cupyx, sklearn -> cuml for GPU acceleration.
             import cupy as cp
             import cupyx.scipy.sparse as cpx
             from cupyx.scipy.sparse.linalg import eigsh, LinearOperator
