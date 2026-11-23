@@ -14,10 +14,10 @@ Convert and transform
    <https://github.com/nelsonaloysio/networkx-temporal/blob/main/notebook/networkx-temporal-02-convert.ipynb>`__.
 
 This package provides a set of functions to manipulate graph classes, formats, and representations.
-In this context, :func:`~networkx_temporal.classes.TemporalGraph.convert` refers to different
-graph-based libraries, e.g., `igraph <https://igraph.org/python>`__, and
-:mod:`~networkx_temporal.transform` refers to the underlying data structure used to store object
-relations, e.g., `event-based temporal graphs <#event-based-temporal-graph>`__.
+In this context, :func:`~networkx_temporal.classes.TemporalGraph.convert` refers to third-party
+libraries, e.g., `igraph <https://igraph.org/python>`__, and
+:mod:`~networkx_temporal.transform` refers to native underlying data structures used to store
+network data, e.g., `event-based temporal graphs <#event-based-temporal-graph>`__.
 
 
 Graph types and classes

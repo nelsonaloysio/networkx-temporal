@@ -5,13 +5,13 @@ Type hints exclusively used in function definitions.
 
 .. autosummary::
 
-   Literal
-   Figure
-   StaticGraph
-   TemporalGraph
-   TemporalDiGraph
-   TemporalMultiGraph
-   TemporalMultiDiGraph
+    Literal
+    Figure
+    StaticGraph
+    TemporalGraph
+    TemporalDiGraph
+    TemporalMultiGraph
+    TemporalMultiDiGraph
 
 .. rubric:: Note
 
@@ -33,10 +33,10 @@ instead.
 
 .. note::
 
-   The convenience functions :func:`~networkx_temporal.classes.is_temporal_graph`
-   and :func:`~networkx_temporal.classes.is_static_graph`
-   may be used instead to check if an object is an instance of a temporal or
-   static NetworkX graph/digraph/multigraph.
+    The convenience functions :func:`~networkx_temporal.classes.is_temporal_graph`
+    and :func:`~networkx_temporal.classes.is_static_graph`
+    may be used instead to check if an object is an instance of a temporal or
+    static NetworkX graph/digraph/multigraph.
 """
 
 from .typing import (

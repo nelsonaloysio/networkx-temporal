@@ -1,5 +1,6 @@
+from typing import List, Optional, Union
+
 import scipy.sparse as sp
-from typing import List, Optional
 
 from ...gpu import NX_GPU_AUTOCONFIG
 from ....typing import Literal
@@ -9,7 +10,7 @@ DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 def spectral_clustering_laplacian(
     adj: sp.spmatrix,
-    k: Optional[int] = None,
+    k: int,
     normalized: bool = True,
     n_init: int = 10,
     max_iter: int = 300,
@@ -17,6 +18,7 @@ def spectral_clustering_laplacian(
     device: Literal["cpu", "gpu"] = DEVICE,
 ) -> List[int]:
     """ Spectral clustering via the Laplacian operator.
+    Also available via :func:`~networkx_temporal.algorithms.spectral_clustering`.
 
     Given a (supra-)adjacency matrix, computes the eigenvectors associated with the :math:`k`
     smallest eigenvalues of the graph Laplacian and clusters the resulting embedding with
@@ -42,10 +44,6 @@ def spectral_clustering_laplacian(
     in sparse graphs. Note that the construction is equivalent to the Bethe-Hessian with
     :math:`r = 1`.
 
-    .. hint::
-
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
-
     .. [1] A. Ng, M. Jordan, and Y. Weiss. (2001). On spectral clustering: Analysis and an
        algorithm. In: Dietterich, T., Becker, S., Ghahramani, Z. (eds.) Advances in Neural
        Information Processing Systems, 14. MIT Press.
@@ -59,11 +57,13 @@ def spectral_clustering_laplacian(
     :param seed: Random seed for :math:`k`-means.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn.
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
+          Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the environment on import.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
     xp, xsp, KMeans, eigsh, _ = _resolve_pathway(device)

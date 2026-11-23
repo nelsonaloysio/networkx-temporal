@@ -21,8 +21,8 @@ def leiden_communities(
     graph: Union[TemporalGraph, StaticGraph],
     device: Optional[Literal["cpu", "gpu"]] = None,
     backend: Optional[BACKEND] = "networkx_temporal",
-    **kwargs
-) -> Union[dict, List[dict]]:
+    **kwargs,
+) -> Union[List[int], List[List[int]]]:
     """ Leiden algorithm for community detection.
     Optimizes
     :func:`~networkx_temporal.algorithms.modularity_multislice` if ``graph`` is a
@@ -47,10 +47,6 @@ def leiden_communities(
     Results may differ between backends and runs due to parallelism and floating point precision.
     Note that backends accept different keyword arguments; see their documentation for details.
 
-    .. hint::
-
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
-
     .. seealso::
 
         - The `Examples → GPU acceleration → Leiden communities
@@ -68,8 +64,9 @@ def leiden_communities(
         - ``'cpu'``: Available for the default backend or ``'leidenalg'``.
 
         - ``'gpu'``: Available for the default backend or ``'cugraph'``.
+          Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the environment on import.
 
-    :param str backend: Alternative backend to use for computation. Optional.
+    :param str backend: Backend to use for computation. Optional.
 
         - ``'networkx_temporal'`` (default): Calls
           :func:`~networkx_temporal.algorithms.leiden_communities_temporal`.
@@ -128,7 +125,6 @@ def _leiden_communities_leidenalg(graph: Union[TemporalGraph, StaticGraph], **kw
     elif is_temporal_graph(graph):
         iG = [to_igraph(g) for g in graph]
         vertex_id_attr = "_nx_name"
-
 
     # Select function based on whether input is a single graph or a sequence of graphs.
     fnc = la.find_partition_temporal if type(iG) == list else la.find_partition
@@ -241,11 +237,12 @@ def _leiden_communities_cugraph(graph: StaticGraph, **kwargs):
 
 
 def _leiden_multislice_gpu(graph: Union[TemporalGraph, StaticGraph], **kwargs):
-    """ Parallelized multislice Leiden algorithm on GPU.\n:meta private:
+    """ Parallelized multislice Leiden algorithm on GPU.
+    :meta private:
     """
     warn(
         "The `leiden_multislice_gpu` function is deprecated in favor of  `leiden_communities"
         "(..., backend='cupy', device='gpu')` and will be removed in a future release.",
         DeprecationWarning
     )
-    return leiden_communities_temporal(graph, **{"device": "gpu", **kwargs})
+    return leiden_communities_temporal(graph, **{**kwargs, "device": "gpu"})

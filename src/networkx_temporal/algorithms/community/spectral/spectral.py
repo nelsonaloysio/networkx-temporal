@@ -7,7 +7,7 @@ from .bethe_hessian import spectral_clustering_bethe_hessian
 from .laplacian import spectral_clustering_laplacian
 from .modularity import spectral_clustering_modularity
 from ...gpu import NX_GPU_AUTOCONFIG
-from ....classes.types import is_temporal_graph
+from ....classes import is_static_graph, is_temporal_graph
 from ....typing import Literal, StaticGraph, TemporalGraph
 from ....utils import to_supra_adjacency_matrix
 
@@ -24,57 +24,47 @@ def spectral_clustering(
     interslice_weight: Optional[float] = 1.0,
     device: Literal["cpu", "gpu"] = DEVICE,
     **kwargs,
-) -> Union[dict, List[dict]]:
+) -> Union[List[int], List[List[int]]]:
     """ Spectral clustering of a temporal or static graph.
 
-    Computes the spectral partition of a temporal or static graph by constructing the
-    supra-adjacency matrix and applying :math:`k`-means on the eigenvectors of the specified
-    ``operator``:
+    High-level function that dispatches to CPU or GPU devices based on ``device``.
+    This function builds the (supra-)adjacency matrix of a static or temporal graph and
+    computes its spectral partitions by clustering with :math:`k`-means the leading :math:`k`
+    eigenvectors of its specified ``operator``:
 
-    - ``'laplacian'``: normalized or unnormalized operator with
+    - ``'laplacian'``: normalized or unnormalized matrix with
       :func:`~networkx_temporal.algorithms.spectral_clustering_laplacian`;
 
-    - ``'bethe_hessian'``: Bethe-Hessian operator with
+    - ``'bethe_hessian'``: Bethe-Hessian matrix with
       :func:`~networkx_temporal.algorithms.spectral_clustering_bethe_hessian`;
 
-    - ``'modularity'``: modularity-based spectral clustering with
+    - ``'modularity'``: multislice or static modularity matrix with
       :func:`~networkx_temporal.algorithms.spectral_clustering_modularity`.
 
-    .. rubric:: Example
-
-    Computing the spectral partition of an example SBM graph:
-
-    .. code-block:: python
-
-        >>> import networkx_temporal as tx
-        >>>
-        >>> TG = tx.generators.example_sbm_graph()
-        >>>
-        >>> y = tx.algorithms.community.spectral.spectral_clustering(
-        ...     TG, k=3, device='cpu', operator="modularity")
-
-    .. hint::
-
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+    Note that operators accept different keyword arguments; see their documentation for details.
 
     .. seealso::
 
         The `Examples → GPU acceleration → Spectral clustering
         <../examples/gpu.html#spectral-clustering>`__ page for examples.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param str operator: The spectral operator to use. Supported types:
         ``'laplacian'`` (default), ``'bethe_hessian'``, and ``'modularity'``.
     :param weight: Edge attribute to use as weight. If unset, treat edges as unweighted.
     :param interslice_weight: Weight of inter-slice edges connecting node copies across snapshots.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn.
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
+          Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the environment on import.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :param kwargs: Keyword arguments to pass to the backend caller.
+
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     if device not in ("cpu", "gpu"):
         raise ValueError(f"Unsupported device: '{device}', expects 'cpu' or 'gpu'.")
@@ -90,13 +80,14 @@ def spectral_clustering(
     else:
         raise ValueError(f"Invalid operator: '{operator}' not in {OPERATORS}.")
 
-    # Inspect function signature, filter kwargs and raise an error for unsupported arguments.
     sig = signature(fnc)
     fnc_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
-
     fnc_kwargs["device"] = device
+
     if operator == "modularity":
-        fnc_kwargs["offsets"] = offsets
+        fnc_kwargs["offsets"] = kwargs.get(
+            "offsets", graph.offsets() if is_temporal_graph(graph) else None
+        )
 
     if any(k not in sig.parameters for k in kwargs):
         invalid_kwargs = set(kwargs) - set(sig.parameters)
@@ -105,7 +96,6 @@ def spectral_clustering(
             f"Supported keywords are: {set(sig.parameters)}."
         )
 
-    # Build adjacency matrix from graph.
     adj, offsets = to_supra_adjacency_matrix(
         graph,
         weight=weight,
@@ -114,10 +104,8 @@ def spectral_clustering(
         return_offsets=True,
     )
 
-    # Compute the spectral partition using the specified device and operator.
     assignments = fnc(adj, **fnc_kwargs)
 
-    # Return assignments per snapshot based on node offsets.
     if is_temporal_graph(graph):
         return [
             assignments[offsets[t]:offsets[t] + len(graph[t])]

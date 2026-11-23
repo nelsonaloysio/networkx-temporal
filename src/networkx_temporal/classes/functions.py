@@ -8,7 +8,7 @@ from ..typing import StaticGraph, TemporalGraph
 
 
 def all_neighbors(TG: TemporalGraph, node: Any) -> iter:
-    """ Returns iterator of all node neighbors in each snapshot. Does not consider edge direction.
+    """ Returns iterator of all neighbors per snapshot. Does not consider edge direction.
 
     :param TG: :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param node: Node to get neighbors for.
@@ -19,7 +19,7 @@ def all_neighbors(TG: TemporalGraph, node: Any) -> iter:
     yield from {nbr for G in TG if G.has_node(node) for nbr in nx.all_neighbors(G, node)}
 
 def neighbors(TG: TemporalGraph, node: Any) -> iter:
-    """ Returns iterator of node neighbors in each snapshot. Considers edge direction.
+    """ Returns iterator of node neighbors per snapshot. Considers edge direction.
 
     :param TG: :class:`~networkx_temporal.classes.TemporalGraph` object.
     :param node: Node to get neighbors for.
@@ -104,7 +104,7 @@ def create_empty_copy(
 
 
 def edge_subgraph(self: TemporalGraph, edges: list) -> TemporalGraph:
-    """ Returns a subgraph view of the temporal graph containing only the specified edges.
+    """ Returns a subgraph view with the specified edges.
 
     :param edges: A list of edges to include in the subgraph.
     """
@@ -113,7 +113,7 @@ def edge_subgraph(self: TemporalGraph, edges: list) -> TemporalGraph:
     return TG
 
 def subgraph(self: TemporalGraph, nodes: list) -> TemporalGraph:
-    """ Returns a subgraph view of the temporal graph containing only the specified nodes.
+    """ Returns a subgraph view with the specified nodes.
 
     :param nodes: A list of nodes to include in the subgraph.
     """
@@ -231,7 +231,7 @@ def relabel_nodes(
     mapping: Union[dict, list],
     copy: bool = True,
 ) -> Union[TemporalGraph, StaticGraph]:
-    """ Relabels nodes of a graph according to a given mapping.
+    """ Relabels nodes of a graph according to a mapping.
 
     :param object graph: :class:`~networkx_temporal.classes.TemporalGraph`
         or static NetworkX graph object.

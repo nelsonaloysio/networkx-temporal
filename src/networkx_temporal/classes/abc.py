@@ -263,7 +263,9 @@ class TemporalABC(metaclass=ABCMeta):
 
     @property
     def names(self) -> list:
-        """ The ``names`` property of the temporal graph.\n:meta private:
+        """ The ``names`` property of the temporal graph.
+
+        :meta private:
         """
         warn("TemporalGraph `names` property is deprecated in favor of `index` and will be removed"
              " in a future release.", DeprecationWarning)
@@ -271,7 +273,9 @@ class TemporalABC(metaclass=ABCMeta):
 
     @names.setter
     def names(self, names: Optional[List[str]]):
-        """ Setter for the ``names`` property of the temporal graph.\n:meta private:
+        """ Setter for the ``names`` property of the temporal graph.
+
+        :meta private:
         """
         warn("TemporalGraph `names` setter is deprecated in favor of `index` and will be removed"
              " in a future release.", DeprecationWarning)
@@ -525,7 +529,7 @@ class TemporalABC(metaclass=ABCMeta):
     def snapshots(self) -> list:
         """ Returns list of snapshots in the temporal graph.
 
-        :note: Alias to :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
+        :note: Alias to :attr:`~networkx_temporal.classes.TemporalGraph.graphs`.
         """
         return self.graphs
 
@@ -621,7 +625,7 @@ class TemporalABC(metaclass=ABCMeta):
         .. seealso::
 
             The :func:`~networkx_temporal.classes.TemporalGraph.temporal_size` method for the
-            number of unique interactions in the temporal graph.
+            number of unique edges in the temporal graph.
 
         :param weight: The edge attribute that holds the numerical value used as a weight.
             If ``None`` (default), then each edge has weight 1.
@@ -676,7 +680,7 @@ class TemporalABC(metaclass=ABCMeta):
         """ Returns list of snapshot name and graph pairs.
 
         :note: Returns pairs of :func:`~networkx_temporal.classes.TemporalGraph.index` and
-            :func:`~networkx_temporal.classes.TemporalGraph.graphs`.
+            :attr:`~networkx_temporal.classes.TemporalGraph.graphs`.
         """
         return tuple(zip(self.keys(), self.values()))
 

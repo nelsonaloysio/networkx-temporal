@@ -87,15 +87,15 @@ assortativity. Let's try to retrieve the ground truths using a simple community 
 Modularity optimization
 =======================
 
-The `leidenalg <https://leidenalg.readthedocs.io>`__ [1]_ package implements optimization algorithms
-for community detection that may be applied on snapshot-based temporal graphs, allowing to
-capture their underlying, evolving structure.
+The Leiden [1]_ algorithm for community detection may be
+employed to optimize multislice modularity on snapshot-based temporal
+graphs, allowing to capture their evolving structure.
 
 .. attention::
 
    Optimization algorithms may help with descriptive or exploratory tasks and post-hoc network
    analysis, but lack statistical rigor for inferential purposes. See `Peixoto (2021)
-   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ and [2]_ for a discussion.
+   <https://skewed.de/tiago/posts/descriptive-inferential/>`__ and [2]_ for more.
 
 
 Optimizing static modularity
@@ -110,7 +110,7 @@ fails to retrieve the true communities (ground truths) in the network:
 .. code-block:: python
 
    >>> G = TG.to_static()
-   >>> assignments = tx.leiden_communities(G, max_iter=-1, seed=0)
+   >>> assignments = tx.leiden_communities(G, seed=0)
    >>>
    >>> node_color = [colors[x % len(colors)] for x in assignments]
    >>>
@@ -123,8 +123,6 @@ fails to retrieve the true communities (ground truths) in the network:
 .. image:: ../../assets/figure/notebook/networkx-temporal-04-community_10_0.png
    :align: center
 
-|
-
 Next, let's try considering the network's temporal information to see if we can improve the results.
 
 Running the same algorithm separately on each of the generated snapshots retrieves the correct
@@ -134,7 +132,7 @@ colors) are not fixed over snapshots, which makes it harder to track their mesos
 .. code-block:: python
 
    >>> snapshot_assignments = [
-   ...     tx.leiden_communities(G, max_iter=-1, seed=0) for G in TG
+   ...     tx.leiden_communities(G, seed=0) for G in TG
    ... ]
    >>>
    >>> temporal_node_color = [
@@ -173,7 +171,7 @@ their mesoscale structures [3]_. This example uses the same algorithm as before:
 
 .. code-block:: python
 
-   >>> multislice_assignments = tx.leiden_communities(TG, max_iter=-1, seed=0)
+   >>> multislice_assignments = tx.leiden_communities(TG, seed=0)
    >>>
    >>> temporal_node_color = [
    ...     [colors[m] for m in multislice_assignments[t]]
@@ -217,9 +215,9 @@ Let's compare the values obtained considering static, snapshot, and multislice g
    ...    Q = [round(q, 3) for q in Q]
    ...    print(f"{m}: Q = {Q} (mean: {mean:.3f})")
 
-   Static: Q = [0.057, 0.099, 0.058, 0.026] (mean: 0.060)
-   Snapshot: Q = [0.468, 0.26, 0.194, 0.147] (mean: 0.267)
-   Multislice: Q = [0.468, 0.21, 0.122, -0.005] (mean: 0.199)
+   Static: C = [0.475, 0.479, 0.531, 0.556] (mean: 0.510)
+   Snapshot: C = [0.323, 0.487, 0.517, 0.386] (mean: 0.428)
+   Multislice: C = [0.323, 0.589, 0.68, 0.808] (mean: 0.600)
 
 Snapshot-based optimization of modularity returned values of :math:`Q` that are higher than those
 obtained by optimizing it on the static or multislice graphs, but they do not correspond to the

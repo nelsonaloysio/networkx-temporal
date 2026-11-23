@@ -127,7 +127,7 @@ def modularity_multislice(
     layer corresponds to a temporal graph snapshot. Temporal node copies are connected across time
     by interlayer edges ("couplings"), as in an `unrolled graph
     <../examples/convert.html#unrolled-temporal-graph>`__, so the expected fraction of intra-layer
-    edges is adjusted to account for these added connections. It may be defined as:
+    edges is adjusted to account for these added connections. Formally, it may be defined as:
 
     .. math::
 
@@ -144,7 +144,7 @@ def modularity_multislice(
         \\delta(c_i^{(s)}, c_j^{(r)}),
 
     where
-    :math:`\\mu` is the total number of intra- and inter-layer edges in the temporal graph,
+    :math:`\\mu` is the total intra- and inter-layer edge weight in the temporal graph,
     :math:`G_t \\in \\mathcal{G}` are graph snapshots (slices/layers),
     :math:`(i,j) \\in V^2` are node pairs,
     :math:`\\mathbf{A}` is the adjacency matrix,
@@ -220,7 +220,7 @@ def modularity_spectral(
     weight: Optional[Union[str, bool]] = True,
     gamma: Optional[float] = None,
 ) -> float:
-    """ Calculates modularity on the graph spectrum. Expects a dense or sparse ``adj``
+    """ Returns the modularity of a graph spectrum. Expects a dense or sparse ``adj``
     matrix from :func:`~networkx_temporal.utils.to_numpy` or
     :func:`~networkx_temporal.utils.to_scipy`, respectively.
     Supports mixed-membership (soft) assignments.

@@ -92,13 +92,13 @@ The package supports **Python 3.7+** and is readily available from `PyPI
 
 .. code-block:: bash
 
-   >>> pip install networkx-temporal
+   pip install networkx-temporal
 
 Additional support for plotting graphs may be optionally installed with:
 
 .. code-block:: bash
 
-   >>> pip install 'networkx-temporal[draw]'
+   pip install 'networkx-temporal[draw]'
 
 
 Quick start
@@ -153,10 +153,10 @@ Note that the total number of nodes may vary, while the total number of edges is
 
 .. note::
 
-   The :func:`~networkx_temporal.classes.TemporalGraph.slice` method by default creates a snapshot
-   for each unique attribute value in the graph. It internally stores `views
+   The :func:`~networkx_temporal.classes.TemporalGraph.slice` method creates a snapshot
+   for each unique attribute value in the graph. It returns `subgraph views
    <https://networkx.org/documentation/stable/reference/classes/generated/networkx.classes.graphviews.subgraph_view.html>`__
-   of the original graph, so no data is copied unless otherwise specified.
+   of the original graph by default, so no data is copied unless otherwise specified.
 
 
 Save and load data

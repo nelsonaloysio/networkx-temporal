@@ -10,7 +10,7 @@ def temporal_graph(
     multigraph: Optional[bool] = True,
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
-    """ Creates a temporal graph with the desired properties. Similar to
+    """ Returns a temporal graph with ``t`` snapshots. Similar to
     `empty_graph <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.empty_graph.html>`__
     from NetworkX.
 
@@ -50,7 +50,7 @@ def temporal_graph(
     :param multigraph: If ``True``, inherits a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__.
         Defaults to ``True``.
-    :param object create_using: NetworkX or :class:`~networkx_temporal.classes.TemporalGraph` to use
+    :param object create_using: Static or :class:`~networkx_temporal.classes.TemporalGraph` to use
         as template. Optional. Does not allow setting ``directed`` and ``multigraph`` if passed.
     """
     if not (directed is None or type(directed) == bool):
@@ -82,10 +82,12 @@ def empty_graph(
     multigraph: Optional[bool] = True,
     create_using: Optional[Union[TemporalGraph, StaticGraph]] = None,
 ) -> TemporalGraph:
-    """ Creates a temporal graph without any initialized snapshots.
+    """ Returns a temporal graph with zero snapshots. Similar to
+    `empty_graph <https://networkx.org/documentation/stable/reference/generated/networkx.generators.classic.empty_graph.html>`__
+    from NetworkX.
 
-    This function is a wrapper around :func:`~networkx_temporal.classes.temporal_graph`,
-    setting ``t=0``.
+    This function is a wrapper around :func:`~networkx_temporal.classes.temporal_graph` with
+    ``t=0`` initialized snapshots.
 
     .. rubric:: Example
 
@@ -106,7 +108,7 @@ def empty_graph(
     :param multigraph: If ``True``, inherits a
         `MultiGraph <https://networkx.org/documentation/stable/reference/classes/multigraph.html>`__.
         Defaults to ``True``.
-    :param object create_using: NetworkX or :class:`~networkx_temporal.classes.TemporalGraph` to use
+    :param object create_using: Static or :class:`~networkx_temporal.classes.TemporalGraph` to use
         as template. Optional. Does not allow setting ``directed`` and ``multigraph`` if passed.
     """
     return temporal_graph(t=0, directed=directed, multigraph=multigraph, create_using=create_using)

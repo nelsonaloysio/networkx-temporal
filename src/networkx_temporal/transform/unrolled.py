@@ -52,7 +52,7 @@ def from_unrolled(UTG: StaticGraph, delta: Optional[int] = None) -> TemporalGrap
         ...         connectionstyle="arc3,rad=0.25")
 
     .. image:: ../../assets/figure/transform/from_unrolled.png
-        :align: center
+       :align: center
 
     .. attention::
 

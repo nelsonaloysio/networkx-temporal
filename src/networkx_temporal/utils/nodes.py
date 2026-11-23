@@ -13,12 +13,13 @@ def get_node_attributes(
     index: bool = True,
     values: Optional[Literal["list", "set"]] = None,
 ) -> List[Any]:
-    """ Returns node attribute values for each snapshot and node in the graph.
+    """ Returns attribute values per snapshot and node.
 
     For temporal graphs, returns a list of dictionaries, one per snapshot, where keys are nodes
     and values are attribute values. If ``index=False``, returns a list of lists of attribute
     values for each snapshot, where the order of values corresponds to the node order in the graph.
-    If ``values`` is set to ``'list'`` or ``'set'``, returns a list or a set of values per node.
+    If ``values`` is set to ``list`` or ``set``, the function returns a list or a set of attribute
+    values per node, respectively.
 
     Note that nodes with missing attributes are skipped by default, unless ``default`` is set.
 
@@ -51,11 +52,11 @@ def get_node_attributes(
     :param index: Whether to return a dictionary with nodes as keys.
         If ``False``, returns a list of attribute values for each snapshot, where the order of
         values corresponds to the node order in the graph. Default is ``True``.
-    :param values: If set, returns a dictionary with a single key-value pair for each node, being:
+    :param values: If set, returns a dictionary with a single key-value pair for each node:
 
-       - ``'list'``: returns a list of attribute values per node across time.
+       - ``list``: returns a list of attribute values per node across time.
 
-       - ``'set'``: returns a set of unique attribute values per node across time.
+       - ``set``: returns a set of unique attribute values per node across time.
     """
     if is_static_graph(graph):
         node_attrs = nx.get_node_attributes(graph, attr, default=default)
@@ -199,7 +200,7 @@ def map_node_attr_to_edges(
     origin: Literal["source", "target", "both"] = "source",
     unique: bool = False,
 ) -> list:
-    """ Returns edge attributes from node attributes.
+    """ Returns edge map from node attributes.
 
     For temporal graphs, returns a list of lists, one per snapshot,
     where each list contains the source or target node attribute value for each edge.

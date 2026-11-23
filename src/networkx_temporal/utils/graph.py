@@ -16,7 +16,7 @@ DEVICE = "gpu" if NX_GPU_AUTOCONFIG else "cpu"
 
 
 def combine_snapshots(graphs: List[TemporalGraph]) -> TemporalGraph:
-    """ Returns temporal graph with combined snapshots.
+    """ Combines same-index snapshots from graphs.
 
     Each snapshot in the resulting temporal graph is the union of the corresponding
     snapshots at each index :math:`t` from ``graphs``. All input temporal graphs
@@ -126,7 +126,7 @@ def to_adjacency_matrix(
     dtype: Optional[object] = None,
     format: FORMAT = "csr",
 ) -> sp.spmatrix:
-    """ Returns sparse adjacency matrix of graph.
+    """ Returns sparse adjacency matrix.
 
     If ``graph`` is a :class:`~networkx_temporal.classes.TemporalGraph`, returns a single weighted
     adjacency matrix combining all snapshots; if a static
@@ -166,7 +166,7 @@ def to_adjacency_matrix(
 
     .. note::
 
-        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        Supports CPU and GPU computation with SciPy or CuPy, by setting ``device='cpu'`` (default)
         or ``device='gpu'``, respectively. The resulting matrix can be made dense with
         ``.todense()``.
 
@@ -176,9 +176,10 @@ def to_adjacency_matrix(
         ``None`` treats all weights as 1. Default: ``'weight'``.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy and SciPy (default).
+        - ``'cpu'``: Uses NumPy and SciPy.
 
-        - ``'gpu'``: Uses CuPy and CuPy sparse.
+        - ``'gpu'``: Uses CuPy. Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the
+          environment on import.
 
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).
@@ -218,7 +219,7 @@ def to_supra_adjacency_matrix(
     dtype: Optional[object] = None,
     format: FORMAT = "csr",
 ) -> Union[sp.spmatrix, Tuple[sp.spmatrix, List[int]]]:
-    """ Returns sparse supra-adjacency matrix of temporal graph.
+    """ Returns sparse supra-adjacency matrix.
 
     The supra-adjacency matrix is a block matrix with intra-slice adjacency matrices on the
     diagonal and inter-slice identity matrices on the off-diagonal blocks, representing
@@ -289,11 +290,11 @@ def to_supra_adjacency_matrix(
 
     .. note::
 
-        Supports CPU and GPU computation with SciPy and CuPy, by setting ``device='cpu'`` (default)
+        Supports CPU and GPU computation with SciPy or CuPy, by setting ``device='cpu'`` (default)
         or ``device='gpu'``, respectively. The resulting matrix can be made dense with ``.todense()``.
 
-    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX graph
-        object.
+    :param object graph: A :class:`~networkx_temporal.classes.TemporalGraph` or static NetworkX
+        graph object.
     :param weight: Edge attribute key used to compute edge weights (default: ``'weight'``). If
         ``None``, all edge weights are considered as ``1``.
     :param interslice_weight: Inter-slice coupling strength for temporal graphs. Default: ``1.0``.
@@ -314,9 +315,10 @@ def to_supra_adjacency_matrix(
         starting indices for each slice. Default: ``False``.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy and SciPy (default).
+        - ``'cpu'``: Uses NumPy and SciPy.
 
-        - ``'gpu'``: Uses CuPy and CuPy sparse.
+        - ``'gpu'``: Uses CuPy. Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the
+          environment on import.
 
     :param dtype: Data type for the resulting sparse matrix values.
         If unset, uses NumPy ``float32`` (CPU) or CuPy ``float32`` (GPU).

@@ -29,8 +29,9 @@ def convert(
     *args,
     **kwargs
 ) -> Any:
-    """ High-level conversion function to other libraries. Calls the appropriate function based on the
-    received ``to`` parameter. The following libraries are currently supported for conversion:
+    """ High-level :func:`~networkx_temporal.classes.TemporalGraph.convert` function to other
+    libraries. Calls the appropriate function based on the received ``to`` parameter. The following
+    libraries are currently supported for conversion:
 
     +-------------------------------------------------------------------+--------------------------------------+-------------------------------------------------------------------+
     | Format                                                            | Parameter (Package)                  | .. centered:: Calls (Function)                                    |

@@ -699,7 +699,7 @@ def test_community() -> None:
 
     log.info("Optimizing static modularity")
     G = TG.to_static()
-    assignments = tx.leiden_communities(G, max_iter=-1, seed=0)
+    assignments = tx.leiden_communities(G, seed=0)
 
     node_color = [colors[x % len(colors)] for x in assignments]
 
@@ -710,7 +710,7 @@ def test_community() -> None:
             suptitle="Modularity optimization on static graph")
 
     snapshot_assignments = [
-        tx.leiden_communities(G, max_iter=-1, seed=0) for G in TG
+        tx.leiden_communities(G, seed=0) for G in TG
     ]
 
     temporal_node_color = [
@@ -729,7 +729,7 @@ def test_community() -> None:
              suptitle="Modularity optimization on graph snapshots")
 
     log.info("Optimizing multislice modularity")
-    multislice_assignments = tx.leiden_communities(TG, max_iter=-1, seed=0)
+    multislice_assignments = tx.leiden_communities(TG, seed=0)
 
     temporal_node_color = [
         [colors[m] for m in multislice_assignments[t]]
@@ -759,8 +759,8 @@ def test_community() -> None:
        results[m] = (Q, f"{mean:.3f}")
 
     assert results == {
-        "Static": ([0.057, 0.099, 0.058, 0.026], "0.060"),
-        "Snapshot": ([0.468, 0.26, 0.194, 0.147], "0.267"),
+        "Static": ([0.077, 0.093, 0.045, 0.039], "0.064"),
+        "Snapshot": ([0.468, 0.26, 0.143, 0.134], "0.251"),
         "Multislice": ([0.468, 0.21, 0.122, -0.005], "0.199"),
     }
 
@@ -772,8 +772,8 @@ def test_community() -> None:
        results[m] = (conductance, f"{mean:.3f}")
 
     assert results == {
-        "Static": ([0.449, 0.419, 0.464, 0.493], "0.456"),
-        "Snapshot": ([0.323, 0.487, 0.463, 0.371], "0.411"),
+        "Static": ([0.475, 0.479, 0.531, 0.556], "0.510"),
+        "Snapshot": ([0.323, 0.487, 0.517, 0.386], "0.428"),
         "Multislice": ([0.323, 0.589, 0.68, 0.808], "0.600"),
     }
 
@@ -852,23 +852,25 @@ def test_gpu(gpu: bool = False, pubmed: bool = False) -> None:
     plot_temporal_graph(TG, y_pred)
 
     G = TG.to_static()
-    y_pred = tx.spectral_clustering(G, k=3)
-    assert len(y_pred) == G.order()
+    y_spectral = tx.spectral_clustering(G, k=3)
+    y_leiden = tx.leiden_communities(G)
+    assert len(y_spectral) == G.order()
+    assert len(y_leiden) == G.order()
 
-    def plot_static_graph(G, y_pred):
+    def plot_static_graph(G, y_spectral, y_leiden):
         y_true = tx.get_node_attributes(G, "community", index=False)
         pos = tx.layout(G, layout="kamada_kawai")
         node_color = [
             [colors[m % len(colors)] for m in y]
-            for y in [y_true, y_pred]
+            for y in [y_true, y_spectral, y_leiden]
         ]
-        # Draw ground truths (left) and clustering results (right).
+        # Draw ground truths (left) and clustering results (middle/right).
         return tx.draw(
-            [G, G], figsize=(6, 3), pos=pos, node_size=70,
-            title=["Ground Truths", "Clustering Results"],
+            [G, G, G], figsize=(9, 3), pos=pos, node_size=70,
+            title=["Ground Truths", "Spectral Clustering", "Leiden Communities"],
             temporal_node_color=node_color)
 
-    plot_static_graph(G, y_pred)
+    plot_static_graph(G, y_spectral, y_leiden)
 
     log.info("Leiden communities")
     y_pred = tx.leiden_communities(TG)

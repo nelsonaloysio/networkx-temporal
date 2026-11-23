@@ -12,7 +12,7 @@
 ## \[X.Y.Z\] - DD-MM-YYYY
 
 ### Added
-- Partially parallelized Leiden algorithm for temporal graphs with `leiden_multislice` (CPU).
+- Parallelized Leiden on CPU with `leiden_communities_temporal` (NumPy/SciPy).
 
 ### Changed
 - Automatic device selection based on `NX_GPU_AUTOCONFIG` for adjacency matrix transformations.
@@ -22,6 +22,7 @@
 - Module `convert` functions accept either a static or temporal graph object as input (not lists).
 
 ### Deprecated
+- Function `leiden_multislice_gpu` deprecated for `leiden_communities_temporal(..., device='gpu')`.
 - Parameter `gamma` from `modularity_spectral` deprecated for `resolution` (submodule convention).
 
 

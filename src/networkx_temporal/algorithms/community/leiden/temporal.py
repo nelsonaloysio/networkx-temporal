@@ -5,7 +5,7 @@ import numpy as np
 import scipy.sparse as sp
 
 from ...gpu import NX_GPU_AUTOCONFIG
-from ....classes.types import is_static_graph, is_temporal_graph
+from ....classes import is_static_graph, is_temporal_graph
 from ....typing import StaticGraph, TemporalGraph, Literal
 from ....utils.graph import to_supra_adjacency_matrix
 
@@ -26,7 +26,7 @@ def leiden_communities_temporal(
     refine: bool = True,
     seed: Optional[int] = None,
     device: Literal["cpu", "gpu"] = DEVICE,
-) -> List[List[int]]:
+) -> Union[List[int], List[List[int]]]:
     """ Leiden parallelized temporal community detection.
     Optimizes
     :func:`~networkx_temporal.algorithms.modularity_multislice`.
@@ -35,10 +35,6 @@ def leiden_communities_temporal(
     or `CuPy <https://cupy.dev/>`__ if ``device='gpu'`` (AMD/NVIDIA). Allows passing a sparse
     adjacency matrix, static NetworkX graph, or :func:`~networkx_temporal.classes.TemporalGraph`
     as input ``graph``.
-
-    .. hint::
-
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
 
     .. note::
 
@@ -67,7 +63,8 @@ def leiden_communities_temporal(
 
         - ``'cpu'``: Uses NumPy and SciPy.
 
-        - ``'gpu'``: Uses CuPy.
+        - ``'gpu'``: Uses CuPy. Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the
+          environment on import.
     """
     cp, cpx, csp, to_host = _resolve_pathway(device)
 

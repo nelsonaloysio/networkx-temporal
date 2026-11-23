@@ -13,12 +13,13 @@ def get_edge_attributes(
     index: bool = True,
     values: Optional[Literal["list", "set"]] = None
 ) -> List[Any]:
-    """ Returns edge attribute values for each snapshot and edge in the graph.
+    """ Returns attribute values per snapshot and edge.
 
     For temporal graphs, returns a list of dictionaries, one per snapshot, where keys are edges
     and values are attribute values. If ``index=False``, returns a list of lists of attribute
     values for each snapshot, where the order of values corresponds to the edge order in the graph.
-    If ``values`` is set to ``'list'`` or ``'set'``, returns a list or a set of values per node.
+    If ``values`` is set to ``list`` or ``set``, the function returns a list or a set of attribute
+    values per edge, respectively.
 
     Note that edges with missing attributes are skipped by default, unless ``default`` is set.
 
@@ -51,11 +52,11 @@ def get_edge_attributes(
     :param index: Whether to return a dictionary with edges as keys.
         If ``False``, returns a list of attribute values for each snapshot, where the order of
         values corresponds to the edge order in the graph. Default is ``True``.
-    :param values: If set, returns a dictionary with a single key-value pair for each edge, being:
+    :param values: If set, returns a dictionary with a single key-value pair for each edge:
 
-       - ``'list'``: returns a list of attribute values per edge across time.
+       - ``list``: returns a list of attribute values per edge across time.
 
-       - ``'set'``: returns a set of unique attribute values per edge across time.
+       - ``set``: returns a set of unique attribute values per edge across time.
     """
     if is_static_graph(graph):
         edge_attrs = nx.get_edge_attributes(graph, attr, default=default)
@@ -192,7 +193,7 @@ def map_edge_attr_to_nodes(
     default: Any = None,
     unique: bool = False,
 ) -> list:
-    """ Returns node attributes from edge attributes.
+    """ Returns node map from edge attributes.
 
     For temporal graphs, returns a list of dictionaries, one per snapshot, where
     each dictionary contains the aggregated edge attribute values for each node.

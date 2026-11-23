@@ -5,8 +5,8 @@ Input/Output functions for temporal graphs.
 
 .. autosummary::
 
-   read_graph
-   write_graph
+    read_graph
+    write_graph
 
 .. rubric:: Functions
 """

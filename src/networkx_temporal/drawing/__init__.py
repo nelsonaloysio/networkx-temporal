@@ -5,14 +5,14 @@ Drawing functions for temporal graphs.
 
 .. autosummary::
 
-   draw
-   draw_networkx
-   draw_networkx_nodes
-   draw_networkx_edges
-   draw_networkx_labels
-   draw_networkx_edge_labels
-   layout
-   unrolled_layout
+    draw
+    draw_networkx
+    draw_networkx_nodes
+    draw_networkx_edges
+    draw_networkx_labels
+    draw_networkx_edge_labels
+    layout
+    unrolled_layout
 
 .. rubric:: Functions
 """

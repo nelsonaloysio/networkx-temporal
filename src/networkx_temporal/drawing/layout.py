@@ -35,7 +35,13 @@ def unrolled_layout(
 ) -> dict:
     """ Compute unrolled temporal graph node positions.
 
-    :param object UTG: A :class:`~networkx_temporal.classes.TemporalGraph` or unrolled
+    .. seealso::
+
+       The `Examples → Convert and transform → Unrolled temporal graphs <../examples/convert.html#unrolled-temporal-graph>`__
+       page.
+
+    :param object UTG: A :class:`~networkx_temporal.classes.TemporalGraph` or unrolled static
+        graph from :func:`~networkx_temporal.transform.to_unrolled` function.
     :param nodes: A list of node identifiers to sort the layout by.
     """
     if not is_unrolled_graph(UTG):

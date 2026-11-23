@@ -1,6 +1,6 @@
 from .convert import convert, FORMATS
-from .cugraph import to_cugraph  # , to_pylibcugraph
-from .cupy import  to_cupy
+from .cugraph import to_cugraph  # to_pylibcugraph
+from .cupy import to_cupy
 from .dgl import to_dgl
 from .dynetx import to_dynetx
 from .graph_tool import to_graph_tool

@@ -1,6 +1,6 @@
 import logging as log
 import scipy.sparse as sp
-from typing import List, Optional
+from typing import List, Optional, Union
 from warnings import warn
 
 from ...gpu import NX_GPU_AUTOCONFIG
@@ -21,6 +21,7 @@ def spectral_clustering_bethe_hessian(
     device: Literal["cpu", "gpu"] = DEVICE,
 ) -> List[int]:
     """ Spectral clustering via the Bethe-Hessian operator.
+    Also available via :func:`~networkx_temporal.algorithms.spectral_clustering`.
 
     Given a (supra-)adjacency matrix, constructs the Bethe-Hessian matrix
 
@@ -51,10 +52,6 @@ def spectral_clustering_bethe_hessian(
         Current estimation of the regularizer parameter :math:`r` supports only assortative
         structures.
 
-    .. hint::
-
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
-
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
     :param k: Number of communities. If unset, estimate from the number of negative eigenvalues.
@@ -66,11 +63,13 @@ def spectral_clustering_bethe_hessian(
     :param seed: Random seed for :math:`k`-means.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn.
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
+          Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the environment on import.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU aceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
     xp, xsp, KMeans, eigsh, _ = _resolve_pathway(device)

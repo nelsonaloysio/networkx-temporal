@@ -118,7 +118,7 @@ def is_temporal_graph(obj: Any) -> bool:
 
 
 def is_unrolled_graph(UTG: StaticGraph) -> bool:
-    """ Returns ``True`` if static graph is an unrolled temporal graph.
+    """ Returns ``True`` if graph is an unrolled static graph.
 
     Unrolled graphs are a static representation of temporal networks, where each node is suffixed
     with its temporal index (e.g., ``'a_0'``) and inter-slice edges are added to connect copies of

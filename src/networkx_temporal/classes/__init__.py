@@ -5,49 +5,49 @@ Classes and functions for temporal graph objects.
 
 .. autosummary::
 
-   temporal_graph
-   TemporalGraph
-   TemporalDiGraph
-   TemporalMultiGraph
-   TemporalMultiDiGraph
-   TemporalABC
-   empty_graph
+    TemporalGraph
+    TemporalDiGraph
+    TemporalMultiGraph
+    TemporalMultiDiGraph
+    TemporalABC
 
 .. rubric:: Functions - Summary
 
 .. autosummary::
 
-   all_neighbors
-   compose
-   compose_all
-   edge_subgraph
-   from_multigraph
-   is_events_graph
-   is_events_multigraph
-   is_frozen
-   is_static_graph
-   is_temporal_graph
-   is_unrolled_graph
-   isolates
-   neighbors
-   relabel_nodes
-   subgraph
-   to_multigraph
+    temporal_graph
+    empty_graph
+    all_neighbors
+    compose
+    compose_all
+    edge_subgraph
+    from_multigraph
+    is_events_graph
+    is_events_multigraph
+    is_frozen
+    is_static_graph
+    is_temporal_graph
+    is_unrolled_graph
+    isolates
+    neighbors
+    relabel_nodes
+    subgraph
+    to_multigraph
 
 .. rubric:: Classes
 
 .. autoclass:: networkx_temporal.classes.TemporalGraph
-   :members:
-   :inherited-members: Graph
+    :members:
+    :inherited-members: Graph
 
 .. autoclass:: networkx_temporal.classes.TemporalDiGraph
-   :members:
+    :members:
 
 .. autoclass:: networkx_temporal.classes.TemporalMultiGraph
-   :members:
+    :members:
 
 .. autoclass:: networkx_temporal.classes.TemporalMultiDiGraph
-   :members:
+    :members:
 
 .. autoclass:: TemporalABC
 
@@ -85,13 +85,13 @@ from .types import (
 )
 
 __all__ = (
-    "temporal_graph",
-    "empty_graph",
     "TemporalGraph",
     "TemporalDiGraph",
     "TemporalMultiGraph",
     "TemporalMultiDiGraph",
     "TemporalABC",
+    "temporal_graph",
+    "empty_graph",
     "all_neighbors",
     "compose",
     "compose_all",

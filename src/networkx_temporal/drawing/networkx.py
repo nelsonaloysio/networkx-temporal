@@ -64,7 +64,14 @@ def draw_networkx(
 
     .. code-block:: bash
 
-        >>> pip install 'networkx-temporal[draw]'
+        pip install 'networkx-temporal[draw]'
+
+    Note that the
+    :func:`~networkx_temporal.drawing.draw_networkx_nodes`,
+    :func:`~networkx_temporal.drawing.draw_networkx_edges`,
+    :func:`~networkx_temporal.drawing.draw_networkx_labels`, and
+    :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
+    functions allow to plot individual temporal graph elements.
 
     .. rubric:: Example
 
@@ -122,17 +129,11 @@ def draw_networkx(
         >>>
         >>> # Save figure to file.
         >>> # fig.savefig("figure.png")
-        >>>
-        >>> fig
 
     .. image:: ../../assets/figure/drawing/draw_networkx.png
+       :align: center
 
-    Note that the functions
-    :func:`~networkx_temporal.drawing.draw_networkx_nodes`,
-    :func:`~networkx_temporal.drawing.draw_networkx_edges`,
-    :func:`~networkx_temporal.drawing.draw_networkx_labels`, and
-    :func:`~networkx_temporal.drawing.draw_networkx_edge_labels`
-    allow to plot specific temporal graph elements on the same figure.
+    |
 
     .. important::
 

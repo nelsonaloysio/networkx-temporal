@@ -17,51 +17,62 @@ def spectral_clustering_modularity(
     max_iter: int = 300,
     seed: Optional[int] = None,
     device: Literal["cpu", "gpu"] = DEVICE
-) -> List[dict]:
-    """ Spectral clustering via multislice modularity.
+) -> List[int]:
+    """ Spectral clustering via the modularity operator.
+    Also available via :func:`~networkx_temporal.algorithms.spectral_clustering`.
 
-    Multislice modularity (Mucha et al. 2010) generalizes the Newman-Girvan modularity to
-    temporal graphs by introducing inter-slice couplings between node copies across snapshots,
+    Given a (supra-)adjacency matrix, computes the eigenvectors associated with the :math:`k`
+    largest eigenvalues of the (supra-)modularity matrix and clusters the resulting embedding with
+    :math:`k`-means. This is a spectral relaxation of :func:`~networkx_temporal.algorithms.modularity_multislice` maximization, that is,
 
     .. math::
 
         \\mathcal{Q}_\\mathrm{MS} =
         \\frac{1}{2 \\mu}
-        \\mathrm{Tr} (\\mathbf{C}^\\top \\mathbf{M} \\mathbf{C})
+        \\mathrm{Tr} (\\mathbf{C}^\\top \\mathbf{M} \\mathbf{C}),
 
-    where :math:`\\mathbf{M}` is the supra-modularity matrix with diagonal blocks
-    :math:`\\mathbf{B}^{(t)} = \\mathbf{A}^{(t)} - \\gamma \\frac{d^{(t)} d^{(t)T}}{2 m^{(t)}}`
-    and off-diagonal blocks :math:`\\omega^{(sr)} \\mathbf{I}` connecting nodes across
-    snapshots, and :math:`\\mathbf{C}` is the community matrix.
+    where :math:`\\mathbf{C}` is the (binary) community assignment matrix,
+    :math:`\\mu` is the total intra- and inter-layer edge weight in the temporal graph,
+    and :math:`\\mathbf{M}` is the (supra-)modularity matrix, with diagonal blocks
 
-    This function computes the leading :math:`k` eigenvectors of the supra-modularity matrix and
-    clusters them with :math:`k`-means. Requires :math:`\\mathbf{M}` to be symmetric (undirected
-    graph) for spectral decomposition, where the largest eigenvalues correspond to community
-    structures with increased modularity.
+    .. math::
 
-    .. hint::
+        \\mathbf{B}^{(t)} =
+        \\mathbf{A}^{(t)} - \\gamma \\frac{\\mathbf{d}^{(t)} \\mathbf{d}^{(t)\\top}}{2 m^{(t)}}
 
-        Setting ``NX_GPU_AUTOCONFIG=1`` in the environment will set ``device='gpu'`` as default.
+    and off-diagonal blocks :math:`\\omega^{(sr)} \\mathbf{I}` coupling temporal node copies,
+    :math:`\\mathbf{A}^{(t)}` is the adjacency
+    matrix of snapshot :math:`t`, :math:`\\mathbf{d}^{(t)}` its degree vector,
+    :math:`m^{(t)}` its total edge weight, and :math:`\\gamma` the resolution parameter.
+
+    Relaxing :math:`\\mathbf{C}` to a real-valued matrix with orthonormal columns, the trace is
+    maximized by the leading :math:`k` eigenvectors of :math:`\\mathbf{M}`. Rows of the embedding
+    are rescaled to unit :math:`\\ell_2`-norm before clustering [1]_.
+    The null model is applied implicitly as a linear operator to avoid materializing
+    :math:`\\mathbf{M}` as a dense matrix. Requires ``adj`` to be symmetric (undirected graph)
+    and specifying the number of communities ``k`` in advance. Reduces to :func:`~networkx_temporal.algorithms.modularity` maximization if ``offsets`` is unset.
 
     :param adj: Adjacency or supra-adjacency matrix in CSR format.
         Accepts dense NumPy (CPU) or sparse SciPy/CuPy (GPU) matrices.
-    :param k: Number of communities.
-    :param offsets: List of starting indices for each snapshot in the supra-adjacency matrix.
+    :param k: Number of communities or number of eigenvectors computed.
+    :param offsets: List of starting node indices for each snapshot in the graph.
         Obtained by :func:`~networkx_temporal.classes.TemporalGraph.offsets`, or
         :func:`~networkx_temporal.utils.to_supra_adjacency_matrix` with
-        ``return_offsets=True``. If ``None``, assumes a static graph.
-    :param gamma: Resolution parameter :math:`\\gamma` (default: ``1.0``). Controls the size of the
-        communities found, where higher values lead to smaller communities.
+        ``return_offsets=True``. Required for multislice modularity maximization.
+    :param gamma: Resolution parameter :math:`\\gamma`. Default is ``1.0``.
+        Controls the size of communities, where higher values lead to smaller communities.
     :param n_init: Number of random initializations for :math:`k`-means.
     :param max_iter: Maximum number of iterations for :math:`k`-means.
     :param seed: Random seed for :math:`k`-means.
     :param str device: Device to use for computation. Available choices:
 
-        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn (default).
+        - ``'cpu'``: Uses NumPy, SciPy, and scikit-learn.
 
-        - ``'gpu'``: Uses CuPy, CuPy sparse, and cuML (NVIDIA RAPIDS).
+        - ``'gpu'``: Uses CuPy and cuML (NVIDIA RAPIDS).
+          If cuML is not installed, uses CuPy and scikit-learn's :math:`k`-means as fallback.
+          Used by default if ``NX_GPU_AUTOCONFIG=1`` is set on the environment on import.
 
-    :note: GPU acceleration requires NVIDIA CUDA-enabled hardware.
+    :note: Full GPU acceleration requires cuML on NVIDIA CUDA-enabled hardware.
     """
     from .spectral import _resolve_pathway
     xp, _, KMeans, _, LinearOperator = _resolve_pathway(device)
@@ -96,7 +107,6 @@ def spectral_clustering_modularity(
             result[sl] -= (gamma / (2.0 * m[t])) * d[t] * (d[t] @ v[sl])
         return result
 
-    # LinearOperator for M (avoids materialising dense null model):
     # M @ v  =  A_supra @ v  -  γ Σ_t  d_t (d_t^T v_t) / (2 m_t)
     # NOTE: null model is block-diagonal of rank-1 outer products d_t d_t^T,
     # but we apply it implicitly via dot products O(N) to avoid O(N²) per

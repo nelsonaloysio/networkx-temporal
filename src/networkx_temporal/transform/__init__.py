@@ -5,14 +5,14 @@ Transform data between different temporal graph representations.
 
 .. autosummary::
 
-   from_events
-   from_snapshots
-   from_static
-   from_unrolled
-   to_events
-   to_snapshots
-   to_static
-   to_unrolled
+    from_events
+    from_snapshots
+    from_static
+    from_unrolled
+    to_events
+    to_snapshots
+    to_static
+    to_unrolled
 
 .. rubric:: Functions
 """
