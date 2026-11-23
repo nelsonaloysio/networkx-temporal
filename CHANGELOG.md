@@ -13,6 +13,7 @@
 
 ### Added
 - Parallelized Leiden on CPU with `leiden_communities_temporal` (NumPy/SciPy).
+- Utility function `map_to_offsets` to return a list of values re-indexed by tmeporal node offsets.
 
 ### Changed
 - Automatic device selection based on `NX_GPU_AUTOCONFIG` for adjacency matrix transformations.

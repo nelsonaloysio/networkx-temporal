@@ -6,6 +6,7 @@ Utility functions for NetworkX static and temporal graphs.
 .. autosummary::
 
     combine_snapshots
+    map_to_offsets
     propagate_snapshots
     temporal_edge_similarity
     temporal_node_similarity
@@ -102,6 +103,7 @@ from .nodes import *
 
 __all__ = (
     "combine_snapshots",
+    "map_to_offsets",
     "propagate_snapshots",
     "temporal_edge_similarity",
     "temporal_node_similarity",

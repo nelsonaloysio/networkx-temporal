@@ -70,6 +70,22 @@ def combine_snapshots(graphs: List[TemporalGraph]) -> TemporalGraph:
     return TG
 
 
+def map_to_offsets(TG: TemporalGraph, values: list) -> list:
+    """ Maps flat list of values to temporal node offsets.
+
+    :param object TG: A :class:`~networkx_temporal.classes.TemporalGraph` object or
+        :class:`~networkx_temporal.classes.TemporalGraph.offsets` list.
+    :param values: List of values to map to offset indices.
+    """
+    offsets = TG.offsets()
+    n_nodes = sum(TG.order())
+    n_t = [offsets[t + 1] - offsets[t] for t in range(len(TG) - 1)] + [n_nodes - offsets[-1]]
+    return [
+        values[offsets[t]:offsets[t]+n_t[t]]
+        for t in range(len(TG))
+    ]
+
+
 def propagate_snapshots(
     TG: TemporalGraph,
     method: Literal["ffill", "bfill"] = "ffill",
